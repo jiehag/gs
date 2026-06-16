@@ -467,7 +467,7 @@
             overflow-y: auto;
         }
 
-        /* ========= 移动端专属优化 (增加时间输入框长度约1/3) ========= */
+        /* ========= 移动端专属优化 ========= */
         @media (max-width: 900px) {
             body {
                 padding: 16px;
@@ -494,7 +494,6 @@
                 padding: 0;
                 gap: 12px;
             }
-            /* 时间范围项占满宽度 */
             .time-range-item {
                 width: 100%;
                 justify-content: space-between;
@@ -505,16 +504,14 @@
             .time-range-item label {
                 font-size: 0.85rem;
             }
-            /* 关键修改：手机端时间输入框宽度增加约三分之一 (原80px→110px) */
             .time-range-item input {
-                width: 110px;        /* 原电脑端98px，手机端之前80px容易遮挡，增加至110px (增加约37%) */
+                width: 110px;
                 padding: 8px 10px;
                 font-size: 0.85rem;
                 background: white;
                 border-radius: 32px;
                 border: 1px solid #e2e8f0;
             }
-            /* 重置时段按钮单独一行 */
             .settings-group .btn {
                 width: 100%;
                 justify-content: center;
@@ -588,7 +585,6 @@
             }
         }
 
-        /* 超小屏进一步优化，但保持时间输入框宽度足够 */
         @media (max-width: 480px) {
             body {
                 padding: 12px;
@@ -599,9 +595,8 @@
             .time-range-item {
                 padding: 6px 12px;
             }
-            /* 极小屏下依然保持较宽，避免遮挡 */
             .time-range-item input {
-                width: 105px;   /* 极小屏也保持足够长度 */
+                width: 105px;
                 padding: 6px 8px;
             }
             .hourly-rate-area input, .password-area input {
@@ -647,7 +642,7 @@
         </div>
     </div>
 
-    <!-- 全局设置区（午餐/晚餐输入框手机端宽度已增加约三分之一） -->
+    <!-- 全局设置区 -->
     <div class="settings-card card">
         <div class="settings-group">
             <div class="time-range-item"><i class="fas fa-utensils"></i><label>午餐</label><input type="time" id="lunchStart" value="12:00"> — <input type="time" id="lunchEnd" value="13:00"></div>
@@ -702,6 +697,10 @@
     let hourlyRate = 25;
     let mealSettings = { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
     
+    // 【修改1】新增：草稿自动保存定时器
+    let autoSaveTimer = null;
+    const AUTO_SAVE_DELAY = 3000; // 3秒无操作后自动保存草稿
+    
     function timeToMinutes(t) { if(!t) return null; let p=t.split(':'); if(p.length!==2) return null; let h=parseInt(p[0]), m=parseInt(p[1]); return isNaN(h)||isNaN(m)? null : h*60+m; }
     function getOverlap(s,e,bs,be) { let os=Math.max(s,bs), oe=Math.min(e,be); return os<oe ? oe-os : 0; }
     
@@ -722,6 +721,56 @@
     }
     function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
     
+    // 【修改1】新增：自动保存草稿到 localStorage
+    function saveDraftToLocalStorage() {
+        try {
+            localStorage.setItem("draftRecords_backup", JSON.stringify(draftRecords));
+            console.log("草稿已自动保存");
+        } catch(e) { console.warn("自动保存失败", e); }
+    }
+    
+    // 【修改1】新增：触发自动保存（防抖）
+    function triggerAutoSave() {
+        if (autoSaveTimer) clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+            saveDraftToLocalStorage();
+        }, AUTO_SAVE_DELAY);
+    }
+    
+    // 【修改1】新增：恢复草稿备份
+    function loadDraftFromLocalStorage() {
+        let savedDraft = localStorage.getItem("draftRecords_backup");
+        if (savedDraft) {
+            try {
+                let parsed = JSON.parse(savedDraft);
+                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                    if (confirm("检测到未保存的草稿数据，是否恢复？\n（点击确定恢复草稿，取消则使用已保存数据）")) {
+                        draftRecords = parsed;
+                        updateDraftHoursAndSalary();
+                        renderTable();
+                        return true;
+                    }
+                }
+            } catch(e) { console.warn("草稿恢复失败", e); }
+        }
+        return false;
+    }
+    
+    // 【修改1】新增：离开页面提醒
+    let isDraftSaved = true;
+    function markDraftChanged() {
+        isDraftSaved = false;
+        triggerAutoSave();
+    }
+    
+    window.addEventListener("beforeunload", (e) => {
+        if (!isDraftSaved) {
+            e.preventDefault();
+            e.returnValue = "您有未保存的草稿，确定要离开吗？";
+            return e.returnValue;
+        }
+    });
+    
     function updateDraftHoursAndSalary() {
         for (let rec of draftRecords) {
             let deduct = (rec.customDeductMinutes && !isNaN(rec.customDeductMinutes)) ? rec.customDeductMinutes : 0;
@@ -730,6 +779,7 @@
                 rec.salary = getSalary(rec.hours);
             } else { rec.hours = 0; rec.salary = 0; }
         }
+        markDraftChanged(); // 标记草稿已修改
     }
     
     function renderTable() {
@@ -779,11 +829,11 @@
             salaryCell.appendChild(salarySpan);
             let noteCell = row.insertCell(7);
             let noteInput = document.createElement('input'); noteInput.type='text'; noteInput.placeholder='事件备注...'; noteInput.className='event-input'; noteInput.value=rec.note||'';
-            noteInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].note=e.target.value; })(i));
+            noteInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].note=e.target.value; markDraftChanged(); })(i));
             noteCell.appendChild(noteInput);
             let actionCell = row.insertCell(8);
             let delBtn = document.createElement('button'); delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; delBtn.className='delete-day';
-            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); renderTable(); } })(i));
+            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); } })(i));
             actionCell.appendChild(delBtn);
         }
         if(draftRecords.length===0){
@@ -868,6 +918,9 @@
             workRecords = JSON.parse(JSON.stringify(draftRecords));
             localStorage.setItem("hourlyRateBack", hourlyRate);
             saveToLocalStorage();
+            // 【修改1】保存成功后清除草稿备份
+            localStorage.removeItem("draftRecords_backup");
+            isDraftSaved = true;
             updateDraftHoursAndSalary();
             renderTable();
             alert("✅ 所有修改已安全保存");
@@ -892,6 +945,7 @@
         newRec.hours = calculateNetHours("09:00","17:00", false, 0);
         newRec.salary = getSalary(newRec.hours);
         draftRecords.push(newRec);
+        updateDraftHoursAndSalary();
         renderTable();
     }
     
@@ -907,6 +961,9 @@
             updateDraftHoursAndSalary();
             renderTable();
             saveToLocalStorage();
+            // 清除草稿备份
+            localStorage.removeItem("draftRecords_backup");
+            isDraftSaved = true;
         }
     }
     
@@ -917,10 +974,18 @@
         localStorage.setItem("hourlyRate", hourlyRate);
         localStorage.setItem("hourlyRateBack", hourlyRate);
     }
+    
     function loadFromLocalStorage(){
         let saved = localStorage.getItem("workHoursData");
-        if(saved){ try{ workRecords=JSON.parse(saved); draftRecords=JSON.parse(JSON.stringify(workRecords)); }catch(e){ initDefault(); } }
+        if(saved){ try{ workRecords=JSON.parse(saved); }catch(e){ initDefault(); } }
         else initDefault();
+        
+        // 【修改1】先尝试恢复草稿，若无草稿则使用正式数据作为草稿
+        let hasDraft = loadDraftFromLocalStorage();
+        if (!hasDraft) {
+            draftRecords = JSON.parse(JSON.stringify(workRecords));
+        }
+        
         let savedSet = localStorage.getItem("mealSettings");
         if(savedSet) try{ let ms=JSON.parse(savedSet); if(ms.lunchStart) mealSettings=ms; }catch(e){}
         let savedPwd = localStorage.getItem("appPassword");
@@ -935,6 +1000,7 @@
         document.getElementById('hourlyRate').value = hourlyRate;
         updateDraftHoursAndSalary();
     }
+    
     function initDefault(){
         workRecords = [ { dateStr: new Date().toISOString().slice(0,10), startTime:"09:00", endTime:"17:00", note:"示例", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 } ];
         draftRecords = JSON.parse(JSON.stringify(workRecords));
@@ -974,10 +1040,19 @@
         XLSX.writeFile(wb, `钟点工报表_${new Date().toISOString().slice(0,19)}.xlsx`);
     }
     
+    // 【修改2】修复：月份选择器基于正式数据+草稿数据合并去重
     function populateMonthSelect(){
         let select=document.getElementById('monthSelect');
-        let months=new Set(); draftRecords.forEach(r=>months.add(r.dateStr.substring(0,7)));
-        let arr=Array.from(months).sort(); if(arr.length===0) arr=[new Date().toISOString().slice(0,7)];
+        // 合并正式数据和草稿数据中的所有月份
+        let months=new Set();
+        workRecords.forEach(r => {
+            if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7));
+        });
+        draftRecords.forEach(r => {
+            if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7));
+        });
+        let arr=Array.from(months).sort();
+        if(arr.length===0) arr=[new Date().toISOString().slice(0,7)];
         select.innerHTML=arr.map(ym=>`<option value="${ym}">${ym.replace('-','年')}月</option>`).join('');
         if(arr.length && !select.value) select.value=arr[0];
         updateMonthlySummaryFromDraft();
