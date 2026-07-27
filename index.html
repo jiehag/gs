@@ -15,28 +15,22 @@
             box-sizing: border-box;
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
         }
-
         body {
             background: #f0f5fa;
             padding: 28px 24px;
             color: #1e293b;
             transition: all 0.2s;
         }
-
         .container {
             max-width: 1600px;
             margin: 0 auto;
         }
-
-        /* 卡片通用样式 */
         .card {
             background: #ffffff;
             border-radius: 32px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9edf2;
         }
-
-        /* ========= 电脑端默认样式 ========= */
         .header-card {
             display: flex;
             flex-wrap: wrap;
@@ -46,9 +40,7 @@
             margin-bottom: 24px;
             background: #ffffff;
             border-radius: 36px;
-            position: relative;
         }
-
         .title-section h1 {
             font-size: 1.85rem;
             font-weight: 700;
@@ -61,7 +53,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .title-section p {
             font-size: 0.85rem;
             color: #5b6e8c;
@@ -71,7 +62,6 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-
         .settings-dropdown-wrapper {
             position: relative;
             display: inline-block;
@@ -136,13 +126,11 @@
             width: 20px;
             color: #2c7a4b;
         }
-
         .action-buttons {
             display: flex;
             gap: 12px;
             align-items: center;
         }
-
         .btn {
             border: none;
             padding: 8px 20px;
@@ -158,19 +146,15 @@
             color: #1e293b;
             touch-action: manipulation;
         }
-
         .btn-primary {
             background: #2c7a4b;
             color: white;
             box-shadow: 0 2px 8px rgba(44, 122, 75, 0.15);
         }
-
         .btn-primary:hover {
             background: #236b3f;
             transform: translateY(-1px);
         }
-
-        /* 设置区域 - 电脑端舒适 */
         .settings-card {
             display: flex;
             flex-wrap: wrap;
@@ -180,7 +164,6 @@
             padding: 16px 28px;
             margin-bottom: 24px;
         }
-
         .settings-group {
             display: flex;
             flex-wrap: wrap;
@@ -190,7 +173,6 @@
             padding: 6px 16px;
             border-radius: 60px;
         }
-
         .time-range-item {
             display: flex;
             align-items: center;
@@ -201,14 +183,12 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
             border: 1px solid #e2e8f0;
         }
-
         .time-range-item label {
             font-weight: 600;
             color: #2d6a4f;
             font-size: 0.8rem;
             white-space: nowrap;
         }
-
         .time-range-item input {
             border: none;
             background: #f8fafc;
@@ -218,7 +198,6 @@
             font-weight: 500;
             font-size: 0.8rem;
         }
-
         .hourly-rate-area, .password-area {
             display: flex;
             align-items: center;
@@ -227,12 +206,10 @@
             padding: 4px 20px;
             border-radius: 48px;
         }
-
         .hourly-rate-area i, .password-area i {
             color: #38a169;
             font-size: 1rem;
         }
-
         .hourly-rate-area input, .password-area input {
             border: 1px solid #e2e8f0;
             border-radius: 32px;
@@ -241,12 +218,10 @@
             background: white;
             font-weight: 500;
         }
-
         .stats-card {
             padding: 20px 28px;
             margin-bottom: 28px;
         }
-
         .stats-title {
             display: flex;
             justify-content: space-between;
@@ -254,7 +229,6 @@
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
-
         .month-picker select {
             padding: 8px 20px;
             border-radius: 40px;
@@ -262,13 +236,11 @@
             background: white;
             font-weight: 500;
         }
-
         .summary-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
         }
-
         .summary-item {
             background: #f9fbfd;
             border-radius: 28px;
@@ -278,7 +250,6 @@
             text-align: center;
             border: 1px solid #ecf3f9;
         }
-
         .summary-label {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -286,19 +257,16 @@
             color: #5b6e8c;
             font-weight: 600;
         }
-
         .summary-value {
             font-size: 2rem;
             font-weight: 800;
             margin-top: 8px;
             color: #1e6f3f;
         }
-
         .daily-section {
             padding: 24px 20px 28px;
             overflow-x: auto;
         }
-
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -307,7 +275,6 @@
             margin-bottom: 20px;
             padding: 0 8px;
         }
-
         .section-header h3 {
             font-size: 1.3rem;
             font-weight: 600;
@@ -315,14 +282,12 @@
             align-items: center;
             gap: 8px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
             min-width: 1300px;
         }
-
         th {
             text-align: left;
             padding: 16px 12px;
@@ -331,13 +296,11 @@
             font-weight: 600;
             border-bottom: 2px solid #e2edf2;
         }
-
         td {
             padding: 14px 12px;
             border-bottom: 1px solid #ecf3f8;
             vertical-align: middle;
         }
-
         .date-input, .time-input, .event-input, .deduct-input {
             border: 1px solid #e2e8f0;
             border-radius: 28px;
@@ -347,16 +310,13 @@
             width: 100%;
             max-width: 130px;
         }
-
         .deduct-input {
             max-width: 95px;
             text-align: center;
         }
-
         .event-input {
             min-width: 160px;
         }
-
         .hours-badge, .money-badge {
             background: #e9f4ef;
             color: #2c7a4b;
@@ -366,19 +326,16 @@
             display: inline-block;
             font-size: 0.8rem;
         }
-
         .money-badge {
             background: #eef2ff;
             color: #1e4b6e;
         }
-
         .exclude-check {
             display: flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
         }
-
         .delete-day {
             background: transparent;
             border: none;
@@ -389,12 +346,10 @@
             padding: 6px 10px;
             border-radius: 40px;
         }
-
         .delete-day:hover {
             background: #ffefea;
             color: #c2410c;
         }
-
         .add-row-btn {
             margin-top: 28px;
             display: inline-flex;
@@ -408,12 +363,10 @@
             cursor: pointer;
             transition: 0.2s;
         }
-
         .add-row-btn:hover {
             background: #e6f0f8;
             border-color: #2c7a4b;
         }
-
         .warning-tip {
             background: #fefce8;
             border-left: 5px solid #e6b12e;
@@ -423,7 +376,6 @@
             margin-bottom: 24px;
             color: #7b6e3c;
         }
-
         .footer-note {
             text-align: center;
             margin-top: 28px;
@@ -432,7 +384,6 @@
             border-top: 1px solid #edf2f7;
             padding-top: 20px;
         }
-
         .modal-mask {
             position: fixed;
             top: 0;
@@ -446,7 +397,6 @@
             justify-content: center;
             z-index: 2000;
         }
-
         .verify-panel {
             background: white;
             border-radius: 48px;
@@ -455,7 +405,6 @@
             text-align: center;
             box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
         }
-
         .changes-preview {
             background: #f8fafc;
             border-radius: 28px;
@@ -466,153 +415,55 @@
             max-height: 240px;
             overflow-y: auto;
         }
-
-        /* ========= 移动端专属优化 ========= */
-        @media (max-width: 900px) {
-            body {
-                padding: 16px;
-            }
-            .header-card {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 16px 18px;
-                gap: 14px;
-            }
-            .action-buttons {
-                justify-content: flex-start;
-            }
-            .settings-card {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 14px;
-                padding: 16px;
-            }
-            .settings-group {
-                width: 100%;
-                flex-direction: column;
-                background: transparent;
-                padding: 0;
-                gap: 12px;
-            }
-            .time-range-item {
-                width: 100%;
-                justify-content: space-between;
-                padding: 8px 16px;
-                background: #f8fafc;
-                border-radius: 48px;
-            }
-            .time-range-item label {
-                font-size: 0.85rem;
-            }
-            .time-range-item input {
-                width: 110px;
-                padding: 8px 10px;
-                font-size: 0.85rem;
-                background: white;
-                border-radius: 32px;
-                border: 1px solid #e2e8f0;
-            }
-            .settings-group .btn {
-                width: 100%;
-                justify-content: center;
-                margin-top: 4px;
-            }
-            .hourly-rate-area, .password-area {
-                width: 100%;
-                justify-content: space-between;
-                background: #f8fafc;
-                padding: 10px 18px;
-                border-radius: 48px;
-            }
-            .summary-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            .summary-item {
-                padding: 12px 12px;
-                min-width: auto;
-            }
-            .summary-value {
-                font-size: 1.5rem;
-            }
-            .daily-section {
-                padding: 16px 12px;
-            }
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            table {
-                font-size: 0.75rem;
-                min-width: 1050px;
-            }
-            th {
-                padding: 10px 6px;
-                font-size: 0.7rem;
-            }
-            td {
-                padding: 10px 6px;
-            }
-            .date-input, .time-input, .event-input, .deduct-input {
-                padding: 6px 8px;
-                font-size: 0.7rem;
-                max-width: 110px;
-            }
-            .event-input {
-                min-width: 120px;
-            }
-            .deduct-input {
-                max-width: 75px;
-            }
-            .hours-badge, .money-badge {
-                padding: 4px 10px;
-                font-size: 0.7rem;
-            }
-            .btn {
-                padding: 8px 16px;
-                font-size: 0.75rem;
-            }
-            .add-row-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            .settings-menu {
-                right: 0;
-                left: auto;
-                min-width: 180px;
-            }
+        .month-filter-tip {
+            margin: 8px 0 0 12px;
+            font-size: 0.8rem;
+            color: #2c7a4b;
+            background: #eaf6ef;
+            padding: 4px 14px;
+            border-radius: 40px;
+            display: inline-block;
         }
-
+        @media (max-width: 900px) {
+            body { padding: 16px; }
+            .header-card { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 14px; }
+            .action-buttons { justify-content: flex-start; }
+            .settings-card { flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
+            .settings-group { width: 100%; flex-direction: column; background: transparent; padding: 0; gap: 12px; }
+            .time-range-item { width: 100%; justify-content: space-between; padding: 8px 16px; background: #f8fafc; border-radius: 48px; }
+            .time-range-item label { font-size: 0.85rem; }
+            .time-range-item input { width: 110px; padding: 8px 10px; font-size: 0.85rem; background: white; border-radius: 32px; border: 1px solid #e2e8f0; }
+            .settings-group .btn { width: 100%; justify-content: center; margin-top: 4px; }
+            .hourly-rate-area, .password-area { width: 100%; justify-content: space-between; background: #f8fafc; padding: 10px 18px; border-radius: 48px; }
+            .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .summary-item { padding: 12px 12px; min-width: auto; }
+            .summary-value { font-size: 1.5rem; }
+            .daily-section { padding: 16px 12px; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            table { font-size: 0.75rem; min-width: 1050px; }
+            th { padding: 10px 6px; font-size: 0.7rem; }
+            td { padding: 10px 6px; }
+            .date-input, .time-input, .event-input, .deduct-input { padding: 6px 8px; font-size: 0.7rem; max-width: 110px; }
+            .event-input { min-width: 120px; }
+            .deduct-input { max-width: 75px; }
+            .hours-badge, .money-badge { padding: 4px 10px; font-size: 0.7rem; }
+            .btn { padding: 8px 16px; font-size: 0.75rem; }
+            .add-row-btn { width: 100%; justify-content: center; }
+            .settings-menu { right: 0; left: auto; min-width: 180px; }
+        }
         @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-            .summary-value {
-                font-size: 1.2rem;
-            }
-            .time-range-item {
-                padding: 6px 12px;
-            }
-            .time-range-item input {
-                width: 105px;
-                padding: 6px 8px;
-            }
-            .hourly-rate-area input, .password-area input {
-                width: 100px;
-            }
-            .settings-menu {
-                width: calc(100% - 20px);
-                left: 10px;
-                right: auto;
-            }
+            body { padding: 12px; }
+            .summary-value { font-size: 1.2rem; }
+            .time-range-item { padding: 6px 12px; }
+            .time-range-item input { width: 105px; padding: 6px 8px; }
+            .hourly-rate-area input, .password-area input { width: 100px; }
+            .settings-menu { width: calc(100% - 20px); left: 10px; right: auto; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- 头部卡片：整合设置菜单 -->
+    <!-- 头部卡片 -->
     <div class="header-card card">
         <div class="title-section">
             <h1><i class="fas fa-clock" style="color:#2c7a4b;"></i> 钟点工时管家</h1>
@@ -624,25 +475,17 @@
                     <i class="fas fa-sliders-h"></i> 设置 <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
                 </button>
                 <div class="settings-menu" id="settingsMenu">
-                    <div class="settings-menu-item" id="exportExcelMenuItem">
-                        <i class="fas fa-file-excel"></i> 导出Excel
-                    </div>
-                    <div class="settings-menu-item" id="exportDataMenuItem">
-                        <i class="fas fa-download"></i> JSON备份
-                    </div>
-                    <div class="settings-menu-item" id="importTriggerMenuItem">
-                        <i class="fas fa-upload"></i> 导入备份
-                    </div>
-                    <div class="settings-menu-item" id="resetDemoMenuItem">
-                        <i class="fas fa-undo-alt"></i> 重置示例
-                    </div>
+                    <div class="settings-menu-item" id="exportExcelMenuItem"><i class="fas fa-file-excel"></i> 导出Excel</div>
+                    <div class="settings-menu-item" id="exportDataMenuItem"><i class="fas fa-download"></i> JSON备份</div>
+                    <div class="settings-menu-item" id="importTriggerMenuItem"><i class="fas fa-upload"></i> 导入备份</div>
+                    <div class="settings-menu-item" id="resetDemoMenuItem"><i class="fas fa-undo-alt"></i> 重置示例</div>
                 </div>
             </div>
             <input type="file" id="importFileInput" accept=".json" style="display: none;">
         </div>
     </div>
 
-    <!-- 全局设置区 -->
+    <!-- 全局设置 -->
     <div class="settings-card card">
         <div class="settings-group">
             <div class="time-range-item"><i class="fas fa-utensils"></i><label>午餐</label><input type="time" id="lunchStart" value="12:00"> — <input type="time" id="lunchEnd" value="13:00"></div>
@@ -653,7 +496,7 @@
         <div class="password-area"><i class="fas fa-lock"></i><input type="password" id="globalPasswordInput" placeholder="操作密码" value="123456"><button class="btn" id="changePwdBtn"><i class="fas fa-key"></i> 修改</button></div>
     </div>
 
-    <!-- 月度汇总卡片 -->
+    <!-- 月度汇总 -->
     <div class="stats-card card">
         <div class="stats-title">
             <h2><i class="fas fa-chart-line"></i> 月度薪资总览</h2>
@@ -670,7 +513,7 @@
     <!-- 每日登记表 -->
     <div class="daily-section card">
         <div class="section-header">
-            <h3><i class="fas fa-edit"></i> 每日工时明细</h3>
+            <h3><i class="fas fa-edit"></i> 每日工时明细 <span class="month-filter-tip" id="currentMonthFilterTip">📅 当前显示: 全部</span></h3>
             <button class="btn btn-primary" id="globalSaveBtn"><i class="fas fa-save"></i> 保存所有修改 (密码验证)</button>
         </div>
         <div class="warning-tip">
@@ -690,16 +533,17 @@
 </div>
 
 <script>
-    // ---------- 数据结构 ----------
+    // ---------- 数据 ----------
     let workRecords = [];        
     let draftRecords = [];       
     let currentPassword = "123456";
     let hourlyRate = 25;
     let mealSettings = { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
+    let currentDisplayMonth = ''; // 当前筛选月份 YYYY-MM
     
-    // 【修改1】新增：草稿自动保存定时器
     let autoSaveTimer = null;
-    const AUTO_SAVE_DELAY = 3000; // 3秒无操作后自动保存草稿
+    const AUTO_SAVE_DELAY = 3000;
+    let isDraftSaved = true;
     
     function timeToMinutes(t) { if(!t) return null; let p=t.split(':'); if(p.length!==2) return null; let h=parseInt(p[0]), m=parseInt(p[1]); return isNaN(h)||isNaN(m)? null : h*60+m; }
     function getOverlap(s,e,bs,be) { let os=Math.max(s,bs), oe=Math.min(e,be); return os<oe ? oe-os : 0; }
@@ -721,48 +565,20 @@
     }
     function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
     
-    // 【修改1】新增：自动保存草稿到 localStorage
     function saveDraftToLocalStorage() {
         try {
             localStorage.setItem("draftRecords_backup", JSON.stringify(draftRecords));
             console.log("草稿已自动保存");
         } catch(e) { console.warn("自动保存失败", e); }
     }
-    
-    // 【修改1】新增：触发自动保存（防抖）
     function triggerAutoSave() {
         if (autoSaveTimer) clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(() => {
-            saveDraftToLocalStorage();
-        }, AUTO_SAVE_DELAY);
+        autoSaveTimer = setTimeout(() => { saveDraftToLocalStorage(); }, AUTO_SAVE_DELAY);
     }
-    
-    // 【修改1】新增：恢复草稿备份
-    function loadDraftFromLocalStorage() {
-        let savedDraft = localStorage.getItem("draftRecords_backup");
-        if (savedDraft) {
-            try {
-                let parsed = JSON.parse(savedDraft);
-                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-                    if (confirm("检测到未保存的草稿数据，是否恢复？\n（点击确定恢复草稿，取消则使用已保存数据）")) {
-                        draftRecords = parsed;
-                        updateDraftHoursAndSalary();
-                        renderTable();
-                        return true;
-                    }
-                }
-            } catch(e) { console.warn("草稿恢复失败", e); }
-        }
-        return false;
-    }
-    
-    // 【修改1】新增：离开页面提醒
-    let isDraftSaved = true;
     function markDraftChanged() {
         isDraftSaved = false;
         triggerAutoSave();
     }
-    
     window.addEventListener("beforeunload", (e) => {
         if (!isDraftSaved) {
             e.preventDefault();
@@ -779,34 +595,61 @@
                 rec.salary = getSalary(rec.hours);
             } else { rec.hours = 0; rec.salary = 0; }
         }
-        markDraftChanged(); // 标记草稿已修改
+        markDraftChanged();
     }
     
+    // ----- 核心渲染：根据 currentDisplayMonth 过滤显示 -----
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
-        draftRecords.sort((a,b)=> new Date(a.dateStr) - new Date(b.dateStr));
-        for (let i=0; i<draftRecords.length; i++) {
-            const rec = draftRecords[i];
+        
+        // 按日期排序
+        const sorted = [...draftRecords].sort((a,b)=> new Date(a.dateStr) - new Date(b.dateStr));
+        // 月份过滤
+        let filtered = sorted;
+        if (currentDisplayMonth) {
+            filtered = sorted.filter(r => r.dateStr && r.dateStr.startsWith(currentDisplayMonth));
+        }
+        // 更新提示
+        const tip = document.getElementById('currentMonthFilterTip');
+        if (currentDisplayMonth) {
+            const [y,m] = currentDisplayMonth.split('-');
+            tip.innerText = `📅 当前显示: ${y}年${parseInt(m)}月 (${filtered.length}条)`;
+        } else {
+            tip.innerText = `📅 当前显示: 全部 (${sorted.length}条)`;
+        }
+        
+        if (filtered.length === 0) {
+            let emptyRow = tbody.insertRow();
+            let td = emptyRow.insertCell(0); td.colSpan=9; td.style.textAlign='center'; td.style.padding='36px';
+            td.innerHTML='<i class="fas fa-inbox" style="font-size: 1.4rem; color:#94a3b8;"></i><p style="margin-top:8px;">暂无记录，点击下方新增</p>';
+            updateMonthlySummaryFromDraft();
+            return;
+        }
+        
+        for (let i=0; i<filtered.length; i++) {
+            const rec = filtered[i];
+            // 找到在draftRecords中的真实索引，用于删除/修改
+            const realIdx = draftRecords.indexOf(rec);
             const row = tbody.insertRow();
             let dateCell = row.insertCell(0);
             let dateInput = document.createElement('input'); dateInput.type='date'; dateInput.value=rec.dateStr; dateInput.className='date-input';
-            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; updateDraftHoursAndSalary(); renderTable(); } })(i));
+            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; updateDraftHoursAndSalary(); renderTable(); } })(realIdx));
             dateCell.appendChild(dateInput);
             let startCell = row.insertCell(1);
             let startInput = document.createElement('input'); startInput.type='time'; startInput.value=rec.startTime||''; startInput.className='time-input';
-            startInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].startTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(i));
+            startInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].startTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
             startCell.appendChild(startInput);
             let endCell = row.insertCell(2);
             let endInput = document.createElement('input'); endInput.type='time'; endInput.value=rec.endTime||''; endInput.className='time-input';
-            endInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].endTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(i));
+            endInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].endTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
             endCell.appendChild(endInput);
             let specialCell = row.insertCell(3);
             let wrapper = document.createElement('div'); wrapper.className='exclude-check';
             let chk = document.createElement('input'); chk.type='checkbox'; chk.checked=rec.excludeDinner===true;
             let lbl = document.createElement('label'); lbl.innerText='🌙 不扣晚餐'; lbl.style.fontSize='0.75rem';
-            chk.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].excludeDinner=e.target.checked; updateDraftHoursAndSalary(); renderTable(); })(i));
+            chk.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].excludeDinner=e.target.checked; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
             wrapper.appendChild(chk); wrapper.appendChild(lbl);
             specialCell.appendChild(wrapper);
             let deductCell = row.insertCell(4);
@@ -817,7 +660,7 @@
                 if (isNaN(val)) val = 0;
                 draftRecords[idx].customDeductMinutes = Math.max(0, val);
                 updateDraftHoursAndSalary(); renderTable();
-            })(i));
+            })(realIdx));
             deductCell.appendChild(deductInput);
             let hourCell = row.insertCell(5);
             let hourSpan = document.createElement('span'); hourSpan.className='hours-badge';
@@ -829,27 +672,39 @@
             salaryCell.appendChild(salarySpan);
             let noteCell = row.insertCell(7);
             let noteInput = document.createElement('input'); noteInput.type='text'; noteInput.placeholder='事件备注...'; noteInput.className='event-input'; noteInput.value=rec.note||'';
-            noteInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].note=e.target.value; markDraftChanged(); })(i));
+            noteInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].note=e.target.value; markDraftChanged(); })(realIdx));
             noteCell.appendChild(noteInput);
             let actionCell = row.insertCell(8);
             let delBtn = document.createElement('button'); delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; delBtn.className='delete-day';
-            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); } })(i));
+            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); } })(realIdx));
             actionCell.appendChild(delBtn);
         }
-        if(draftRecords.length===0){
-            let emptyRow = tbody.insertRow();
-            let td = emptyRow.insertCell(0); td.colSpan=9; td.style.textAlign='center'; td.style.padding='36px';
-            td.innerHTML='<i class="fas fa-inbox" style="font-size: 1.4rem; color:#94a3b8;"></i><p style="margin-top:8px;">暂无工时记录，点击下方新增</p>';
-        }
         updateMonthlySummaryFromDraft();
-        populateMonthSelect();
     }
     
+    // 汇总基于当前筛选月份 (优先使用 currentDisplayMonth)
     function updateMonthlySummaryFromDraft() {
         const selectEl = document.getElementById('monthSelect');
-        if (!selectEl || !selectEl.value) return;
-        const selectedYM = selectEl.value;
-        const monthRecords = draftRecords.filter(r=> r.dateStr.startsWith(selectedYM));
+        if (!selectEl) return;
+        let selectedYM = selectEl.value;
+        // 如果当前有筛选月份，与下拉同步
+        if (currentDisplayMonth) {
+            if (selectedYM !== currentDisplayMonth) {
+                selectEl.value = currentDisplayMonth;
+                selectedYM = currentDisplayMonth;
+            }
+        } else {
+            // 没有筛选，取下拉值
+            selectedYM = selectEl.value;
+        }
+        if (!selectedYM) {
+            document.getElementById('totalHoursMonth').innerText = '0.0';
+            document.getElementById('workDaysCount').innerText = '0';
+            document.getElementById('totalSalaryMonth').innerText = '0.0';
+            document.getElementById('avgDailySalary').innerText = '0.0';
+            return;
+        }
+        const monthRecords = draftRecords.filter(r=> r.dateStr && r.dateStr.startsWith(selectedYM));
         let totalHours=0, totalSalary=0;
         monthRecords.forEach(r=>{ totalHours+=r.hours||0; totalSalary+=getSalary(r.hours); });
         let workDays = monthRecords.length;
@@ -918,7 +773,6 @@
             workRecords = JSON.parse(JSON.stringify(draftRecords));
             localStorage.setItem("hourlyRateBack", hourlyRate);
             saveToLocalStorage();
-            // 【修改1】保存成功后清除草稿备份
             localStorage.removeItem("draftRecords_backup");
             isDraftSaved = true;
             updateDraftHoursAndSalary();
@@ -947,6 +801,12 @@
         draftRecords.push(newRec);
         updateDraftHoursAndSalary();
         renderTable();
+        // 如果当前有月份筛选，自动匹配
+        if (currentDisplayMonth && !newRec.dateStr.startsWith(currentDisplayMonth)) {
+            // 如果新增日期不在当前筛选月份，建议提示
+        }
+        // 刷新下拉选项
+        populateMonthSelect();
     }
     
     function resetDemo(){
@@ -954,16 +814,18 @@
             let demo = [
                 { dateStr:"2026-06-07", startTime:"08:30", endTime:"16:30", note:"日常保洁", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
                 { dateStr:"2026-06-08", startTime:"10:00", endTime:"20:00", note:"加班午休延长", excludeDinner:true, customDeductMinutes:30, hours:0, salary:0 },
-                { dateStr:"2026-06-10", startTime:"12:00", endTime:"19:00", note:"照看儿童", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 }
+                { dateStr:"2026-06-10", startTime:"12:00", endTime:"19:00", note:"照看儿童", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 },
+                { dateStr:"2026-07-01", startTime:"09:00", endTime:"18:00", note:"七月新记录", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
+                { dateStr:"2026-07-03", startTime:"08:00", endTime:"17:00", note:"七月保洁", excludeDinner:true, customDeductMinutes:20, hours:0, salary:0 }
             ];
             workRecords = JSON.parse(JSON.stringify(demo));
             draftRecords = JSON.parse(JSON.stringify(demo));
             updateDraftHoursAndSalary();
             renderTable();
             saveToLocalStorage();
-            // 清除草稿备份
             localStorage.removeItem("draftRecords_backup");
             isDraftSaved = true;
+            populateMonthSelect();
         }
     }
     
@@ -980,8 +842,19 @@
         if(saved){ try{ workRecords=JSON.parse(saved); }catch(e){ initDefault(); } }
         else initDefault();
         
-        // 【修改1】先尝试恢复草稿，若无草稿则使用正式数据作为草稿
-        let hasDraft = loadDraftFromLocalStorage();
+        let hasDraft = false;
+        let savedDraft = localStorage.getItem("draftRecords_backup");
+        if (savedDraft) {
+            try {
+                let parsed = JSON.parse(savedDraft);
+                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                    if (confirm("检测到未保存的草稿数据，是否恢复？\n（点击确定恢复草稿，取消则使用已保存数据）")) {
+                        draftRecords = parsed;
+                        hasDraft = true;
+                    }
+                }
+            } catch(e) { console.warn("草稿恢复失败", e); }
+        }
         if (!hasDraft) {
             draftRecords = JSON.parse(JSON.stringify(workRecords));
         }
@@ -1040,22 +913,28 @@
         XLSX.writeFile(wb, `钟点工报表_${new Date().toISOString().slice(0,19)}.xlsx`);
     }
     
-    // 【修改2】修复：月份选择器基于正式数据+草稿数据合并去重
+    // 月份下拉：基于所有数据（草稿+正式）生成
     function populateMonthSelect(){
         let select=document.getElementById('monthSelect');
-        // 合并正式数据和草稿数据中的所有月份
         let months=new Set();
-        workRecords.forEach(r => {
-            if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7));
-        });
-        draftRecords.forEach(r => {
-            if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7));
-        });
+        workRecords.forEach(r => { if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7)); });
+        draftRecords.forEach(r => { if(r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0,7)); });
         let arr=Array.from(months).sort();
         if(arr.length===0) arr=[new Date().toISOString().slice(0,7)];
         select.innerHTML=arr.map(ym=>`<option value="${ym}">${ym.replace('-','年')}月</option>`).join('');
-        if(arr.length && !select.value) select.value=arr[0];
+        // 恢复当前选中
+        if (currentDisplayMonth && arr.includes(currentDisplayMonth)) {
+            select.value = currentDisplayMonth;
+        } else {
+            // 如果当前筛选不在列表中，选择第一个或全部
+            if (currentDisplayMonth) {
+                // 如果不在列表中，清除筛选
+                currentDisplayMonth = '';
+            }
+            select.value = arr[0] || '';
+        }
         updateMonthlySummaryFromDraft();
+        renderTable(); // 重新渲染以应用筛选
     }
     
     function initSettingsDropdown() {
@@ -1088,10 +967,48 @@
         document.getElementById('lunchEnd').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerStart').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerEnd').addEventListener('change',applySettingsRefresh);
-        document.getElementById('monthSelect').addEventListener('change',()=>updateMonthlySummaryFromDraft());
+        // 月份下拉切换 -> 更新筛选
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            const val = this.value;
+            if (val) {
+                currentDisplayMonth = val;
+            } else {
+                currentDisplayMonth = '';
+            }
+            renderTable();
+            updateMonthlySummaryFromDraft();
+        });
     }
     
-    function init(){ loadFromLocalStorage(); bindEvents(); renderTable(); populateMonthSelect(); initSettingsDropdown(); updateMonthlySummaryFromDraft(); }
+    function init(){
+        loadFromLocalStorage();
+        bindEvents();
+        // 初始化时，默认不筛选（显示全部），但下拉选中第一个月份，但不影响显示全部
+        // 但为了体验，默认显示全部，下拉选中第一个月份但不筛选
+        populateMonthSelect();
+        // 默认不筛选
+        currentDisplayMonth = '';
+        // 但是下拉值可能被populate设置，我们强制让显示全部
+        const select = document.getElementById('monthSelect');
+        if (select) {
+            // 保留下拉值，但显示全部，需要把currentDisplayMonth置空并重新渲染
+            currentDisplayMonth = '';
+            renderTable();
+            updateMonthlySummaryFromDraft();
+        }
+        initSettingsDropdown();
+        // 额外处理：点击下拉选项时更新筛选
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            const val = this.value;
+            if (val) {
+                currentDisplayMonth = val;
+            } else {
+                currentDisplayMonth = '';
+            }
+            renderTable();
+            updateMonthlySummaryFromDraft();
+        });
+    }
     init();
 </script>
 </body>
