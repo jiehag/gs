@@ -6,458 +6,303 @@
     <title>钟点工时管家 | 智慧计薪+自定义扣时</title>
     <!-- SheetJS 导出Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- Chart.js 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-        }
-        body {
-            background: #f0f5fa;
-            padding: 28px 24px;
-            color: #1e293b;
-            transition: all 0.2s;
-        }
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        .card {
-            background: #ffffff;
-            border-radius: 32px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e9edf2;
-        }
-        .header-card {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 28px;
-            margin-bottom: 24px;
-            background: #ffffff;
-            border-radius: 36px;
-        }
-        .title-section h1 {
-            font-size: 1.85rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #1e6f3f, #38a169);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .title-section p {
-            font-size: 0.85rem;
-            color: #5b6e8c;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .settings-dropdown-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .btn-settings {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            color: #1e293b;
-        }
-        .btn-settings:hover {
-            background: #e6edf4;
-            border-color: #cbd5e1;
-        }
-        .settings-menu {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-            min-width: 190px;
-            z-index: 100;
-            border: 1px solid #e9edf2;
-            overflow: hidden;
-            display: none;
-        }
-        .settings-menu.show {
-            display: block;
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .settings-menu-item {
-            padding: 12px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.15s;
-            color: #1e293b;
-            border-bottom: 1px solid #f0f2f5;
-        }
-        .settings-menu-item:last-child {
-            border-bottom: none;
-        }
-        .settings-menu-item:hover {
-            background: #f8fafc;
-        }
-        .settings-menu-item i {
-            width: 20px;
-            color: #2c7a4b;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        .btn {
-            border: none;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #f1f5f9;
-            color: #1e293b;
-            touch-action: manipulation;
-        }
-        .btn-primary {
-            background: #2c7a4b;
-            color: white;
-            box-shadow: 0 2px 8px rgba(44, 122, 75, 0.15);
-        }
-        .btn-primary:hover {
-            background: #236b3f;
-            transform: translateY(-1px);
-        }
-        .settings-card {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 16px 28px;
-            margin-bottom: 24px;
-        }
-        .settings-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 20px;
-            background: #fafcff;
-            padding: 6px 16px;
-            border-radius: 60px;
-        }
-        .time-range-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            padding: 4px 16px;
-            border-radius: 40px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-            border: 1px solid #e2e8f0;
-        }
-        .time-range-item label {
-            font-weight: 600;
-            color: #2d6a4f;
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-        .time-range-item input {
-            border: none;
-            background: #f8fafc;
-            border-radius: 30px;
-            padding: 6px 12px;
-            width: 98px;
-            font-weight: 500;
-            font-size: 0.8rem;
-        }
-        .hourly-rate-area, .password-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f8fafc;
-            padding: 4px 20px;
-            border-radius: 48px;
-        }
-        .hourly-rate-area i, .password-area i {
-            color: #38a169;
-            font-size: 1rem;
-        }
-        .hourly-rate-area input, .password-area input {
-            border: 1px solid #e2e8f0;
-            border-radius: 32px;
-            padding: 7px 14px;
-            width: 110px;
-            background: white;
-            font-weight: 500;
-        }
-        .stats-card {
-            padding: 20px 28px;
-            margin-bottom: 28px;
-        }
-        .stats-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .month-picker select {
-            padding: 8px 20px;
-            border-radius: 40px;
-            border: 1px solid #cbd5e1;
-            background: white;
-            font-weight: 500;
-        }
-        .summary-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .summary-item {
-            background: #f9fbfd;
-            border-radius: 28px;
-            padding: 16px 24px;
-            flex: 1;
-            min-width: 150px;
-            text-align: center;
-            border: 1px solid #ecf3f9;
-        }
-        .summary-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #5b6e8c;
-            font-weight: 600;
-        }
-        .summary-value {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-top: 8px;
-            color: #1e6f3f;
-        }
-        .daily-section {
-            padding: 24px 20px 28px;
-            overflow-x: auto;
-        }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 0 8px;
-        }
-        .section-header h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            min-width: 1300px;
-        }
-        th {
-            text-align: left;
-            padding: 16px 12px;
-            background: #f8fafd;
-            color: #2c3e50;
-            font-weight: 600;
-            border-bottom: 2px solid #e2edf2;
-        }
-        td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #ecf3f8;
-            vertical-align: middle;
-        }
-        .date-input, .time-input, .event-input, .deduct-input {
-            border: 1px solid #e2e8f0;
-            border-radius: 28px;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            background: white;
-            width: 100%;
-            max-width: 130px;
-        }
-        .deduct-input {
-            max-width: 95px;
-            text-align: center;
-        }
-        .event-input {
-            min-width: 160px;
-        }
-        .hours-badge, .money-badge {
-            background: #e9f4ef;
-            color: #2c7a4b;
-            font-weight: 700;
-            padding: 5px 14px;
-            border-radius: 40px;
-            display: inline-block;
-            font-size: 0.8rem;
-        }
-        .money-badge {
-            background: #eef2ff;
-            color: #1e4b6e;
-        }
-        .exclude-check {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        .delete-day {
-            background: transparent;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #a8735c;
-            transition: 0.1s;
-            padding: 6px 10px;
-            border-radius: 40px;
-        }
-        .delete-day:hover {
-            background: #ffefea;
-            color: #c2410c;
-        }
-        .add-row-btn {
-            margin-top: 28px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #f1f5f9;
-            border: 1px dashed #90b4ce;
-            padding: 10px 28px;
-            border-radius: 60px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .add-row-btn:hover {
-            background: #e6f0f8;
-            border-color: #2c7a4b;
-        }
-        .warning-tip {
-            background: #fefce8;
-            border-left: 5px solid #e6b12e;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-size: 0.75rem;
-            margin-bottom: 24px;
-            color: #7b6e3c;
-        }
-        .footer-note {
-            text-align: center;
-            margin-top: 28px;
-            font-size: 0.7rem;
-            color: #7c8ba0;
-            border-top: 1px solid #edf2f7;
-            padding-top: 20px;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body { background:#f0f5fa; padding:28px 24px; color:#1e293b; transition:all 0.2s; }
+        .container { max-width:1600px; margin:0 auto; }
+        .card { background:#ffffff; border-radius:32px; box-shadow:0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.05); border:1px solid #e9edf2; }
+        .header-card { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; padding:20px 28px; margin-bottom:24px; background:#ffffff; border-radius:36px; }
+        .title-section h1 { font-size:1.85rem; font-weight:700; background:linear-gradient(135deg,#1e6f3f,#38a169); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.3px; display:flex; align-items:center; gap:8px; }
+        .title-section p { font-size:0.85rem; color:#5b6e8c; margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .settings-dropdown-wrapper { position:relative; display:inline-block; }
+        .btn-settings { background:#f1f5f9; border:1px solid #e2e8f0; padding:8px 20px; border-radius:40px; font-weight:500; font-size:0.85rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; color:#1e293b; }
+        .btn-settings:hover { background:#e6edf4; border-color:#cbd5e1; }
+        .settings-menu { position:absolute; top:calc(100% + 8px); right:0; background:white; border-radius:24px; box-shadow:0 12px 28px rgba(0,0,0,0.1); min-width:190px; z-index:100; border:1px solid #e9edf2; overflow:hidden; display:none; }
+        .settings-menu.show { display:block; animation:fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        .settings-menu-item { padding:12px 18px; display:flex; align-items:center; gap:12px; font-size:0.85rem; cursor:pointer; transition:background 0.15s; color:#1e293b; border-bottom:1px solid #f0f2f5; }
+        .settings-menu-item:last-child { border-bottom:none; }
+        .settings-menu-item:hover { background:#f8fafc; }
+        .settings-menu-item i { width:20px; color:#2c7a4b; }
+        .action-buttons { display:flex; gap:12px; align-items:center; }
+        .btn { border:none; padding:8px 20px; border-radius:40px; font-weight:500; font-size:0.85rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#1e293b; touch-action:manipulation; }
+        .btn-primary { background:#2c7a4b; color:white; box-shadow:0 2px 8px rgba(44,122,75,0.15); }
+        .btn-primary:hover { background:#236b3f; transform:translateY(-1px); }
+        .btn-outline { background:transparent; border:1px solid #e2e8f0; }
+        .btn-outline:hover { background:#f8fafc; }
+        .settings-card { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; padding:16px 28px; margin-bottom:24px; }
+        .settings-group { display:flex; flex-wrap:wrap; align-items:center; gap:20px; background:#fafcff; padding:6px 16px; border-radius:60px; }
+        .time-range-item { display:flex; align-items:center; gap:8px; background:white; padding:4px 16px; border-radius:40px; box-shadow:0 1px 3px rgba(0,0,0,0.03); border:1px solid #e2e8f0; }
+        .time-range-item label { font-weight:600; color:#2d6a4f; font-size:0.8rem; white-space:nowrap; }
+        .time-range-item input { border:none; background:#f8fafc; border-radius:30px; padding:6px 12px; width:98px; font-weight:500; font-size:0.8rem; }
+        .hourly-rate-area, .password-area { display:flex; align-items:center; gap:12px; background:#f8fafc; padding:4px 20px; border-radius:48px; }
+        .hourly-rate-area i, .password-area i { color:#38a169; font-size:1rem; }
+        .hourly-rate-area input, .password-area input { border:1px solid #e2e8f0; border-radius:32px; padding:7px 14px; width:110px; background:white; font-weight:500; }
+        .stats-card { padding:20px 28px; margin-bottom:28px; }
+        .stats-title { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; margin-bottom:20px; }
+        .month-picker select { padding:8px 20px; border-radius:40px; border:1px solid #cbd5e1; background:white; font-weight:500; }
+        .summary-grid { display:flex; flex-wrap:wrap; gap:20px; }
+        .summary-item { background:#f9fbfd; border-radius:28px; padding:16px 24px; flex:1; min-width:150px; text-align:center; border:1px solid #ecf3f9; }
+        .summary-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:#5b6e8c; font-weight:600; }
+        .summary-value { font-size:2rem; font-weight:800; margin-top:8px; color:#1e6f3f; }
+
+        /* 图表卡片 */
+        .chart-card { padding:20px 28px; margin-bottom:28px; background:#ffffff; border-radius:32px; border:1px solid #e9edf2; }
+        .chart-card .chart-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+        .chart-card .chart-header h3 { font-size:1.1rem; font-weight:600; display:flex; align-items:center; gap:8px; color:#1e293b; }
+        .chart-container { position:relative; height:280px; width:100%; }
+        .chart-container canvas { width:100% !important; height:100% !important; }
+
+        .daily-section { padding:24px 20px 28px; overflow-x:auto; }
+        .section-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:20px; padding:0 8px; }
+        .section-header h3 { font-size:1.3rem; font-weight:600; display:flex; align-items:center; gap:8px; }
+        table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:1300px; }
+        th { text-align:left; padding:16px 12px; background:#f8fafd; color:#2c3e50; font-weight:600; border-bottom:2px solid #e2edf2; }
+        td { padding:14px 12px; border-bottom:1px solid #ecf3f8; vertical-align:middle; }
+        .date-input, .time-input, .event-input, .deduct-input { border:1px solid #e2e8f0; border-radius:28px; padding:8px 12px; font-size:0.8rem; background:white; width:100%; max-width:130px; }
+        .deduct-input { max-width:95px; text-align:center; }
+        .event-input { min-width:160px; }
+        .hours-badge, .money-badge { background:#e9f4ef; color:#2c7a4b; font-weight:700; padding:5px 14px; border-radius:40px; display:inline-block; font-size:0.8rem; }
+        .money-badge { background:#eef2ff; color:#1e4b6e; }
+        .exclude-check { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+        .delete-day { background:transparent; border:none; font-size:1.2rem; cursor:pointer; color:#a8735c; transition:0.1s; padding:6px 10px; border-radius:40px; }
+        .delete-day:hover { background:#ffefea; color:#c2410c; }
+        .add-row-btn { margin-top:28px; display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; border:1px dashed #90b4ce; padding:10px 28px; border-radius:60px; font-weight:500; cursor:pointer; transition:0.2s; }
+        .add-row-btn:hover { background:#e6f0f8; border-color:#2c7a4b; }
+        .warning-tip { background:#fefce8; border-left:5px solid #e6b12e; padding:12px 20px; border-radius:24px; font-size:0.75rem; margin-bottom:24px; color:#7b6e3c; }
+        .footer-note { text-align:center; margin-top:28px; font-size:0.7rem; color:#7c8ba0; border-top:1px solid #edf2f7; padding-top:20px; }
+        .month-filter-tip { margin:8px 0 0 12px; font-size:0.8rem; color:#2c7a4b; background:#eaf6ef; padding:4px 14px; border-radius:40px; display:inline-block; }
+
+        /* 日历UI样式 */
+        .calendar-wrapper { background:#ffffff; border-radius:28px; border:1px solid #e9edf2; padding:20px 20px 10px; margin-bottom:30px; box-shadow:0 4px 12px rgba(0,0,0,0.02); }
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
+        .calendar-header h2 { font-size:1.4rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:10px; }
+        .calendar-header .cal-nav { display:flex; gap:12px; }
+        .calendar-header .cal-nav button { background:#f1f5f9; border:none; border-radius:40px; padding:8px 16px; font-weight:500; cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:6px; }
+        .calendar-header .cal-nav button:hover { background:#e2e8f0; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; font-size:0.85rem; }
+        .calendar-grid .weekday { font-weight:600; color:#475569; padding:8px 0; background:#f8fafc; border-radius:20px; }
+        .calendar-grid .day-cell { background:#fafcff; border-radius:16px; padding:8px 4px; min-height:68px; cursor:pointer; transition:0.15s; border:1px solid transparent; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .calendar-grid .day-cell:hover { background:#eef4fa; border-color:#bdd3e8; }
+        .calendar-grid .day-cell .day-number { font-weight:600; font-size:1.1rem; color:#1e293b; }
+        .calendar-grid .day-cell .day-info { font-size:0.6rem; color:#2c7a4b; background:#e6f0eb; padding:2px 8px; border-radius:40px; margin-top:3px; white-space:nowrap; }
+        .calendar-grid .day-cell.has-record { background:#f0f7f3; border-color:#c0dacb; }
+        .calendar-grid .day-cell.other-month { opacity:0.4; }
+        .calendar-grid .day-cell.today { border:2px solid #2c7a4b; background:#eafaf1; }
+        .calendar-grid .day-cell .day-salary { font-size:0.6rem; color:#1e4b6e; background:#eef2ff; padding:1px 8px; border-radius:40px; margin-top:2px; }
+        .calendar-grid .day-cell .day-hours { font-size:0.6rem; color:#2c7a4b; background:#e6f0eb; padding:1px 8px; border-radius:40px; margin-top:2px; }
+
+        /* ===== 全新美化的密码弹窗 ===== */
         .modal-mask {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            animation: modalFadeIn 0.25s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
         }
         .verify-panel {
-            background: white;
+            background: #ffffff;
             border-radius: 48px;
-            padding: 28px 32px;
+            padding: 36px 40px 32px;
             width: 480px;
+            max-width: 92vw;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
             text-align: center;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+        .verify-panel .icon-lock {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: #eaf6ef;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            color: #1e6f3f;
+            font-size: 28px;
+        }
+        .verify-panel h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .verify-panel .subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
         .changes-preview {
             background: #f8fafc;
-            border-radius: 28px;
-            padding: 16px;
-            margin: 16px 0;
+            border-radius: 24px;
+            padding: 18px 20px;
+            margin: 8px 0 20px;
             text-align: left;
-            font-size: 0.8rem;
-            max-height: 240px;
+            font-size: 0.85rem;
+            max-height: 200px;
             overflow-y: auto;
+            border: 1px solid #e9edf2;
+            color: #1e293b;
+            line-height: 1.5;
         }
-        .month-filter-tip {
-            margin: 8px 0 0 12px;
+        .changes-preview hr { margin: 12px 0; border: 0; border-top: 1px dashed #dce3ec; }
+        .changes-preview ul { padding-left: 18px; margin: 6px 0; }
+        .changes-preview strong { color: #0f172a; }
+        .verify-panel .input-group {
+            position: relative;
+            margin: 20px 0 16px;
+        }
+        .verify-panel .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .verify-panel .input-group input {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: 0.2s;
+            outline: none;
+            font-weight: 500;
+            color: #0f172a;
+        }
+        .verify-panel .input-group input:focus {
+            border-color: #2c7a4b;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(44, 122, 75, 0.12);
+        }
+        .verify-panel .input-group input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        .verify-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .verify-buttons .btn {
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            min-width: 100px;
+            justify-content: center;
+        }
+        .verify-buttons .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+        }
+        .verify-buttons .btn-outline:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .verify-buttons .btn-primary {
+            background: #2c7a4b;
+            color: white;
+            box-shadow: 0 4px 14px rgba(44, 122, 75, 0.25);
+        }
+        .verify-buttons .btn-primary:hover {
+            background: #1e6f3f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 122, 75, 0.3);
+        }
+        .verify-panel .error-hint {
+            color: #b91c1c;
             font-size: 0.8rem;
-            color: #2c7a4b;
-            background: #eaf6ef;
-            padding: 4px 14px;
+            margin-top: 8px;
+            min-height: 20px;
+        }
+
+        /* 图表的响应式 */
+        .chart-toggle-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 6px 18px;
             border-radius: 40px;
-            display: inline-block;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            color: #1e293b;
         }
-        @media (max-width: 900px) {
-            body { padding: 16px; }
-            .header-card { flex-direction: column; align-items: stretch; padding: 16px 18px; gap: 14px; }
-            .action-buttons { justify-content: flex-start; }
-            .settings-card { flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
-            .settings-group { width: 100%; flex-direction: column; background: transparent; padding: 0; gap: 12px; }
-            .time-range-item { width: 100%; justify-content: space-between; padding: 8px 16px; background: #f8fafc; border-radius: 48px; }
-            .time-range-item label { font-size: 0.85rem; }
-            .time-range-item input { width: 110px; padding: 8px 10px; font-size: 0.85rem; background: white; border-radius: 32px; border: 1px solid #e2e8f0; }
-            .settings-group .btn { width: 100%; justify-content: center; margin-top: 4px; }
-            .hourly-rate-area, .password-area { width: 100%; justify-content: space-between; background: #f8fafc; padding: 10px 18px; border-radius: 48px; }
-            .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .summary-item { padding: 12px 12px; min-width: auto; }
-            .summary-value { font-size: 1.5rem; }
-            .daily-section { padding: 16px 12px; }
-            .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            table { font-size: 0.75rem; min-width: 1050px; }
-            th { padding: 10px 6px; font-size: 0.7rem; }
-            td { padding: 10px 6px; }
-            .date-input, .time-input, .event-input, .deduct-input { padding: 6px 8px; font-size: 0.7rem; max-width: 110px; }
-            .event-input { min-width: 120px; }
-            .deduct-input { max-width: 75px; }
-            .hours-badge, .money-badge { padding: 4px 10px; font-size: 0.7rem; }
-            .btn { padding: 8px 16px; font-size: 0.75rem; }
-            .add-row-btn { width: 100%; justify-content: center; }
-            .settings-menu { right: 0; left: auto; min-width: 180px; }
+        .chart-toggle-btn:hover { background:#e6edf4; }
+        .chart-toggle-btn.active { background:#2c7a4b; color:white; border-color:#2c7a4b; }
+
+        @media (max-width:900px) {
+            body { padding:16px; }
+            .header-card { flex-direction:column; align-items:stretch; padding:16px 18px; gap:14px; }
+            .action-buttons { justify-content:flex-start; }
+            .settings-card { flex-direction:column; align-items:stretch; gap:14px; padding:16px; }
+            .settings-group { width:100%; flex-direction:column; background:transparent; padding:0; gap:12px; }
+            .time-range-item { width:100%; justify-content:space-between; padding:8px 16px; background:#f8fafc; border-radius:48px; }
+            .time-range-item label { font-size:0.85rem; }
+            .time-range-item input { width:110px; padding:8px 10px; font-size:0.85rem; background:white; border-radius:32px; border:1px solid #e2e8f0; }
+            .settings-group .btn { width:100%; justify-content:center; margin-top:4px; }
+            .hourly-rate-area, .password-area { width:100%; justify-content:space-between; background:#f8fafc; padding:10px 18px; border-radius:48px; }
+            .summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+            .summary-item { padding:12px 12px; min-width:auto; }
+            .summary-value { font-size:1.5rem; }
+            .daily-section { padding:16px 12px; }
+            .section-header { flex-direction:column; align-items:flex-start; gap:12px; }
+            table { font-size:0.75rem; min-width:1050px; }
+            th { padding:10px 6px; font-size:0.7rem; }
+            td { padding:10px 6px; }
+            .date-input, .time-input, .event-input, .deduct-input { padding:6px 8px; font-size:0.7rem; max-width:110px; }
+            .event-input { min-width:120px; }
+            .deduct-input { max-width:75px; }
+            .hours-badge, .money-badge { padding:4px 10px; font-size:0.7rem; }
+            .btn { padding:8px 16px; font-size:0.75rem; }
+            .add-row-btn { width:100%; justify-content:center; }
+            .settings-menu { right:0; left:auto; min-width:180px; }
+            .calendar-grid .day-cell { min-height:54px; padding:4px 2px; }
+            .calendar-grid .day-cell .day-number { font-size:0.9rem; }
+            .verify-panel { padding:28px 20px 24px; }
+            .verify-panel .icon-lock { width:52px; height:52px; font-size:22px; }
+            .verify-buttons .btn { padding:10px 20px; font-size:0.85rem; min-width:80px; }
+            .chart-container { height:220px; }
+            .chart-card { padding:16px; }
         }
-        @media (max-width: 480px) {
-            body { padding: 12px; }
-            .summary-value { font-size: 1.2rem; }
-            .time-range-item { padding: 6px 12px; }
-            .time-range-item input { width: 105px; padding: 6px 8px; }
-            .hourly-rate-area input, .password-area input { width: 100px; }
-            .settings-menu { width: calc(100% - 20px); left: 10px; right: auto; }
+        @media (max-width:480px) {
+            body { padding:12px; }
+            .summary-value { font-size:1.2rem; }
+            .time-range-item { padding:6px 12px; }
+            .time-range-item input { width:105px; padding:6px 8px; }
+            .hourly-rate-area input, .password-area input { width:100px; }
+            .settings-menu { width:calc(100% - 20px); left:10px; right:auto; }
+            .calendar-grid .day-cell { min-height:48px; }
+            .calendar-grid .day-cell .day-number { font-size:0.8rem; }
+            .calendar-grid .day-cell .day-info, .calendar-grid .day-cell .day-salary, .calendar-grid .day-cell .day-hours { font-size:0.5rem; padding:0 4px; }
+            .verify-panel { padding:24px 16px 20px; }
+            .verify-panel .input-group input { padding:12px 14px 12px 42px; font-size:0.9rem; }
+            .verify-buttons { flex-direction:column; gap:10px; }
+            .verify-buttons .btn { width:100%; }
+            .chart-container { height:180px; }
         }
     </style>
 </head>
@@ -472,7 +317,7 @@
         <div class="action-buttons">
             <div class="settings-dropdown-wrapper">
                 <button class="btn-settings" id="settingsToggleBtn">
-                    <i class="fas fa-sliders-h"></i> 设置 <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                    <i class="fas fa-sliders-h"></i> 设置 <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
                 </button>
                 <div class="settings-menu" id="settingsMenu">
                     <div class="settings-menu-item" id="exportExcelMenuItem"><i class="fas fa-file-excel"></i> 导出Excel</div>
@@ -481,7 +326,7 @@
                     <div class="settings-menu-item" id="resetDemoMenuItem"><i class="fas fa-undo-alt"></i> 重置示例</div>
                 </div>
             </div>
-            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
         </div>
     </div>
 
@@ -510,6 +355,34 @@
         </div>
     </div>
 
+    <!-- 图表卡片 -->
+    <div class="chart-card" id="chartCard">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-bar" style="color:#2c7a4b;"></i> 月度工时趋势 <span id="chartMonthLabel" style="font-size:0.8rem; font-weight:400; color:#64748b;">(2026年7月)</span></h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="chart-toggle-btn active" id="chartHoursBtn"><i class="fas fa-clock"></i> 工时</button>
+                <button class="chart-toggle-btn" id="chartSalaryBtn"><i class="fas fa-coins"></i> 薪资</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 日历UI -->
+    <div class="calendar-wrapper" id="calendarWrapper">
+        <div class="calendar-header">
+            <h2><i class="fas fa-calendar-alt" style="color:#2c7a4b;"></i> <span id="calendarTitle">2026年7月</span></h2>
+            <div class="cal-nav">
+                <button id="calPrevMonth"><i class="fas fa-chevron-left"></i> 上月</button>
+                <button id="calNextMonth">下月 <i class="fas fa-chevron-right"></i></button>
+                <button id="calTodayBtn"><i class="fas fa-calendar-day"></i> 今日</button>
+            </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div style="text-align:right; font-size:0.7rem; color:#7c8ba0; margin-top:8px; padding-right:4px;"><i class="fas fa-circle" style="color:#2c7a4b;"></i> 有工时记录</div>
+    </div>
+
     <!-- 每日登记表 -->
     <div class="daily-section card">
         <div class="section-header">
@@ -519,7 +392,7 @@
         <div class="warning-tip">
             <i class="fas fa-info-circle"></i> 工时 = (上下班区间) - 午餐/晚餐重叠 - 额外扣除分钟/60。可独立勾选「不扣晚餐」，并支持每日自定义额外扣除。
         </div>
-        <div style="overflow-x: auto;">
+        <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr><th><i class="fas fa-calendar-day"></i> 日期</th><th><i class="fas fa-hourglass-start"></i> 上班</th><th><i class="fas fa-hourglass-end"></i> 下班</th><th><i class="fas fa-egg"></i> 不扣晚餐</th><th><i class="fas fa-cut"></i> 额外扣除(分钟)</th><th><i class="fas fa-chart-simple"></i> 工时(h)</th><th><i class="fas fa-coins"></i> 报酬(元)</th><th><i class="fas fa-pen"></i> 事件备注</th><th></th></tr>
@@ -539,11 +412,17 @@
     let currentPassword = "123456";
     let hourlyRate = 25;
     let mealSettings = { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
-    let currentDisplayMonth = ''; // 当前筛选月份 YYYY-MM
+    let currentDisplayMonth = ''; 
     
     let autoSaveTimer = null;
     const AUTO_SAVE_DELAY = 3000;
     let isDraftSaved = true;
+    
+    let calYear = 2026, calMonth = 7; 
+
+    // 图表相关
+    let trendChart = null;
+    let chartMode = 'hours'; // 'hours' 或 'salary'
     
     function timeToMinutes(t) { if(!t) return null; let p=t.split(':'); if(p.length!==2) return null; let h=parseInt(p[0]), m=parseInt(p[1]); return isNaN(h)||isNaN(m)? null : h*60+m; }
     function getOverlap(s,e,bs,be) { let os=Math.max(s,bs), oe=Math.min(e,be); return os<oe ? oe-os : 0; }
@@ -566,10 +445,7 @@
     function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
     
     function saveDraftToLocalStorage() {
-        try {
-            localStorage.setItem("draftRecords_backup", JSON.stringify(draftRecords));
-            console.log("草稿已自动保存");
-        } catch(e) { console.warn("自动保存失败", e); }
+        try { localStorage.setItem("draftRecords_backup", JSON.stringify(draftRecords)); } catch(e) { console.warn("自动保存失败", e); }
     }
     function triggerAutoSave() {
         if (autoSaveTimer) clearTimeout(autoSaveTimer);
@@ -598,20 +474,200 @@
         markDraftChanged();
     }
     
-    // ----- 核心渲染：根据 currentDisplayMonth 过滤显示 -----
+    // ---------- 图表渲染 ----------
+    function renderChart() {
+        const canvas = document.getElementById('trendChart');
+        if (!canvas) return;
+        
+        // 获取当前选中的月份数据
+        const selectEl = document.getElementById('monthSelect');
+        let selectedYM = selectEl ? selectEl.value : '';
+        if (!selectedYM) {
+            const d = new Date();
+            selectedYM = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+        }
+        
+        // 从草稿中获取数据（包含未保存的修改）
+        const monthRecords = draftRecords.filter(r => r.dateStr && r.dateStr.startsWith(selectedYM));
+        const sorted = [...monthRecords].sort((a,b) => new Date(a.dateStr) - new Date(b.dateStr));
+        
+        // 生成该月所有日期
+        const [year, month] = selectedYM.split('-').map(Number);
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const dateLabels = [];
+        const hoursData = [];
+        const salaryData = [];
+        const recordMap = {};
+        
+        sorted.forEach(r => { recordMap[r.dateStr] = r; });
+        
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            dateLabels.push(String(d));
+            const rec = recordMap[dateStr];
+            if (rec && rec.hours !== undefined && rec.hours > 0) {
+                hoursData.push(Math.round(rec.hours * 100) / 100);
+                salaryData.push(Math.round(rec.salary * 100) / 100);
+            } else {
+                hoursData.push(0);
+                salaryData.push(0);
+            }
+        }
+        
+        // 更新图表标题
+        document.getElementById('chartMonthLabel').textContent = `(${year}年${month}月)`;
+        
+        const ctx = canvas.getContext('2d');
+        
+        if (trendChart) {
+            trendChart.destroy();
+        }
+        
+        const isHours = chartMode === 'hours';
+        const datasetLabel = isHours ? '每日工时 (h)' : '每日薪资 (元)';
+        const dataValues = isHours ? hoursData : salaryData;
+        const color = isHours ? '#2c7a4b' : '#1e4b6e';
+        const bgColor = isHours ? 'rgba(44,122,75,0.1)' : 'rgba(30,75,110,0.1)';
+        const borderColor = isHours ? '#2c7a4b' : '#1e4b6e';
+        
+        trendChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: datasetLabel,
+                    data: dataValues,
+                    backgroundColor: dataValues.map(v => v > 0 ? bgColor : 'rgba(200,200,200,0.1)'),
+                    borderColor: dataValues.map(v => v > 0 ? borderColor : 'rgba(200,200,200,0.3)'),
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: { size: 12, weight: '500' },
+                            color: '#475569',
+                            boxWidth: 14,
+                            padding: 16,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.parsed.y;
+                                if (val === 0) return '无记录';
+                                return isHours ? `${val.toFixed(2)} 小时` : `¥ ${val.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)',
+                            drawBorder: false,
+                        },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return isHours ? value.toFixed(1) + 'h' : '¥' + value.toFixed(0);
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#94a3b8',
+                            maxTicksLimit: 31,
+                            autoSkip: true,
+                            maxRotation: 45,
+                            minRotation: 0,
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                hover: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            }
+        });
+    }
+    
+    // 切换图表模式
+    function setChartMode(mode) {
+        chartMode = mode;
+        document.getElementById('chartHoursBtn').classList.toggle('active', mode === 'hours');
+        document.getElementById('chartSalaryBtn').classList.toggle('active', mode === 'salary');
+        renderChart();
+    }
+    
+    function renderCalendar(year, month) {
+        const grid = document.getElementById('calendarGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const title = document.getElementById('calendarTitle');
+        title.innerText = `${year}年${month}月`;
+        const firstDay = new Date(year, month-1, 1).getDay();
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        const weekdays = ['日','一','二','三','四','五','六'];
+        weekdays.forEach(w => { let div = document.createElement('div'); div.className = 'weekday'; div.innerText = w; grid.appendChild(div); });
+        for (let i=0; i<firstDay; i++) { let div = document.createElement('div'); div.className = 'day-cell other-month'; grid.appendChild(div); }
+        const monthRecords = draftRecords.filter(r => r.dateStr && r.dateStr.startsWith(`${year}-${String(month).padStart(2,'0')}`));
+        const recordMap = {};
+        monthRecords.forEach(r => { recordMap[r.dateStr] = r; });
+        for (let d=1; d<=daysInMonth; d++) {
+            let dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            let div = document.createElement('div');
+            div.className = 'day-cell';
+            if (recordMap[dateStr]) div.classList.add('has-record');
+            if (dateStr === todayStr) div.classList.add('today');
+            let numSpan = document.createElement('div'); numSpan.className = 'day-number'; numSpan.innerText = d; div.appendChild(numSpan);
+            let rec = recordMap[dateStr];
+            if (rec) {
+                let info = document.createElement('div'); info.className = 'day-info'; let h = rec.hours || 0; info.innerText = `${h.toFixed(1)}h`; div.appendChild(info);
+                let sal = document.createElement('div'); sal.className = 'day-salary'; sal.innerText = `¥${(rec.salary||0).toFixed(0)}`; div.appendChild(sal);
+            }
+            div.addEventListener('click', (function(ds) {
+                return function() {
+                    const monthVal = ds.substring(0,7);
+                    document.getElementById('monthSelect').value = monthVal;
+                    currentDisplayMonth = monthVal;
+                    renderTable();
+                    updateMonthlySummaryFromDraft();
+                    renderChart();
+                    document.querySelector('.daily-section').scrollIntoView({ behavior: 'smooth' });
+                };
+            })(dateStr));
+            grid.appendChild(div);
+        }
+    }
+    
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
-        
-        // 按日期排序
         const sorted = [...draftRecords].sort((a,b)=> new Date(a.dateStr) - new Date(b.dateStr));
-        // 月份过滤
         let filtered = sorted;
         if (currentDisplayMonth) {
             filtered = sorted.filter(r => r.dateStr && r.dateStr.startsWith(currentDisplayMonth));
         }
-        // 更新提示
         const tip = document.getElementById('currentMonthFilterTip');
         if (currentDisplayMonth) {
             const [y,m] = currentDisplayMonth.split('-');
@@ -619,37 +675,34 @@
         } else {
             tip.innerText = `📅 当前显示: 全部 (${sorted.length}条)`;
         }
-        
         if (filtered.length === 0) {
             let emptyRow = tbody.insertRow();
             let td = emptyRow.insertCell(0); td.colSpan=9; td.style.textAlign='center'; td.style.padding='36px';
-            td.innerHTML='<i class="fas fa-inbox" style="font-size: 1.4rem; color:#94a3b8;"></i><p style="margin-top:8px;">暂无记录，点击下方新增</p>';
+            td.innerHTML='<i class="fas fa-inbox" style="font-size:1.4rem; color:#94a3b8;"></i><p style="margin-top:8px;">暂无记录，点击下方新增</p>';
             updateMonthlySummaryFromDraft();
             return;
         }
-        
         for (let i=0; i<filtered.length; i++) {
             const rec = filtered[i];
-            // 找到在draftRecords中的真实索引，用于删除/修改
             const realIdx = draftRecords.indexOf(rec);
             const row = tbody.insertRow();
             let dateCell = row.insertCell(0);
             let dateInput = document.createElement('input'); dateInput.type='date'; dateInput.value=rec.dateStr; dateInput.className='date-input';
-            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; updateDraftHoursAndSalary(); renderTable(); } })(realIdx));
+            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
             dateCell.appendChild(dateInput);
             let startCell = row.insertCell(1);
             let startInput = document.createElement('input'); startInput.type='time'; startInput.value=rec.startTime||''; startInput.className='time-input';
-            startInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].startTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
+            startInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].startTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
             startCell.appendChild(startInput);
             let endCell = row.insertCell(2);
             let endInput = document.createElement('input'); endInput.type='time'; endInput.value=rec.endTime||''; endInput.className='time-input';
-            endInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].endTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
+            endInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].endTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
             endCell.appendChild(endInput);
             let specialCell = row.insertCell(3);
             let wrapper = document.createElement('div'); wrapper.className='exclude-check';
             let chk = document.createElement('input'); chk.type='checkbox'; chk.checked=rec.excludeDinner===true;
             let lbl = document.createElement('label'); lbl.innerText='🌙 不扣晚餐'; lbl.style.fontSize='0.75rem';
-            chk.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].excludeDinner=e.target.checked; updateDraftHoursAndSalary(); renderTable(); })(realIdx));
+            chk.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].excludeDinner=e.target.checked; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
             wrapper.appendChild(chk); wrapper.appendChild(lbl);
             specialCell.appendChild(wrapper);
             let deductCell = row.insertCell(4);
@@ -659,7 +712,7 @@
                 let val = parseInt(e.target.value,10);
                 if (isNaN(val)) val = 0;
                 draftRecords[idx].customDeductMinutes = Math.max(0, val);
-                updateDraftHoursAndSalary(); renderTable();
+                updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart();
             })(realIdx));
             deductCell.appendChild(deductInput);
             let hourCell = row.insertCell(5);
@@ -676,25 +729,19 @@
             noteCell.appendChild(noteInput);
             let actionCell = row.insertCell(8);
             let delBtn = document.createElement('button'); delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; delBtn.className='delete-day';
-            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); } })(realIdx));
+            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
             actionCell.appendChild(delBtn);
         }
         updateMonthlySummaryFromDraft();
     }
     
-    // 汇总基于当前筛选月份 (优先使用 currentDisplayMonth)
     function updateMonthlySummaryFromDraft() {
         const selectEl = document.getElementById('monthSelect');
         if (!selectEl) return;
         let selectedYM = selectEl.value;
-        // 如果当前有筛选月份，与下拉同步
         if (currentDisplayMonth) {
-            if (selectedYM !== currentDisplayMonth) {
-                selectEl.value = currentDisplayMonth;
-                selectedYM = currentDisplayMonth;
-            }
+            if (selectedYM !== currentDisplayMonth) { selectEl.value = currentDisplayMonth; selectedYM = currentDisplayMonth; }
         } else {
-            // 没有筛选，取下拉值
             selectedYM = selectEl.value;
         }
         if (!selectedYM) {
@@ -757,6 +804,49 @@
         return desc;
     }
     
+    // ===== 美化后的密码弹窗 =====
+    function showPasswordModal(html, onSuccess){
+        let modal = document.createElement('div'); modal.className='modal-mask';
+        modal.innerHTML = `
+            <div class="verify-panel">
+                <div class="icon-lock"><i class="fas fa-lock"></i></div>
+                <h3>安全验证</h3>
+                <p class="subtitle">请输入操作密码以保存所有修改</p>
+                <div class="changes-preview">${html}</div>
+                <div class="input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="verifyPasswordInput" placeholder="请输入操作密码" autocomplete="off">
+                </div>
+                <div id="passwordErrorHint" class="error-hint"></div>
+                <div class="verify-buttons">
+                    <button class="btn btn-outline" id="verifyCancelBtn">取消</button>
+                    <button class="btn btn-primary" id="verifyConfirmBtn">确认保存</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        let inp = modal.querySelector('#verifyPasswordInput');
+        let errorHint = modal.querySelector('#passwordErrorHint');
+        inp.focus();
+        let clean = ()=> modal.remove();
+        let confirm = ()=>{
+            if (inp.value === currentPassword) {
+                clean();
+                onSuccess();
+            } else {
+                errorHint.innerText = '❌ 密码错误，请重新输入';
+                inp.value = '';
+                inp.focus();
+                inp.style.borderColor = '#b91c1c';
+                setTimeout(() => { inp.style.borderColor = ''; }, 800);
+            }
+        };
+        modal.querySelector('#verifyConfirmBtn').onclick = confirm;
+        modal.querySelector('#verifyCancelBtn').onclick = clean;
+        inp.addEventListener('keypress', e=>{ if(e.key==='Enter') confirm(); });
+        modal.addEventListener('click', (e) => { if (e.target === modal) clean(); });
+    }
+    
     function saveWithVerification(){
         let hasDiff=false;
         if(draftRecords.length !== workRecords.length) hasDiff=true;
@@ -777,20 +867,10 @@
             isDraftSaved = true;
             updateDraftHoursAndSalary();
             renderTable();
+            renderCalendar(calYear, calMonth);
+            renderChart();
             alert("✅ 所有修改已安全保存");
         });
-    }
-    
-    function showPasswordModal(html, onSuccess){
-        let modal = document.createElement('div'); modal.className='modal-mask';
-        modal.innerHTML = `<div class="verify-panel"><h3><i class="fas fa-lock"></i> 验证操作 & 变更明细</h3><div class="changes-preview">${html}</div><hr/><input type="password" id="verifyPasswordInput" placeholder="请输入操作密码" autocomplete="off"><div class="verify-buttons" style="display:flex; gap:12px; justify-content:center; margin-top:12px;"><button class="btn btn-outline" id="verifyCancelBtn">取消</button><button class="btn btn-primary" id="verifyConfirmBtn">确认保存</button></div></div>`;
-        document.body.appendChild(modal);
-        let inp = modal.querySelector('#verifyPasswordInput'); inp.focus();
-        let clean = ()=> modal.remove();
-        let confirm = ()=>{ if(inp.value === currentPassword){ clean(); onSuccess(); } else { alert("❌ 密码错误"); clean(); } };
-        modal.querySelector('#verifyConfirmBtn').onclick = confirm;
-        modal.querySelector('#verifyCancelBtn').onclick = clean;
-        inp.addEventListener('keypress', e=>{ if(e.key==='Enter') confirm(); });
     }
     
     function addBlankRecord(){
@@ -801,11 +881,9 @@
         draftRecords.push(newRec);
         updateDraftHoursAndSalary();
         renderTable();
-        // 如果当前有月份筛选，自动匹配
-        if (currentDisplayMonth && !newRec.dateStr.startsWith(currentDisplayMonth)) {
-            // 如果新增日期不在当前筛选月份，建议提示
-        }
-        // 刷新下拉选项
+        renderCalendar(calYear, calMonth);
+        renderChart();
+        if (currentDisplayMonth && !newRec.dateStr.startsWith(currentDisplayMonth)) {}
         populateMonthSelect();
     }
     
@@ -816,7 +894,12 @@
                 { dateStr:"2026-06-08", startTime:"10:00", endTime:"20:00", note:"加班午休延长", excludeDinner:true, customDeductMinutes:30, hours:0, salary:0 },
                 { dateStr:"2026-06-10", startTime:"12:00", endTime:"19:00", note:"照看儿童", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 },
                 { dateStr:"2026-07-01", startTime:"09:00", endTime:"18:00", note:"七月新记录", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-07-03", startTime:"08:00", endTime:"17:00", note:"七月保洁", excludeDinner:true, customDeductMinutes:20, hours:0, salary:0 }
+                { dateStr:"2026-07-03", startTime:"08:00", endTime:"17:00", note:"七月保洁", excludeDinner:true, customDeductMinutes:20, hours:0, salary:0 },
+                { dateStr:"2026-07-05", startTime:"09:30", endTime:"18:30", note:"日常清洁", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
+                { dateStr:"2026-07-07", startTime:"08:00", endTime:"16:00", note:"半日班", excludeDinner:true, customDeductMinutes:0, hours:0, salary:0 },
+                { dateStr:"2026-07-10", startTime:"10:00", endTime:"19:00", note:"晚班", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 },
+                { dateStr:"2026-07-12", startTime:"09:00", endTime:"17:30", note:"正常班", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
+                { dateStr:"2026-07-15", startTime:"08:30", endTime:"20:00", note:"长班", excludeDinner:true, customDeductMinutes:45, hours:0, salary:0 }
             ];
             workRecords = JSON.parse(JSON.stringify(demo));
             draftRecords = JSON.parse(JSON.stringify(demo));
@@ -826,6 +909,8 @@
             localStorage.removeItem("draftRecords_backup");
             isDraftSaved = true;
             populateMonthSelect();
+            renderCalendar(calYear, calMonth);
+            renderChart();
         }
     }
     
@@ -841,7 +926,6 @@
         let saved = localStorage.getItem("workHoursData");
         if(saved){ try{ workRecords=JSON.parse(saved); }catch(e){ initDefault(); } }
         else initDefault();
-        
         let hasDraft = false;
         let savedDraft = localStorage.getItem("draftRecords_backup");
         if (savedDraft) {
@@ -858,7 +942,6 @@
         if (!hasDraft) {
             draftRecords = JSON.parse(JSON.stringify(workRecords));
         }
-        
         let savedSet = localStorage.getItem("mealSettings");
         if(savedSet) try{ let ms=JSON.parse(savedSet); if(ms.lunchStart) mealSettings=ms; }catch(e){}
         let savedPwd = localStorage.getItem("appPassword");
@@ -891,11 +974,13 @@
         if(!isNaN(newRate) && newRate>=0) hourlyRate = newRate;
         updateDraftHoursAndSalary();
         renderTable();
+        renderCalendar(calYear, calMonth);
+        renderChart();
         saveToLocalStorage();
     }
     function changePassword(){ let newPwd = document.getElementById('globalPasswordInput').value.trim(); if(!newPwd){ alert("密码不能为空"); return; } currentPassword=newPwd; saveToLocalStorage(); alert("操作密码已更新"); }
     function exportJSON(){ let obj={ records:workRecords, mealSettings, appPassword:currentPassword, hourlyRate }; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:"application/json"})); a.download=`工时数据_${new Date().toISOString().slice(0,19)}.json`; a.click(); }
-    function importJSON(file){ let reader=new FileReader(); reader.onload=e=>{ try{ let data=JSON.parse(e.target.result); if(data.records) workRecords=data.records; if(data.mealSettings) mealSettings=data.mealSettings; if(data.appPassword) currentPassword=data.appPassword; if(data.hourlyRate) hourlyRate=data.hourlyRate; draftRecords=JSON.parse(JSON.stringify(workRecords)); updateDraftHoursAndSalary(); renderTable(); saveToLocalStorage(); alert("导入成功"); location.reload(); }catch(err){ alert("文件无效"); } }; reader.readAsText(file); }
+    function importJSON(file){ let reader=new FileReader(); reader.onload=e=>{ try{ let data=JSON.parse(e.target.result); if(data.records) workRecords=data.records; if(data.mealSettings) mealSettings=data.mealSettings; if(data.appPassword) currentPassword=data.appPassword; if(data.hourlyRate) hourlyRate=data.hourlyRate; draftRecords=JSON.parse(JSON.stringify(workRecords)); updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); saveToLocalStorage(); alert("导入成功"); }catch(err){ alert("文件无效"); } }; reader.readAsText(file); }
     function exportToExcel(){
         if(workRecords.length===0){ alert("暂无正式数据，请先保存记录"); return; }
         let sheetData = [["日期","上班","下班","不扣晚餐","额外扣除(分钟)","工时(小时)","报酬(元)","事件备注"]];
@@ -913,7 +998,6 @@
         XLSX.writeFile(wb, `钟点工报表_${new Date().toISOString().slice(0,19)}.xlsx`);
     }
     
-    // 月份下拉：基于所有数据（草稿+正式）生成
     function populateMonthSelect(){
         let select=document.getElementById('monthSelect');
         let months=new Set();
@@ -922,34 +1006,23 @@
         let arr=Array.from(months).sort();
         if(arr.length===0) arr=[new Date().toISOString().slice(0,7)];
         select.innerHTML=arr.map(ym=>`<option value="${ym}">${ym.replace('-','年')}月</option>`).join('');
-        // 恢复当前选中
         if (currentDisplayMonth && arr.includes(currentDisplayMonth)) {
             select.value = currentDisplayMonth;
         } else {
-            // 如果当前筛选不在列表中，选择第一个或全部
-            if (currentDisplayMonth) {
-                // 如果不在列表中，清除筛选
-                currentDisplayMonth = '';
-            }
+            if (currentDisplayMonth) { currentDisplayMonth = ''; }
             select.value = arr[0] || '';
         }
         updateMonthlySummaryFromDraft();
-        renderTable(); // 重新渲染以应用筛选
+        renderTable();
+        renderChart();
     }
     
     function initSettingsDropdown() {
         const toggleBtn = document.getElementById('settingsToggleBtn');
         const menu = document.getElementById('settingsMenu');
         if (!toggleBtn || !menu) return;
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.classList.toggle('show');
-        });
-        document.addEventListener('click', (e) => {
-            if (!toggleBtn.contains(e.target) && !menu.contains(e.target)) {
-                menu.classList.remove('show');
-            }
-        });
+        toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
+        document.addEventListener('click', (e) => { if (!toggleBtn.contains(e.target) && !menu.contains(e.target)) { menu.classList.remove('show'); } });
         document.getElementById('exportExcelMenuItem').onclick = (e) => { e.stopPropagation(); exportToExcel(); menu.classList.remove('show'); };
         document.getElementById('exportDataMenuItem').onclick = (e) => { e.stopPropagation(); exportJSON(); menu.classList.remove('show'); };
         document.getElementById('importTriggerMenuItem').onclick = (e) => { e.stopPropagation(); document.getElementById('importFileInput').click(); menu.classList.remove('show'); };
@@ -967,46 +1040,82 @@
         document.getElementById('lunchEnd').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerStart').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerEnd').addEventListener('change',applySettingsRefresh);
-        // 月份下拉切换 -> 更新筛选
         document.getElementById('monthSelect').addEventListener('change', function() {
             const val = this.value;
-            if (val) {
-                currentDisplayMonth = val;
-            } else {
-                currentDisplayMonth = '';
-            }
+            if (val) { currentDisplayMonth = val; } else { currentDisplayMonth = ''; }
             renderTable();
             updateMonthlySummaryFromDraft();
+            renderChart();
+            if (val) {
+                let parts = val.split('-');
+                calYear = parseInt(parts[0]);
+                calMonth = parseInt(parts[1]);
+                renderCalendar(calYear, calMonth);
+            }
         });
+        document.getElementById('calPrevMonth').onclick = function() {
+            if (calMonth === 1) { calMonth = 12; calYear--; } else { calMonth--; }
+            renderCalendar(calYear, calMonth);
+        };
+        document.getElementById('calNextMonth').onclick = function() {
+            if (calMonth === 12) { calMonth = 1; calYear++; } else { calMonth++; }
+            renderCalendar(calYear, calMonth);
+        };
+        document.getElementById('calTodayBtn').onclick = function() {
+            const d = new Date();
+            calYear = d.getFullYear();
+            calMonth = d.getMonth() + 1;
+            renderCalendar(calYear, calMonth);
+            const m = `${calYear}-${String(calMonth).padStart(2,'0')}`;
+            document.getElementById('monthSelect').value = m;
+            currentDisplayMonth = m;
+            renderTable();
+            updateMonthlySummaryFromDraft();
+            renderChart();
+        };
+        // 图表切换按钮
+        document.getElementById('chartHoursBtn').onclick = () => setChartMode('hours');
+        document.getElementById('chartSalaryBtn').onclick = () => setChartMode('salary');
     }
     
     function init(){
         loadFromLocalStorage();
         bindEvents();
-        // 初始化时，默认不筛选（显示全部），但下拉选中第一个月份，但不影响显示全部
-        // 但为了体验，默认显示全部，下拉选中第一个月份但不筛选
+        const d = new Date();
+        calYear = d.getFullYear();
+        calMonth = d.getMonth() + 1;
         populateMonthSelect();
-        // 默认不筛选
         currentDisplayMonth = '';
-        // 但是下拉值可能被populate设置，我们强制让显示全部
         const select = document.getElementById('monthSelect');
         if (select) {
-            // 保留下拉值，但显示全部，需要把currentDisplayMonth置空并重新渲染
+            const curM = `${calYear}-${String(calMonth).padStart(2,'0')}`;
+            if (select.querySelector(`option[value="${curM}"]`)) select.value = curM;
+            else select.value = select.options[0]?.value || '';
             currentDisplayMonth = '';
-            renderTable();
-            updateMonthlySummaryFromDraft();
         }
+        renderTable();
+        updateMonthlySummaryFromDraft();
+        renderCalendar(calYear, calMonth);
+        renderChart();
         initSettingsDropdown();
-        // 额外处理：点击下拉选项时更新筛选
         document.getElementById('monthSelect').addEventListener('change', function() {
             const val = this.value;
-            if (val) {
-                currentDisplayMonth = val;
-            } else {
-                currentDisplayMonth = '';
-            }
+            if (val) { currentDisplayMonth = val; } else { currentDisplayMonth = ''; }
             renderTable();
             updateMonthlySummaryFromDraft();
+            renderChart();
+            if (val) {
+                let parts = val.split('-');
+                calYear = parseInt(parts[0]);
+                calMonth = parseInt(parts[1]);
+                renderCalendar(calYear, calMonth);
+            }
+        });
+        // 窗口resize时重绘图表
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => { if (trendChart) trendChart.resize(); }, 300);
         });
     }
     init();
