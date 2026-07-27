@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>钟点工时管家 | 智慧计薪+自定义扣时</title>
+    <title>钟点工时管家 | 多用户管理</title>
     <!-- SheetJS 导出Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <!-- Chart.js 图表库 -->
@@ -28,12 +28,15 @@
         .settings-menu-item:last-child { border-bottom:none; }
         .settings-menu-item:hover { background:#f8fafc; }
         .settings-menu-item i { width:20px; color:#2c7a4b; }
-        .action-buttons { display:flex; gap:12px; align-items:center; }
+        .action-buttons { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
         .btn { border:none; padding:8px 20px; border-radius:40px; font-weight:500; font-size:0.85rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#1e293b; touch-action:manipulation; }
         .btn-primary { background:#2c7a4b; color:white; box-shadow:0 2px 8px rgba(44,122,75,0.15); }
         .btn-primary:hover { background:#236b3f; transform:translateY(-1px); }
         .btn-outline { background:transparent; border:1px solid #e2e8f0; }
         .btn-outline:hover { background:#f8fafc; }
+        .btn-danger { background:#dc2626; color:white; }
+        .btn-danger:hover { background:#b91c1c; }
+        .btn-sm { padding:4px 12px; font-size:0.75rem; }
         .settings-card { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; padding:16px 28px; margin-bottom:24px; }
         .settings-group { display:flex; flex-wrap:wrap; align-items:center; gap:20px; background:#fafcff; padding:6px 16px; border-radius:60px; }
         .time-range-item { display:flex; align-items:center; gap:8px; background:white; padding:4px 16px; border-radius:40px; box-shadow:0 1px 3px rgba(0,0,0,0.03); border:1px solid #e2e8f0; }
@@ -49,6 +52,13 @@
         .summary-item { background:#f9fbfd; border-radius:28px; padding:16px 24px; flex:1; min-width:150px; text-align:center; border:1px solid #ecf3f9; }
         .summary-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:#5b6e8c; font-weight:600; }
         .summary-value { font-size:2rem; font-weight:800; margin-top:8px; color:#1e6f3f; }
+
+        /* 用户管理 */
+        .user-management { display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:#f8fafc; padding:6px 16px; border-radius:48px; border:1px solid #e2e8f0; }
+        .user-management .current-user { display:flex; align-items:center; gap:8px; font-weight:600; color:#1e293b; }
+        .user-management .current-user i { color:#2c7a4b; }
+        .user-selector { padding:6px 14px; border-radius:40px; border:1px solid #cbd5e1; background:white; font-weight:500; font-size:0.85rem; min-width:120px; }
+        .user-actions { display:flex; gap:6px; }
 
         /* 图表卡片 */
         .chart-card { padding:20px 28px; margin-bottom:28px; background:#ffffff; border-radius:32px; border:1px solid #e9edf2; }
@@ -96,7 +106,7 @@
         .calendar-grid .day-cell .day-salary { font-size:0.6rem; color:#1e4b6e; background:#eef2ff; padding:1px 8px; border-radius:40px; margin-top:2px; }
         .calendar-grid .day-cell .day-hours { font-size:0.6rem; color:#2c7a4b; background:#e6f0eb; padding:1px 8px; border-radius:40px; margin-top:2px; }
 
-        /* ===== 全新美化的密码弹窗 ===== */
+        /* ===== 密码弹窗 ===== */
         .modal-mask {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -135,6 +145,10 @@
             margin-bottom: 12px;
             color: #1e6f3f;
             font-size: 28px;
+        }
+        .verify-panel .icon-danger {
+            background: #fee2e2;
+            color: #dc2626;
         }
         .verify-panel h3 {
             font-size: 1.4rem;
@@ -193,6 +207,10 @@
             background: #ffffff;
             box-shadow: 0 0 0 4px rgba(44, 122, 75, 0.12);
         }
+        .verify-panel .input-group input:focus.danger-focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+        }
         .verify-panel .input-group input::placeholder {
             color: #94a3b8;
             font-weight: 400;
@@ -230,12 +248,34 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(44, 122, 75, 0.3);
         }
+        .verify-buttons .btn-danger {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+        }
+        .verify-buttons .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
         .verify-panel .error-hint {
             color: #b91c1c;
             font-size: 0.8rem;
             margin-top: 8px;
             min-height: 20px;
         }
+
+        /* 用户管理弹窗 */
+        .user-modal .verify-panel { width: 520px; max-width: 95vw; }
+        .user-modal .user-list { text-align:left; margin:12px 0 16px; max-height:200px; overflow-y:auto; }
+        .user-modal .user-list-item { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #f0f2f5; }
+        .user-modal .user-list-item:last-child { border-bottom:none; }
+        .user-modal .user-list-item .user-name { font-weight:500; display:flex; align-items:center; gap:8px; }
+        .user-modal .user-list-item .user-name i { color:#2c7a4b; }
+        .user-modal .user-list-item .user-actions { display:flex; gap:6px; }
+        .user-modal .input-group-add { display:flex; gap:10px; margin-top:12px; }
+        .user-modal .input-group-add input { flex:1; padding:10px 16px; border:2px solid #e2e8f0; border-radius:40px; font-size:0.9rem; outline:none; transition:0.2s; }
+        .user-modal .input-group-add input:focus { border-color:#2c7a4b; }
 
         /* 图表的响应式 */
         .chart-toggle-btn {
@@ -287,6 +327,8 @@
             .verify-buttons .btn { padding:10px 20px; font-size:0.85rem; min-width:80px; }
             .chart-container { height:220px; }
             .chart-card { padding:16px; }
+            .user-management { width:100%; justify-content:space-between; }
+            .user-management .user-selector { flex:1; min-width:100px; }
         }
         @media (max-width:480px) {
             body { padding:12px; }
@@ -303,6 +345,7 @@
             .verify-buttons { flex-direction:column; gap:10px; }
             .verify-buttons .btn { width:100%; }
             .chart-container { height:180px; }
+            .user-modal .verify-panel { padding:20px 16px; }
         }
     </style>
 </head>
@@ -312,9 +355,18 @@
     <div class="header-card card">
         <div class="title-section">
             <h1><i class="fas fa-clock" style="color:#2c7a4b;"></i> 钟点工时管家</h1>
-            <p><i class="fas fa-calculator"></i> 自定义餐时 & 每日额外扣时 · 智能计薪 · 安全保存</p>
+            <p><i class="fas fa-users"></i> 多用户管理 · 独立数据 · 安全计薪</p>
         </div>
         <div class="action-buttons">
+            <!-- 用户管理区域 -->
+            <div class="user-management">
+                <span class="current-user"><i class="fas fa-user-circle"></i> <span id="currentUserDisplay">默认用户</span></span>
+                <select class="user-selector" id="userSelector"></select>
+                <div class="user-actions">
+                    <button class="btn btn-sm btn-outline" id="manageUsersBtn"><i class="fas fa-cog"></i></button>
+                    <button class="btn btn-sm btn-outline" id="deleteUserBtn"><i class="fas fa-trash-alt" style="color:#dc2626;"></i></button>
+                </div>
+            </div>
             <div class="settings-dropdown-wrapper">
                 <button class="btn-settings" id="settingsToggleBtn">
                     <i class="fas fa-sliders-h"></i> 设置 <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
@@ -406,7 +458,13 @@
 </div>
 
 <script>
-    // ---------- 数据 ----------
+    // ============================================================
+    //  多用户管理核心
+    // ============================================================
+    
+    // 所有用户数据存储结构: { "用户名": { records: [], settings: { mealSettings, hourlyRate, password } } }
+    let allUsersData = {};
+    let currentUser = '默认用户';
     let workRecords = [];        
     let draftRecords = [];       
     let currentPassword = "123456";
@@ -419,11 +477,418 @@
     let isDraftSaved = true;
     
     let calYear = 2026, calMonth = 7; 
-
-    // 图表相关
     let trendChart = null;
-    let chartMode = 'hours'; // 'hours' 或 'salary'
+    let chartMode = 'hours'; 
+
+    // ============================================================
+    //  密码验证弹窗（通用）
+    // ============================================================
+    function showPasswordModal(options) {
+        // options: {
+        //   title: '标题',
+        //   subtitle: '副标题',
+        //   icon: 'lock' 或 'danger',
+        //   previewHtml: '预览内容',
+        //   confirmText: '确认按钮文字',
+        //   confirmClass: 'btn-primary' 或 'btn-danger',
+        //   onConfirm: function(password) { return true/false 或 Promise },
+        //   onCancel: function() {}
+        // }
+        const defaults = {
+            title: '安全验证',
+            subtitle: '请输入操作密码以继续',
+            icon: 'lock',
+            previewHtml: '',
+            confirmText: '确认',
+            confirmClass: 'btn-primary',
+            onConfirm: null,
+            onCancel: null
+        };
+        const config = { ...defaults, ...options };
+        
+        const iconHtml = config.icon === 'danger' 
+            ? '<div class="icon-lock icon-danger"><i class="fas fa-exclamation-triangle"></i></div>'
+            : '<div class="icon-lock"><i class="fas fa-lock"></i></div>';
+        
+        let modal = document.createElement('div'); 
+        modal.className = 'modal-mask';
+        modal.innerHTML = `
+            <div class="verify-panel">
+                ${iconHtml}
+                <h3>${config.title}</h3>
+                <p class="subtitle">${config.subtitle}</p>
+                ${config.previewHtml ? `<div class="changes-preview">${config.previewHtml}</div>` : ''}
+                <div class="input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="verifyPasswordInput" placeholder="请输入操作密码" autocomplete="off">
+                </div>
+                <div id="passwordErrorHint" class="error-hint"></div>
+                <div class="verify-buttons">
+                    <button class="btn btn-outline" id="verifyCancelBtn">取消</button>
+                    <button class="btn ${config.confirmClass}" id="verifyConfirmBtn">${config.confirmText}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        let inp = modal.querySelector('#verifyPasswordInput');
+        let errorHint = modal.querySelector('#passwordErrorHint');
+        inp.focus();
+        
+        let clean = () => {
+            modal.remove();
+            if (config.onCancel) config.onCancel();
+        };
+        
+        let confirm = () => {
+            const pwd = inp.value;
+            if (config.onConfirm) {
+                const result = config.onConfirm(pwd);
+                if (result === true) {
+                    clean();
+                } else if (result === false) {
+                    errorHint.innerText = '❌ 密码错误，请重新输入';
+                    inp.value = '';
+                    inp.focus();
+                    inp.style.borderColor = '#b91c1c';
+                    setTimeout(() => { inp.style.borderColor = ''; }, 800);
+                }
+                // 如果返回 Promise，则异步处理
+                if (result && typeof result.then === 'function') {
+                    result.then(success => {
+                        if (success) clean();
+                    }).catch(() => {
+                        errorHint.innerText = '❌ 验证失败，请重试';
+                        inp.value = '';
+                        inp.focus();
+                    });
+                }
+            }
+        };
+        
+        modal.querySelector('#verifyConfirmBtn').onclick = confirm;
+        modal.querySelector('#verifyCancelBtn').onclick = clean;
+        inp.addEventListener('keypress', e => { if (e.key === 'Enter') confirm(); });
+        modal.addEventListener('click', (e) => { if (e.target === modal) clean(); });
+        
+        return { modal, inp, errorHint, clean, confirm };
+    }
+
+    // ============================================================
+    //  用户数据管理
+    // ============================================================
     
+    function getUsersList() {
+        try {
+            const data = localStorage.getItem('allUsersData');
+            if (data) {
+                allUsersData = JSON.parse(data);
+                return Object.keys(allUsersData);
+            }
+        } catch(e) { console.warn('读取用户数据失败', e); }
+        return [];
+    }
+    
+    function saveAllUsersData() {
+        try {
+            localStorage.setItem('allUsersData', JSON.stringify(allUsersData));
+        } catch(e) { console.warn('保存用户数据失败', e); }
+    }
+    
+    function getCurrentUserData() {
+        if (!allUsersData[currentUser]) {
+            allUsersData[currentUser] = {
+                records: [],
+                settings: {
+                    mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" },
+                    hourlyRate: 25,
+                    password: "123456"
+                }
+            };
+            saveAllUsersData();
+        }
+        return allUsersData[currentUser];
+    }
+    
+    function loadUserData() {
+        const userData = getCurrentUserData();
+        workRecords = userData.records || [];
+        const settings = userData.settings || {};
+        mealSettings = settings.mealSettings || { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
+        hourlyRate = settings.hourlyRate || 25;
+        currentPassword = settings.password || "123456";
+        
+        // 尝试恢复草稿
+        let hasDraft = false;
+        const draftKey = `draft_${currentUser}`;
+        const savedDraft = localStorage.getItem(draftKey);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                    if (confirm(`检测到用户 "${currentUser}" 有未保存的草稿数据，是否恢复？`)) {
+                        draftRecords = parsed;
+                        hasDraft = true;
+                    }
+                }
+            } catch(e) { console.warn('草稿恢复失败', e); }
+        }
+        if (!hasDraft) {
+            draftRecords = JSON.parse(JSON.stringify(workRecords));
+        }
+        
+        // 更新UI
+        document.getElementById('lunchStart').value = mealSettings.lunchStart;
+        document.getElementById('lunchEnd').value = mealSettings.lunchEnd;
+        document.getElementById('dinnerStart').value = mealSettings.dinnerStart;
+        document.getElementById('dinnerEnd').value = mealSettings.dinnerEnd;
+        document.getElementById('globalPasswordInput').value = currentPassword;
+        document.getElementById('hourlyRate').value = hourlyRate;
+        document.getElementById('currentUserDisplay').textContent = currentUser;
+        
+        updateDraftHoursAndSalary();
+        renderTable();
+        renderCalendar(calYear, calMonth);
+        renderChart();
+        populateMonthSelect();
+        updateMonthlySummaryFromDraft();
+        
+        // 清除旧草稿
+        localStorage.removeItem('draftRecords_backup');
+    }
+    
+    function saveUserData() {
+        const userData = getCurrentUserData();
+        userData.records = workRecords;
+        userData.settings = {
+            mealSettings: mealSettings,
+            hourlyRate: hourlyRate,
+            password: currentPassword
+        };
+        saveAllUsersData();
+        localStorage.removeItem(`draft_${currentUser}`);
+        isDraftSaved = true;
+    }
+    
+    function saveDraftToLocalStorage() {
+        try {
+            localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draftRecords));
+        } catch(e) { console.warn("自动保存失败", e); }
+    }
+    
+    function triggerAutoSave() {
+        if (autoSaveTimer) clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => { saveDraftToLocalStorage(); }, AUTO_SAVE_DELAY);
+    }
+    
+    function markDraftChanged() {
+        isDraftSaved = false;
+        triggerAutoSave();
+    }
+    
+    window.addEventListener("beforeunload", (e) => {
+        if (!isDraftSaved) {
+            e.preventDefault();
+            e.returnValue = "您有未保存的草稿，确定要离开吗？";
+            return e.returnValue;
+        }
+    });
+    
+    // ---------- 切换用户 ----------
+    function switchUser(username) {
+        if (username === currentUser) return;
+        if (!isDraftSaved) {
+            if (!confirm(`当前用户 "${currentUser}" 有未保存的修改，切换用户将丢失草稿。确定切换吗？`)) {
+                document.getElementById('userSelector').value = currentUser;
+                return;
+            }
+        }
+        localStorage.removeItem(`draft_${currentUser}`);
+        currentUser = username;
+        if (!allUsersData[currentUser]) {
+            allUsersData[currentUser] = {
+                records: [],
+                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+            };
+            saveAllUsersData();
+        }
+        loadUserData();
+        document.getElementById('userSelector').value = currentUser;
+    }
+    
+    // ---------- 删除用户（带密码验证） ----------
+    function deleteUserWithPassword(username) {
+        if (username === '默认用户') {
+            alert('不能删除默认用户');
+            return;
+        }
+        if (username === currentUser) {
+            alert('不能删除当前登录用户，请先切换到其他用户');
+            return;
+        }
+        
+        // 先弹出确认对话框
+        if (!confirm(`⚠️ 确定要删除用户 "${username}" 及其所有数据吗？\n此操作不可撤销！`)) return;
+        
+        // 获取该用户的密码
+        const userData = allUsersData[username];
+        const userPassword = userData?.settings?.password || '123456';
+        
+        // 显示密码验证弹窗
+        showPasswordModal({
+            title: '⚠️ 删除用户确认',
+            subtitle: `请输入用户 "${username}" 的操作密码以确认删除`,
+            icon: 'danger',
+            previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除用户 "${username}" 的所有工时数据</p>`,
+            confirmText: '确认删除',
+            confirmClass: 'btn-danger',
+            onConfirm: (pwd) => {
+                if (pwd === userPassword) {
+                    // 密码正确，执行删除
+                    delete allUsersData[username];
+                    saveAllUsersData();
+                    localStorage.removeItem(`draft_${username}`);
+                    populateUserSelector();
+                    alert(`✅ 用户 "${username}" 已删除`);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+    
+    // ---------- 用户管理UI ----------
+    function showUserManagementModal() {
+        const users = getUsersList();
+        let userListHtml = users.length === 0 
+            ? '<p style="text-align:center;color:#94a3b8;padding:16px;">暂无其他用户</p>'
+            : users.map(u => {
+                const hasPwd = allUsersData[u]?.settings?.password ? '🔒' : '🔓';
+                return `
+                <div class="user-list-item">
+                    <span class="user-name"><i class="fas fa-user"></i> ${u} ${hasPwd} ${u === currentUser ? '<span style="font-size:0.7rem;color:#2c7a4b;background:#e6f0eb;padding:2px 10px;border-radius:40px;">当前</span>' : ''}</span>
+                    <div class="user-actions">
+                        ${u !== currentUser ? `<button class="btn btn-sm btn-primary" onclick="window._switchUser('${u}')">切换</button>` : ''}
+                        ${u !== '默认用户' && u !== currentUser ? `<button class="btn btn-sm btn-danger" onclick="window._deleteUser('${u}')">删除</button>` : ''}
+                    </div>
+                </div>
+            `}).join('');
+        
+        const modalHtml = `
+            <div class="modal-mask user-modal" id="userModal">
+                <div class="verify-panel" style="max-width:560px;">
+                    <div class="icon-lock"><i class="fas fa-users"></i></div>
+                    <h3>用户管理</h3>
+                    <p class="subtitle">切换用户或管理账户 · 🔒 表示有独立密码</p>
+                    <div class="user-list">
+                        ${userListHtml}
+                    </div>
+                    <hr style="border:0;border-top:1px solid #e9edf2;margin:12px 0;">
+                    <div class="input-group-add">
+                        <input type="text" id="newUserNameInput" placeholder="输入新用户名" maxlength="20">
+                        <button class="btn btn-primary" id="addUserBtn"><i class="fas fa-plus"></i> 添加</button>
+                    </div>
+                    <div style="margin-top:12px;text-align:center;">
+                        <button class="btn btn-outline" id="closeUserModalBtn">关闭</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const existing = document.getElementById('userModal');
+        if (existing) existing.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('userModal');
+        
+        // 暴露函数到window供内联onclick使用
+        window._switchUser = (name) => {
+            switchUser(name);
+            modal.remove();
+        };
+        window._deleteUser = (name) => {
+            modal.remove();
+            // 延迟执行删除，让模态框先关闭
+            setTimeout(() => deleteUserWithPassword(name), 100);
+        };
+        
+        document.getElementById('closeUserModalBtn').onclick = () => modal.remove();
+        document.getElementById('addUserBtn').onclick = () => {
+            const input = document.getElementById('newUserNameInput');
+            const name = input.value.trim();
+            if (!name) { alert('请输入用户名'); return; }
+            if (name.length > 20) { alert('用户名不能超过20个字符'); return; }
+            if (allUsersData[name]) { alert('用户名已存在'); return; }
+            
+            // 创建新用户
+            allUsersData[name] = {
+                records: [],
+                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+            };
+            saveAllUsersData();
+            populateUserSelector();
+            modal.remove();
+            alert(`用户 "${name}" 已创建`);
+            // 自动切换到新用户
+            switchUser(name);
+        };
+        document.getElementById('newUserNameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('addUserBtn').click();
+        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+        setTimeout(() => document.getElementById('newUserNameInput')?.focus(), 100);
+    }
+    
+    // ---------- 删除当前用户（带密码验证） ----------
+    function deleteCurrentUserWithPassword() {
+        if (currentUser === '默认用户') {
+            alert('不能删除默认用户');
+            return;
+        }
+        if (!confirm(`⚠️ 确定要删除当前用户 "${currentUser}" 及其所有数据吗？\n此操作不可撤销！`)) return;
+        
+        const userPassword = allUsersData[currentUser]?.settings?.password || '123456';
+        
+        showPasswordModal({
+            title: '⚠️ 删除当前用户',
+            subtitle: `请输入用户 "${currentUser}" 的操作密码以确认删除`,
+            icon: 'danger',
+            previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除当前用户 "${currentUser}" 的所有工时数据</p>`,
+            confirmText: '确认删除',
+            confirmClass: 'btn-danger',
+            onConfirm: (pwd) => {
+                if (pwd === userPassword) {
+                    // 密码正确，执行删除
+                    if (!isDraftSaved) {
+                        if (!confirm('当前有未保存的草稿，删除用户将丢失草稿。继续吗？')) return false;
+                    }
+                    delete allUsersData[currentUser];
+                    saveAllUsersData();
+                    localStorage.removeItem(`draft_${currentUser}`);
+                    // 切换到默认用户
+                    currentUser = '默认用户';
+                    if (!allUsersData['默认用户']) {
+                        allUsersData['默认用户'] = {
+                            records: [],
+                            settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+                        };
+                        saveAllUsersData();
+                    }
+                    loadUserData();
+                    populateUserSelector();
+                    alert('✅ 已删除当前用户，切换到默认用户');
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
+    // ============================================================
+    //  工具函数
+    // ============================================================
     function timeToMinutes(t) { if(!t) return null; let p=t.split(':'); if(p.length!==2) return null; let h=parseInt(p[0]), m=parseInt(p[1]); return isNaN(h)||isNaN(m)? null : h*60+m; }
     function getOverlap(s,e,bs,be) { let os=Math.max(s,bs), oe=Math.min(e,be); return os<oe ? oe-os : 0; }
     
@@ -444,25 +909,6 @@
     }
     function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
     
-    function saveDraftToLocalStorage() {
-        try { localStorage.setItem("draftRecords_backup", JSON.stringify(draftRecords)); } catch(e) { console.warn("自动保存失败", e); }
-    }
-    function triggerAutoSave() {
-        if (autoSaveTimer) clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(() => { saveDraftToLocalStorage(); }, AUTO_SAVE_DELAY);
-    }
-    function markDraftChanged() {
-        isDraftSaved = false;
-        triggerAutoSave();
-    }
-    window.addEventListener("beforeunload", (e) => {
-        if (!isDraftSaved) {
-            e.preventDefault();
-            e.returnValue = "您有未保存的草稿，确定要离开吗？";
-            return e.returnValue;
-        }
-    });
-    
     function updateDraftHoursAndSalary() {
         for (let rec of draftRecords) {
             let deduct = (rec.customDeductMinutes && !isNaN(rec.customDeductMinutes)) ? rec.customDeductMinutes : 0;
@@ -478,29 +924,21 @@
     function renderChart() {
         const canvas = document.getElementById('trendChart');
         if (!canvas) return;
-        
-        // 获取当前选中的月份数据
         const selectEl = document.getElementById('monthSelect');
         let selectedYM = selectEl ? selectEl.value : '';
         if (!selectedYM) {
             const d = new Date();
             selectedYM = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
         }
-        
-        // 从草稿中获取数据（包含未保存的修改）
         const monthRecords = draftRecords.filter(r => r.dateStr && r.dateStr.startsWith(selectedYM));
         const sorted = [...monthRecords].sort((a,b) => new Date(a.dateStr) - new Date(b.dateStr));
-        
-        // 生成该月所有日期
         const [year, month] = selectedYM.split('-').map(Number);
         const daysInMonth = new Date(year, month, 0).getDate();
         const dateLabels = [];
         const hoursData = [];
         const salaryData = [];
         const recordMap = {};
-        
         sorted.forEach(r => { recordMap[r.dateStr] = r; });
-        
         for (let d = 1; d <= daysInMonth; d++) {
             const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             dateLabels.push(String(d));
@@ -513,23 +951,15 @@
                 salaryData.push(0);
             }
         }
-        
-        // 更新图表标题
-        document.getElementById('chartMonthLabel').textContent = `(${year}年${month}月)`;
-        
+        document.getElementById('chartMonthLabel').textContent = `(${year}年${month}月 · ${currentUser})`;
         const ctx = canvas.getContext('2d');
-        
-        if (trendChart) {
-            trendChart.destroy();
-        }
-        
+        if (trendChart) { trendChart.destroy(); }
         const isHours = chartMode === 'hours';
         const datasetLabel = isHours ? '每日工时 (h)' : '每日薪资 (元)';
         const dataValues = isHours ? hoursData : salaryData;
         const color = isHours ? '#2c7a4b' : '#1e4b6e';
         const bgColor = isHours ? 'rgba(44,122,75,0.1)' : 'rgba(30,75,110,0.1)';
         const borderColor = isHours ? '#2c7a4b' : '#1e4b6e';
-        
         trendChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -548,15 +978,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            font: { size: 12, weight: '500' },
-                            color: '#475569',
-                            boxWidth: 14,
-                            padding: 16,
-                        }
-                    },
+                    legend: { display: true, labels: { font: { size: 12, weight: '500' }, color: '#475569', boxWidth: 14, padding: 16 } },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -570,45 +992,20 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0,0,0,0.05)',
-                            drawBorder: false,
-                        },
-                        ticks: {
-                            font: { size: 11 },
-                            color: '#94a3b8',
-                            callback: function(value) {
-                                return isHours ? value.toFixed(1) + 'h' : '¥' + value.toFixed(0);
-                            }
-                        }
+                        grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+                        ticks: { font: { size: 11 }, color: '#94a3b8', callback: function(value) { return isHours ? value.toFixed(1) + 'h' : '¥' + value.toFixed(0); } }
                     },
                     x: {
-                        grid: {
-                            display: false,
-                        },
-                        ticks: {
-                            font: { size: 10 },
-                            color: '#94a3b8',
-                            maxTicksLimit: 31,
-                            autoSkip: true,
-                            maxRotation: 45,
-                            minRotation: 0,
-                        }
+                        grid: { display: false },
+                        ticks: { font: { size: 10 }, color: '#94a3b8', maxTicksLimit: 31, autoSkip: true, maxRotation: 45, minRotation: 0 }
                     }
                 },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false,
-                }
+                interaction: { intersect: false, mode: 'index' },
+                hover: { mode: 'index', intersect: false }
             }
         });
     }
     
-    // 切换图表模式
     function setChartMode(mode) {
         chartMode = mode;
         document.getElementById('chartHoursBtn').classList.toggle('active', mode === 'hours');
@@ -616,6 +1013,7 @@
         renderChart();
     }
     
+    // ---------- 日历渲染 ----------
     function renderCalendar(year, month) {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -659,6 +1057,7 @@
         }
     }
     
+    // ---------- 表格渲染 ----------
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         if (!tbody) return;
@@ -671,9 +1070,9 @@
         const tip = document.getElementById('currentMonthFilterTip');
         if (currentDisplayMonth) {
             const [y,m] = currentDisplayMonth.split('-');
-            tip.innerText = `📅 当前显示: ${y}年${parseInt(m)}月 (${filtered.length}条)`;
+            tip.innerText = `📅 当前显示: ${y}年${parseInt(m)}月 (${filtered.length}条) · ${currentUser}`;
         } else {
-            tip.innerText = `📅 当前显示: 全部 (${sorted.length}条)`;
+            tip.innerText = `📅 当前显示: 全部 (${sorted.length}条) · ${currentUser}`;
         }
         if (filtered.length === 0) {
             let emptyRow = tbody.insertRow();
@@ -762,6 +1161,7 @@
         document.getElementById('avgDailySalary').innerText = avgDaily.toFixed(2);
     }
     
+    // ---------- 保存验证 ----------
     function generateChangesDescription() {
         let added=[], deleted=[], modified=[];
         for(let draft of draftRecords){
@@ -798,53 +1198,10 @@
             if(md.length) desc+=`<strong>✏️ 修改 (${md.length})</strong><ul>`+md.map(d=>`<li>${d}</li>`).join('')+`</ul>`;
         }
         if(!added.length && !deleted.length && !modified.length) desc = '<span>✨ 无数据变更</span>';
-        let storedRate = localStorage.getItem("hourlyRateBack");
+        let storedRate = allUsersData[currentUser]?.settings?.hourlyRate;
         let curRate = hourlyRate;
-        if(storedRate && parseFloat(storedRate)!==curRate) desc+=`<hr/><span>💰 时薪调整为 ¥${curRate}/小时</span>`;
+        if(storedRate !== undefined && storedRate !== curRate) desc+=`<hr/><span>💰 时薪调整为 ¥${curRate}/小时</span>`;
         return desc;
-    }
-    
-    // ===== 美化后的密码弹窗 =====
-    function showPasswordModal(html, onSuccess){
-        let modal = document.createElement('div'); modal.className='modal-mask';
-        modal.innerHTML = `
-            <div class="verify-panel">
-                <div class="icon-lock"><i class="fas fa-lock"></i></div>
-                <h3>安全验证</h3>
-                <p class="subtitle">请输入操作密码以保存所有修改</p>
-                <div class="changes-preview">${html}</div>
-                <div class="input-group">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="verifyPasswordInput" placeholder="请输入操作密码" autocomplete="off">
-                </div>
-                <div id="passwordErrorHint" class="error-hint"></div>
-                <div class="verify-buttons">
-                    <button class="btn btn-outline" id="verifyCancelBtn">取消</button>
-                    <button class="btn btn-primary" id="verifyConfirmBtn">确认保存</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        let inp = modal.querySelector('#verifyPasswordInput');
-        let errorHint = modal.querySelector('#passwordErrorHint');
-        inp.focus();
-        let clean = ()=> modal.remove();
-        let confirm = ()=>{
-            if (inp.value === currentPassword) {
-                clean();
-                onSuccess();
-            } else {
-                errorHint.innerText = '❌ 密码错误，请重新输入';
-                inp.value = '';
-                inp.focus();
-                inp.style.borderColor = '#b91c1c';
-                setTimeout(() => { inp.style.borderColor = ''; }, 800);
-            }
-        };
-        modal.querySelector('#verifyConfirmBtn').onclick = confirm;
-        modal.querySelector('#verifyCancelBtn').onclick = clean;
-        inp.addEventListener('keypress', e=>{ if(e.key==='Enter') confirm(); });
-        modal.addEventListener('click', (e) => { if (e.target === modal) clean(); });
     }
     
     function saveWithVerification(){
@@ -856,23 +1213,37 @@
                 if(!w || d.dateStr!==w.dateStr || d.startTime!==w.startTime || d.endTime!==w.endTime || d.excludeDinner!==w.excludeDinner || d.note!==w.note || (d.customDeductMinutes||0) !== (w.customDeductMinutes||0)){ hasDiff=true; break; }
             }
         }
-        let rateChanged = (hourlyRate !== (localStorage.getItem("hourlyRateBack") ? parseFloat(localStorage.getItem("hourlyRateBack")) : 25));
+        let rateChanged = (hourlyRate !== (allUsersData[currentUser]?.settings?.hourlyRate || 25));
         if(!hasDiff && !rateChanged) { alert("无任何修改，无需保存。"); return; }
         const changesHtml = generateChangesDescription();
-        showPasswordModal(changesHtml, ()=>{
-            workRecords = JSON.parse(JSON.stringify(draftRecords));
-            localStorage.setItem("hourlyRateBack", hourlyRate);
-            saveToLocalStorage();
-            localStorage.removeItem("draftRecords_backup");
-            isDraftSaved = true;
-            updateDraftHoursAndSalary();
-            renderTable();
-            renderCalendar(calYear, calMonth);
-            renderChart();
-            alert("✅ 所有修改已安全保存");
+        
+        showPasswordModal({
+            title: '保存修改',
+            subtitle: '请输入操作密码以保存所有修改',
+            icon: 'lock',
+            previewHtml: changesHtml,
+            confirmText: '确认保存',
+            confirmClass: 'btn-primary',
+            onConfirm: (pwd) => {
+                if (pwd === currentPassword) {
+                    workRecords = JSON.parse(JSON.stringify(draftRecords));
+                    saveUserData();
+                    localStorage.removeItem(`draft_${currentUser}`);
+                    isDraftSaved = true;
+                    updateDraftHoursAndSalary();
+                    renderTable();
+                    renderCalendar(calYear, calMonth);
+                    renderChart();
+                    alert("✅ 所有修改已安全保存");
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         });
     }
     
+    // ---------- 其他操作 ----------
     function addBlankRecord(){
         let today = new Date(); let yyyy=today.getFullYear(), mm=String(today.getMonth()+1).padStart(2,'0'), dd=String(today.getDate()).padStart(2,'0');
         let newRec = { dateStr:`${yyyy}-${mm}-${dd}`, startTime:"09:00", endTime:"17:00", note:"", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 };
@@ -883,12 +1254,11 @@
         renderTable();
         renderCalendar(calYear, calMonth);
         renderChart();
-        if (currentDisplayMonth && !newRec.dateStr.startsWith(currentDisplayMonth)) {}
         populateMonthSelect();
     }
     
     function resetDemo(){
-        if(confirm("重置示例数据(包含自定义扣除样例)？")){
+        if(confirm("重置当前用户的示例数据？")){
             let demo = [
                 { dateStr:"2026-06-07", startTime:"08:30", endTime:"16:30", note:"日常保洁", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
                 { dateStr:"2026-06-08", startTime:"10:00", endTime:"20:00", note:"加班午休延长", excludeDinner:true, customDeductMinutes:30, hours:0, salary:0 },
@@ -904,63 +1274,14 @@
             workRecords = JSON.parse(JSON.stringify(demo));
             draftRecords = JSON.parse(JSON.stringify(demo));
             updateDraftHoursAndSalary();
-            renderTable();
-            saveToLocalStorage();
-            localStorage.removeItem("draftRecords_backup");
+            saveUserData();
+            localStorage.removeItem(`draft_${currentUser}`);
             isDraftSaved = true;
             populateMonthSelect();
+            renderTable();
             renderCalendar(calYear, calMonth);
             renderChart();
         }
-    }
-    
-    function saveToLocalStorage(){
-        localStorage.setItem("workHoursData", JSON.stringify(workRecords));
-        localStorage.setItem("mealSettings", JSON.stringify(mealSettings));
-        localStorage.setItem("appPassword", currentPassword);
-        localStorage.setItem("hourlyRate", hourlyRate);
-        localStorage.setItem("hourlyRateBack", hourlyRate);
-    }
-    
-    function loadFromLocalStorage(){
-        let saved = localStorage.getItem("workHoursData");
-        if(saved){ try{ workRecords=JSON.parse(saved); }catch(e){ initDefault(); } }
-        else initDefault();
-        let hasDraft = false;
-        let savedDraft = localStorage.getItem("draftRecords_backup");
-        if (savedDraft) {
-            try {
-                let parsed = JSON.parse(savedDraft);
-                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-                    if (confirm("检测到未保存的草稿数据，是否恢复？\n（点击确定恢复草稿，取消则使用已保存数据）")) {
-                        draftRecords = parsed;
-                        hasDraft = true;
-                    }
-                }
-            } catch(e) { console.warn("草稿恢复失败", e); }
-        }
-        if (!hasDraft) {
-            draftRecords = JSON.parse(JSON.stringify(workRecords));
-        }
-        let savedSet = localStorage.getItem("mealSettings");
-        if(savedSet) try{ let ms=JSON.parse(savedSet); if(ms.lunchStart) mealSettings=ms; }catch(e){}
-        let savedPwd = localStorage.getItem("appPassword");
-        if(savedPwd) currentPassword = savedPwd;
-        let savedRate = localStorage.getItem("hourlyRate");
-        if(savedRate && !isNaN(parseFloat(savedRate))) hourlyRate = parseFloat(savedRate);
-        document.getElementById('lunchStart').value = mealSettings.lunchStart;
-        document.getElementById('lunchEnd').value = mealSettings.lunchEnd;
-        document.getElementById('dinnerStart').value = mealSettings.dinnerStart;
-        document.getElementById('dinnerEnd').value = mealSettings.dinnerEnd;
-        document.getElementById('globalPasswordInput').value = currentPassword;
-        document.getElementById('hourlyRate').value = hourlyRate;
-        updateDraftHoursAndSalary();
-    }
-    
-    function initDefault(){
-        workRecords = [ { dateStr: new Date().toISOString().slice(0,10), startTime:"09:00", endTime:"17:00", note:"示例", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 } ];
-        draftRecords = JSON.parse(JSON.stringify(workRecords));
-        updateDraftHoursAndSalary();
     }
     
     function applySettingsRefresh(){
@@ -976,11 +1297,60 @@
         renderTable();
         renderCalendar(calYear, calMonth);
         renderChart();
-        saveToLocalStorage();
+        const userData = getCurrentUserData();
+        userData.settings.mealSettings = { ...mealSettings };
+        userData.settings.hourlyRate = hourlyRate;
+        saveAllUsersData();
     }
-    function changePassword(){ let newPwd = document.getElementById('globalPasswordInput').value.trim(); if(!newPwd){ alert("密码不能为空"); return; } currentPassword=newPwd; saveToLocalStorage(); alert("操作密码已更新"); }
-    function exportJSON(){ let obj={ records:workRecords, mealSettings, appPassword:currentPassword, hourlyRate }; let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:"application/json"})); a.download=`工时数据_${new Date().toISOString().slice(0,19)}.json`; a.click(); }
-    function importJSON(file){ let reader=new FileReader(); reader.onload=e=>{ try{ let data=JSON.parse(e.target.result); if(data.records) workRecords=data.records; if(data.mealSettings) mealSettings=data.mealSettings; if(data.appPassword) currentPassword=data.appPassword; if(data.hourlyRate) hourlyRate=data.hourlyRate; draftRecords=JSON.parse(JSON.stringify(workRecords)); updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); saveToLocalStorage(); alert("导入成功"); }catch(err){ alert("文件无效"); } }; reader.readAsText(file); }
+    
+    function changePassword(){ 
+        let newPwd = document.getElementById('globalPasswordInput').value.trim(); 
+        if(!newPwd){ alert("密码不能为空"); return; } 
+        currentPassword=newPwd; 
+        const userData = getCurrentUserData();
+        userData.settings.password = currentPassword;
+        saveAllUsersData();
+        alert("操作密码已更新"); 
+    }
+    
+    function exportJSON(){ 
+        const data = {
+            user: currentUser,
+            records: workRecords,
+            settings: { mealSettings, hourlyRate, password: currentPassword },
+            exportDate: new Date().toISOString()
+        };
+        let a=document.createElement('a'); 
+        a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"})); 
+        a.download=`工时数据_${currentUser}_${new Date().toISOString().slice(0,19)}.json`; 
+        a.click(); 
+    }
+    
+    function importJSON(file){ 
+        let reader=new FileReader(); 
+        reader.onload=e=>{ 
+            try{ 
+                let data=JSON.parse(e.target.result); 
+                if(data.records) {
+                    workRecords = data.records;
+                    draftRecords = JSON.parse(JSON.stringify(workRecords));
+                }
+                if(data.settings) {
+                    if(data.settings.mealSettings) mealSettings = data.settings.mealSettings;
+                    if(data.settings.hourlyRate) hourlyRate = data.settings.hourlyRate;
+                    if(data.settings.password) currentPassword = data.settings.password;
+                }
+                updateDraftHoursAndSalary();
+                saveUserData();
+                localStorage.removeItem(`draft_${currentUser}`);
+                isDraftSaved = true;
+                loadUserData();
+                alert("导入成功"); 
+            } catch(err){ alert("文件无效"); } 
+        }; 
+        reader.readAsText(file); 
+    }
+    
     function exportToExcel(){
         if(workRecords.length===0){ alert("暂无正式数据，请先保存记录"); return; }
         let sheetData = [["日期","上班","下班","不扣晚餐","额外扣除(分钟)","工时(小时)","报酬(元)","事件备注"]];
@@ -989,13 +1359,20 @@
             let salaryVal = getSalary(hoursVal);
             sheetData.push([ rec.dateStr, rec.startTime||"", rec.endTime||"", rec.excludeDinner?"是":"否", (rec.customDeductMinutes!==undefined?rec.customDeductMinutes:0), hoursVal.toFixed(2), salaryVal.toFixed(2), rec.note||"" ]);
         });
-        let summarySheet = [["统计项","数值"]]; let totalHours=workRecords.reduce((s,r)=>s+(r.hours||0),0); let totalSalary=workRecords.reduce((s,r)=>s+getSalary(r.hours||0),0);
-        summarySheet.push(["总工时(小时)",totalHours.toFixed(2)],["总报酬(元)",totalSalary.toFixed(2)],["工作天数",workRecords.length],["时薪(元/小时)",hourlyRate]);
-        summarySheet.push(["午餐时段",`${mealSettings.lunchStart} - ${mealSettings.lunchEnd}`],["晚餐时段",`${mealSettings.dinnerStart} - ${mealSettings.dinnerEnd}`]);
+        let summarySheet = [["统计项","数值"]];
+        let totalHours=workRecords.reduce((s,r)=>s+(r.hours||0),0);
+        let totalSalary=workRecords.reduce((s,r)=>s+getSalary(r.hours||0),0);
+        summarySheet.push(["用户", currentUser]);
+        summarySheet.push(["总工时(小时)",totalHours.toFixed(2)]);
+        summarySheet.push(["总报酬(元)",totalSalary.toFixed(2)]);
+        summarySheet.push(["工作天数",workRecords.length]);
+        summarySheet.push(["时薪(元/小时)",hourlyRate]);
+        summarySheet.push(["午餐时段",`${mealSettings.lunchStart} - ${mealSettings.lunchEnd}`]);
+        summarySheet.push(["晚餐时段",`${mealSettings.dinnerStart} - ${mealSettings.dinnerEnd}`]);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetData), "工时明细");
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summarySheet), "汇总统计");
-        XLSX.writeFile(wb, `钟点工报表_${new Date().toISOString().slice(0,19)}.xlsx`);
+        XLSX.writeFile(wb, `钟点工报表_${currentUser}_${new Date().toISOString().slice(0,19)}.xlsx`);
     }
     
     function populateMonthSelect(){
@@ -1015,6 +1392,21 @@
         updateMonthlySummaryFromDraft();
         renderTable();
         renderChart();
+    }
+    
+    function populateUserSelector(){
+        const select = document.getElementById('userSelector');
+        const users = getUsersList();
+        if (users.length === 0) {
+            allUsersData['默认用户'] = {
+                records: [],
+                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+            };
+            saveAllUsersData();
+            users.push('默认用户');
+        }
+        select.innerHTML = users.map(u => `<option value="${u}">${u}</option>`).join('');
+        select.value = currentUser;
     }
     
     function initSettingsDropdown() {
@@ -1040,6 +1432,7 @@
         document.getElementById('lunchEnd').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerStart').addEventListener('change',applySettingsRefresh);
         document.getElementById('dinnerEnd').addEventListener('change',applySettingsRefresh);
+        
         document.getElementById('monthSelect').addEventListener('change', function() {
             const val = this.value;
             if (val) { currentDisplayMonth = val; } else { currentDisplayMonth = ''; }
@@ -1053,6 +1446,7 @@
                 renderCalendar(calYear, calMonth);
             }
         });
+        
         document.getElementById('calPrevMonth').onclick = function() {
             if (calMonth === 1) { calMonth = 12; calYear--; } else { calMonth--; }
             renderCalendar(calYear, calMonth);
@@ -1073,45 +1467,37 @@
             updateMonthlySummaryFromDraft();
             renderChart();
         };
-        // 图表切换按钮
+        
         document.getElementById('chartHoursBtn').onclick = () => setChartMode('hours');
         document.getElementById('chartSalaryBtn').onclick = () => setChartMode('salary');
+        
+        document.getElementById('manageUsersBtn').onclick = showUserManagementModal;
+        document.getElementById('deleteUserBtn').onclick = deleteCurrentUserWithPassword;
+        
+        document.getElementById('userSelector').addEventListener('change', function() {
+            switchUser(this.value);
+        });
     }
     
     function init(){
-        loadFromLocalStorage();
-        bindEvents();
+        getUsersList();
+        if (!allUsersData['默认用户']) {
+            allUsersData['默认用户'] = {
+                records: [],
+                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+            };
+            saveAllUsersData();
+        }
+        populateUserSelector();
+        
         const d = new Date();
         calYear = d.getFullYear();
         calMonth = d.getMonth() + 1;
-        populateMonthSelect();
-        currentDisplayMonth = '';
-        const select = document.getElementById('monthSelect');
-        if (select) {
-            const curM = `${calYear}-${String(calMonth).padStart(2,'0')}`;
-            if (select.querySelector(`option[value="${curM}"]`)) select.value = curM;
-            else select.value = select.options[0]?.value || '';
-            currentDisplayMonth = '';
-        }
-        renderTable();
-        updateMonthlySummaryFromDraft();
-        renderCalendar(calYear, calMonth);
-        renderChart();
+        
+        loadUserData();
+        bindEvents();
         initSettingsDropdown();
-        document.getElementById('monthSelect').addEventListener('change', function() {
-            const val = this.value;
-            if (val) { currentDisplayMonth = val; } else { currentDisplayMonth = ''; }
-            renderTable();
-            updateMonthlySummaryFromDraft();
-            renderChart();
-            if (val) {
-                let parts = val.split('-');
-                calYear = parseInt(parts[0]);
-                calMonth = parseInt(parts[1]);
-                renderCalendar(calYear, calMonth);
-            }
-        });
-        // 窗口resize时重绘图表
+        
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
