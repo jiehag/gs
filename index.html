@@ -21,13 +21,15 @@
         .settings-dropdown-wrapper { position:relative; display:inline-block; }
         .btn-settings { background:#f1f5f9; border:1px solid #e2e8f0; padding:8px 20px; border-radius:40px; font-weight:500; font-size:0.85rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; color:#1e293b; }
         .btn-settings:hover { background:#e6edf4; border-color:#cbd5e1; }
-        .settings-menu { position:absolute; top:calc(100% + 8px); right:0; background:white; border-radius:24px; box-shadow:0 12px 28px rgba(0,0,0,0.1); min-width:190px; z-index:100; border:1px solid #e9edf2; overflow:hidden; display:none; }
+        .settings-menu { position:absolute; top:calc(100% + 8px); right:0; background:white; border-radius:24px; box-shadow:0 12px 28px rgba(0,0,0,0.1); min-width:210px; z-index:100; border:1px solid #e9edf2; overflow:hidden; display:none; }
         .settings-menu.show { display:block; animation:fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
         .settings-menu-item { padding:12px 18px; display:flex; align-items:center; gap:12px; font-size:0.85rem; cursor:pointer; transition:background 0.15s; color:#1e293b; border-bottom:1px solid #f0f2f5; }
         .settings-menu-item:last-child { border-bottom:none; }
         .settings-menu-item:hover { background:#f8fafc; }
         .settings-menu-item i { width:20px; color:#2c7a4b; }
+        .settings-menu-item .badge { background:#eef2ff; color:#1e4b6e; font-size:0.65rem; padding:2px 10px; border-radius:40px; margin-left:auto; }
+        .settings-divider { border-top:1px solid #e9edf2; margin:4px 12px; }
         .action-buttons { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
         .btn { border:none; padding:8px 20px; border-radius:40px; font-weight:500; font-size:0.85rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#1e293b; touch-action:manipulation; }
         .btn-primary { background:#2c7a4b; color:white; box-shadow:0 2px 8px rgba(44,122,75,0.15); }
@@ -87,7 +89,7 @@
         .footer-note { text-align:center; margin-top:28px; font-size:0.7rem; color:#7c8ba0; border-top:1px solid #edf2f7; padding-top:20px; }
         .month-filter-tip { margin:8px 0 0 12px; font-size:0.8rem; color:#2c7a4b; background:#eaf6ef; padding:4px 14px; border-radius:40px; display:inline-block; }
 
-        /* 日历UI样式 */
+        /* 日历UI样式 - 增强 */
         .calendar-wrapper { background:#ffffff; border-radius:28px; border:1px solid #e9edf2; padding:20px 20px 10px; margin-bottom:30px; box-shadow:0 4px 12px rgba(0,0,0,0.02); }
         .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
         .calendar-header h2 { font-size:1.4rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:10px; }
@@ -101,10 +103,18 @@
         .calendar-grid .day-cell .day-number { font-weight:600; font-size:1.1rem; color:#1e293b; }
         .calendar-grid .day-cell .day-info { font-size:0.6rem; color:#2c7a4b; background:#e6f0eb; padding:2px 8px; border-radius:40px; margin-top:3px; white-space:nowrap; }
         .calendar-grid .day-cell.has-record { background:#f0f7f3; border-color:#c0dacb; }
+        .calendar-grid .day-cell.has-zero-hours { background:#fef2f2; border-color:#fca5a5; }
+        .calendar-grid .day-cell.has-zero-hours .day-number { color:#dc2626; }
+        .calendar-grid .day-cell.has-zero-hours .day-info { background:#fee2e2; color:#dc2626; }
         .calendar-grid .day-cell.other-month { opacity:0.4; }
         .calendar-grid .day-cell.today { border:2px solid #2c7a4b; background:#eafaf1; }
+        .calendar-grid .day-cell.today.has-zero-hours { border-color:#dc2626; background:#fef2f2; }
         .calendar-grid .day-cell .day-salary { font-size:0.6rem; color:#1e4b6e; background:#eef2ff; padding:1px 8px; border-radius:40px; margin-top:2px; }
         .calendar-grid .day-cell .day-hours { font-size:0.6rem; color:#2c7a4b; background:#e6f0eb; padding:1px 8px; border-radius:40px; margin-top:2px; }
+
+        /* 高亮当前选中的日期行 */
+        .highlight-row { background:#eafaf1 !important; border-left:4px solid #2c7a4b; }
+        .highlight-row td { background:#eafaf1 !important; }
 
         /* ===== 密码弹窗 ===== */
         .modal-mask {
@@ -294,6 +304,10 @@
         .chart-toggle-btn:hover { background:#e6edf4; }
         .chart-toggle-btn.active { background:#2c7a4b; color:white; border-color:#2c7a4b; }
 
+        /* 表格高亮行 */
+        .highlight-row td:first-child { border-left:4px solid #2c7a4b; }
+        .highlight-row td { background:#eafaf1 !important; }
+
         @media (max-width:900px) {
             body { padding:16px; }
             .header-card { flex-direction:column; align-items:stretch; padding:16px 18px; gap:14px; }
@@ -362,20 +376,20 @@
             <div class="user-management">
                 <span class="current-user"><i class="fas fa-user-circle"></i> <span id="currentUserDisplay">默认用户</span></span>
                 <select class="user-selector" id="userSelector"></select>
-                <div class="user-actions">
-                    <button class="btn btn-sm btn-outline" id="manageUsersBtn"><i class="fas fa-cog"></i></button>
-                    <button class="btn btn-sm btn-outline" id="deleteUserBtn"><i class="fas fa-trash-alt" style="color:#dc2626;"></i></button>
-                </div>
             </div>
             <div class="settings-dropdown-wrapper">
                 <button class="btn-settings" id="settingsToggleBtn">
                     <i class="fas fa-sliders-h"></i> 设置 <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
                 </button>
                 <div class="settings-menu" id="settingsMenu">
+                    <div class="settings-menu-item" id="manageUsersMenuItem"><i class="fas fa-users-cog"></i> 用户管理 <span class="badge">👥</span></div>
+                    <div class="settings-divider"></div>
                     <div class="settings-menu-item" id="exportExcelMenuItem"><i class="fas fa-file-excel"></i> 导出Excel</div>
                     <div class="settings-menu-item" id="exportDataMenuItem"><i class="fas fa-download"></i> JSON备份</div>
                     <div class="settings-menu-item" id="importTriggerMenuItem"><i class="fas fa-upload"></i> 导入备份</div>
+                    <div class="settings-divider"></div>
                     <div class="settings-menu-item" id="resetDemoMenuItem"><i class="fas fa-undo-alt"></i> 重置示例</div>
+                    <div class="settings-menu-item" id="deleteUserMenuItem" style="color:#dc2626;"><i class="fas fa-trash-alt" style="color:#dc2626;"></i> 删除当前用户</div>
                 </div>
             </div>
             <input type="file" id="importFileInput" accept=".json" style="display:none;">
@@ -432,7 +446,11 @@
             </div>
         </div>
         <div class="calendar-grid" id="calendarGrid"></div>
-        <div style="text-align:right; font-size:0.7rem; color:#7c8ba0; margin-top:8px; padding-right:4px;"><i class="fas fa-circle" style="color:#2c7a4b;"></i> 有工时记录</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:0 4px; font-size:0.7rem; color:#7c8ba0;">
+            <span><i class="fas fa-circle" style="color:#2c7a4b;"></i> 有工时记录</span>
+            <span><i class="fas fa-circle" style="color:#dc2626;"></i> 0工时记录</span>
+            <span><i class="fas fa-square" style="color:#eafaf1; border:1px solid #2c7a4b;"></i> 今日</span>
+        </div>
     </div>
 
     <!-- 每日登记表 -->
@@ -462,7 +480,6 @@
     //  多用户管理核心
     // ============================================================
     
-    // 所有用户数据存储结构: { "用户名": { records: [], settings: { mealSettings, hourlyRate, password } } }
     let allUsersData = {};
     let currentUser = '默认用户';
     let workRecords = [];        
@@ -471,6 +488,7 @@
     let hourlyRate = 25;
     let mealSettings = { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
     let currentDisplayMonth = ''; 
+    let highlightedDate = null; // 存储当前高亮的日期
     
     let autoSaveTimer = null;
     const AUTO_SAVE_DELAY = 3000;
@@ -484,16 +502,6 @@
     //  密码验证弹窗（通用）
     // ============================================================
     function showPasswordModal(options) {
-        // options: {
-        //   title: '标题',
-        //   subtitle: '副标题',
-        //   icon: 'lock' 或 'danger',
-        //   previewHtml: '预览内容',
-        //   confirmText: '确认按钮文字',
-        //   confirmClass: 'btn-primary' 或 'btn-danger',
-        //   onConfirm: function(password) { return true/false 或 Promise },
-        //   onCancel: function() {}
-        // }
         const defaults = {
             title: '安全验证',
             subtitle: '请输入操作密码以继续',
@@ -553,7 +561,6 @@
                     inp.style.borderColor = '#b91c1c';
                     setTimeout(() => { inp.style.borderColor = ''; }, 800);
                 }
-                // 如果返回 Promise，则异步处理
                 if (result && typeof result.then === 'function') {
                     result.then(success => {
                         if (success) clean();
@@ -618,7 +625,6 @@
         hourlyRate = settings.hourlyRate || 25;
         currentPassword = settings.password || "123456";
         
-        // 尝试恢复草稿
         let hasDraft = false;
         const draftKey = `draft_${currentUser}`;
         const savedDraft = localStorage.getItem(draftKey);
@@ -637,7 +643,6 @@
             draftRecords = JSON.parse(JSON.stringify(workRecords));
         }
         
-        // 更新UI
         document.getElementById('lunchStart').value = mealSettings.lunchStart;
         document.getElementById('lunchEnd').value = mealSettings.lunchEnd;
         document.getElementById('dinnerStart').value = mealSettings.dinnerStart;
@@ -653,7 +658,6 @@
         populateMonthSelect();
         updateMonthlySummaryFromDraft();
         
-        // 清除旧草稿
         localStorage.removeItem('draftRecords_backup');
     }
     
@@ -712,6 +716,7 @@
             };
             saveAllUsersData();
         }
+        highlightedDate = null;
         loadUserData();
         document.getElementById('userSelector').value = currentUser;
     }
@@ -727,14 +732,11 @@
             return;
         }
         
-        // 先弹出确认对话框
         if (!confirm(`⚠️ 确定要删除用户 "${username}" 及其所有数据吗？\n此操作不可撤销！`)) return;
         
-        // 获取该用户的密码
         const userData = allUsersData[username];
         const userPassword = userData?.settings?.password || '123456';
         
-        // 显示密码验证弹窗
         showPasswordModal({
             title: '⚠️ 删除用户确认',
             subtitle: `请输入用户 "${username}" 的操作密码以确认删除`,
@@ -744,7 +746,6 @@
             confirmClass: 'btn-danger',
             onConfirm: (pwd) => {
                 if (pwd === userPassword) {
-                    // 密码正确，执行删除
                     delete allUsersData[username];
                     saveAllUsersData();
                     localStorage.removeItem(`draft_${username}`);
@@ -802,14 +803,12 @@
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         const modal = document.getElementById('userModal');
         
-        // 暴露函数到window供内联onclick使用
         window._switchUser = (name) => {
             switchUser(name);
             modal.remove();
         };
         window._deleteUser = (name) => {
             modal.remove();
-            // 延迟执行删除，让模态框先关闭
             setTimeout(() => deleteUserWithPassword(name), 100);
         };
         
@@ -821,7 +820,6 @@
             if (name.length > 20) { alert('用户名不能超过20个字符'); return; }
             if (allUsersData[name]) { alert('用户名已存在'); return; }
             
-            // 创建新用户
             allUsersData[name] = {
                 records: [],
                 settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
@@ -830,7 +828,6 @@
             populateUserSelector();
             modal.remove();
             alert(`用户 "${name}" 已创建`);
-            // 自动切换到新用户
             switchUser(name);
         };
         document.getElementById('newUserNameInput').addEventListener('keypress', (e) => {
@@ -859,14 +856,12 @@
             confirmClass: 'btn-danger',
             onConfirm: (pwd) => {
                 if (pwd === userPassword) {
-                    // 密码正确，执行删除
                     if (!isDraftSaved) {
                         if (!confirm('当前有未保存的草稿，删除用户将丢失草稿。继续吗？')) return false;
                     }
                     delete allUsersData[currentUser];
                     saveAllUsersData();
                     localStorage.removeItem(`draft_${currentUser}`);
-                    // 切换到默认用户
                     currentUser = '默认用户';
                     if (!allUsersData['默认用户']) {
                         allUsersData['默认用户'] = {
@@ -875,6 +870,7 @@
                         };
                         saveAllUsersData();
                     }
+                    highlightedDate = null;
                     loadUserData();
                     populateUserSelector();
                     alert('✅ 已删除当前用户，切换到默认用户');
@@ -1013,7 +1009,7 @@
         renderChart();
     }
     
-    // ---------- 日历渲染 ----------
+    // ---------- 日历渲染（含0工时红色标识） ----------
     function renderCalendar(year, month) {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -1034,20 +1030,35 @@
             let dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             let div = document.createElement('div');
             div.className = 'day-cell';
-            if (recordMap[dateStr]) div.classList.add('has-record');
-            if (dateStr === todayStr) div.classList.add('today');
-            let numSpan = document.createElement('div'); numSpan.className = 'day-number'; numSpan.innerText = d; div.appendChild(numSpan);
             let rec = recordMap[dateStr];
-            if (rec) {
-                let info = document.createElement('div'); info.className = 'day-info'; let h = rec.hours || 0; info.innerText = `${h.toFixed(1)}h`; div.appendChild(info);
-                let sal = document.createElement('div'); sal.className = 'day-salary'; sal.innerText = `¥${(rec.salary||0).toFixed(0)}`; div.appendChild(sal);
+            let hasRecord = rec !== undefined;
+            let hasZeroHours = hasRecord && (rec.hours === 0 || rec.hours === undefined || rec.hours === null);
+            let hasValidHours = hasRecord && rec.hours !== undefined && rec.hours !== null && rec.hours > 0;
+            
+            if (hasValidHours) div.classList.add('has-record');
+            if (hasZeroHours) div.classList.add('has-zero-hours');
+            if (dateStr === todayStr) div.classList.add('today');
+            
+            let numSpan = document.createElement('div'); numSpan.className = 'day-number'; numSpan.innerText = d; div.appendChild(numSpan);
+            
+            if (hasRecord) {
+                let info = document.createElement('div'); info.className = 'day-info'; 
+                let h = rec.hours || 0; 
+                info.innerText = `${h.toFixed(1)}h`; 
+                div.appendChild(info);
+                let sal = document.createElement('div'); sal.className = 'day-salary'; 
+                sal.innerText = `¥${(rec.salary||0).toFixed(0)}`; 
+                div.appendChild(sal);
             }
+            
             div.addEventListener('click', (function(ds) {
                 return function() {
                     const monthVal = ds.substring(0,7);
                     document.getElementById('monthSelect').value = monthVal;
                     currentDisplayMonth = monthVal;
+                    highlightedDate = ds;
                     renderTable();
+                    renderCalendar(calYear, calMonth);
                     updateMonthlySummaryFromDraft();
                     renderChart();
                     document.querySelector('.daily-section').scrollIntoView({ behavior: 'smooth' });
@@ -1055,9 +1066,26 @@
             })(dateStr));
             grid.appendChild(div);
         }
+        
+        // 重新高亮日历中对应的日期
+        if (highlightedDate) {
+            const cells = grid.querySelectorAll('.day-cell');
+            cells.forEach(cell => {
+                const num = cell.querySelector('.day-number');
+                if (num) {
+                    const day = parseInt(num.innerText);
+                    const checkDate = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    if (checkDate === highlightedDate) {
+                        cell.style.boxShadow = '0 0 0 3px #2c7a4b';
+                        cell.style.borderColor = '#2c7a4b';
+                        cell.style.zIndex = '2';
+                    }
+                }
+            });
+        }
     }
     
-    // ---------- 表格渲染 ----------
+    // ---------- 表格渲染（含高亮） ----------
     function renderTable() {
         const tbody = document.getElementById('tableBody');
         if (!tbody) return;
@@ -1085,9 +1113,15 @@
             const rec = filtered[i];
             const realIdx = draftRecords.indexOf(rec);
             const row = tbody.insertRow();
+            
+            // 高亮匹配的行
+            if (highlightedDate && rec.dateStr === highlightedDate) {
+                row.className = 'highlight-row';
+            }
+            
             let dateCell = row.insertCell(0);
             let dateInput = document.createElement('input'); dateInput.type='date'; dateInput.value=rec.dateStr; dateInput.className='date-input';
-            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
+            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; if (highlightedDate === draftRecords[idx].dateStr) highlightedDate = nd; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
             dateCell.appendChild(dateInput);
             let startCell = row.insertCell(1);
             let startInput = document.createElement('input'); startInput.type='time'; startInput.value=rec.startTime||''; startInput.className='time-input';
@@ -1116,7 +1150,9 @@
             deductCell.appendChild(deductInput);
             let hourCell = row.insertCell(5);
             let hourSpan = document.createElement('span'); hourSpan.className='hours-badge';
-            hourSpan.innerText = `${(rec.hours || 0).toFixed(2)} h`;
+            let hoursVal = rec.hours || 0;
+            hourSpan.innerText = `${hoursVal.toFixed(2)} h`;
+            if (hoursVal === 0) { hourSpan.style.background = '#fee2e2'; hourSpan.style.color = '#dc2626'; }
             hourCell.appendChild(hourSpan);
             let salaryCell = row.insertCell(6);
             let salarySpan = document.createElement('span'); salarySpan.className='money-badge';
@@ -1128,12 +1164,13 @@
             noteCell.appendChild(noteInput);
             let actionCell = row.insertCell(8);
             let delBtn = document.createElement('button'); delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; delBtn.className='delete-day';
-            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
+            delBtn.addEventListener('click', ((idx)=> (e)=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); if (highlightedDate === draftRecords[idx]?.dateStr) highlightedDate = null; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
             actionCell.appendChild(delBtn);
         }
         updateMonthlySummaryFromDraft();
     }
     
+    // ---------- 月度统计（只统计工时>0的天数） ----------
     function updateMonthlySummaryFromDraft() {
         const selectEl = document.getElementById('monthSelect');
         if (!selectEl) return;
@@ -1151,10 +1188,12 @@
             return;
         }
         const monthRecords = draftRecords.filter(r=> r.dateStr && r.dateStr.startsWith(selectedYM));
-        let totalHours=0, totalSalary=0;
-        monthRecords.forEach(r=>{ totalHours+=r.hours||0; totalSalary+=getSalary(r.hours); });
-        let workDays = monthRecords.length;
-        let avgDaily = workDays===0?0:totalSalary/workDays;
+        // 只统计工时 > 0 的记录
+        const validRecords = monthRecords.filter(r => (r.hours || 0) > 0);
+        let totalHours = 0, totalSalary = 0;
+        validRecords.forEach(r => { totalHours += r.hours || 0; totalSalary += getSalary(r.hours); });
+        let workDays = validRecords.length;
+        let avgDaily = workDays === 0 ? 0 : totalSalary / workDays;
         document.getElementById('totalHoursMonth').innerText = totalHours.toFixed(2);
         document.getElementById('workDaysCount').innerText = workDays;
         document.getElementById('totalSalaryMonth').innerText = totalSalary.toFixed(2);
@@ -1277,6 +1316,7 @@
             saveUserData();
             localStorage.removeItem(`draft_${currentUser}`);
             isDraftSaved = true;
+            highlightedDate = null;
             populateMonthSelect();
             renderTable();
             renderCalendar(calYear, calMonth);
@@ -1344,6 +1384,7 @@
                 saveUserData();
                 localStorage.removeItem(`draft_${currentUser}`);
                 isDraftSaved = true;
+                highlightedDate = null;
                 loadUserData();
                 alert("导入成功"); 
             } catch(err){ alert("文件无效"); } 
@@ -1360,12 +1401,13 @@
             sheetData.push([ rec.dateStr, rec.startTime||"", rec.endTime||"", rec.excludeDinner?"是":"否", (rec.customDeductMinutes!==undefined?rec.customDeductMinutes:0), hoursVal.toFixed(2), salaryVal.toFixed(2), rec.note||"" ]);
         });
         let summarySheet = [["统计项","数值"]];
-        let totalHours=workRecords.reduce((s,r)=>s+(r.hours||0),0);
-        let totalSalary=workRecords.reduce((s,r)=>s+getSalary(r.hours||0),0);
+        let validRecords = workRecords.filter(r => (r.hours || 0) > 0);
+        let totalHours = validRecords.reduce((s,r)=>s+(r.hours||0),0);
+        let totalSalary = validRecords.reduce((s,r)=>s+getSalary(r.hours||0),0);
         summarySheet.push(["用户", currentUser]);
         summarySheet.push(["总工时(小时)",totalHours.toFixed(2)]);
         summarySheet.push(["总报酬(元)",totalSalary.toFixed(2)]);
-        summarySheet.push(["工作天数",workRecords.length]);
+        summarySheet.push(["工作天数(工时>0)",validRecords.length]);
         summarySheet.push(["时薪(元/小时)",hourlyRate]);
         summarySheet.push(["午餐时段",`${mealSettings.lunchStart} - ${mealSettings.lunchEnd}`]);
         summarySheet.push(["晚餐时段",`${mealSettings.dinnerStart} - ${mealSettings.dinnerEnd}`]);
@@ -1415,10 +1457,14 @@
         if (!toggleBtn || !menu) return;
         toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
         document.addEventListener('click', (e) => { if (!toggleBtn.contains(e.target) && !menu.contains(e.target)) { menu.classList.remove('show'); } });
+        
+        // 用户管理整合进设置菜单
+        document.getElementById('manageUsersMenuItem').onclick = (e) => { e.stopPropagation(); showUserManagementModal(); menu.classList.remove('show'); };
         document.getElementById('exportExcelMenuItem').onclick = (e) => { e.stopPropagation(); exportToExcel(); menu.classList.remove('show'); };
         document.getElementById('exportDataMenuItem').onclick = (e) => { e.stopPropagation(); exportJSON(); menu.classList.remove('show'); };
         document.getElementById('importTriggerMenuItem').onclick = (e) => { e.stopPropagation(); document.getElementById('importFileInput').click(); menu.classList.remove('show'); };
         document.getElementById('resetDemoMenuItem').onclick = (e) => { e.stopPropagation(); resetDemo(); menu.classList.remove('show'); };
+        document.getElementById('deleteUserMenuItem').onclick = (e) => { e.stopPropagation(); deleteCurrentUserWithPassword(); menu.classList.remove('show'); };
         document.getElementById('importFileInput').onchange = (e) => { if(e.target.files[0]) importJSON(e.target.files[0]); e.target.value=''; };
     }
     
@@ -1436,6 +1482,7 @@
         document.getElementById('monthSelect').addEventListener('change', function() {
             const val = this.value;
             if (val) { currentDisplayMonth = val; } else { currentDisplayMonth = ''; }
+            highlightedDate = null;
             renderTable();
             updateMonthlySummaryFromDraft();
             renderChart();
@@ -1463,6 +1510,7 @@
             const m = `${calYear}-${String(calMonth).padStart(2,'0')}`;
             document.getElementById('monthSelect').value = m;
             currentDisplayMonth = m;
+            highlightedDate = null;
             renderTable();
             updateMonthlySummaryFromDraft();
             renderChart();
@@ -1470,9 +1518,6 @@
         
         document.getElementById('chartHoursBtn').onclick = () => setChartMode('hours');
         document.getElementById('chartSalaryBtn').onclick = () => setChartMode('salary');
-        
-        document.getElementById('manageUsersBtn').onclick = showUserManagementModal;
-        document.getElementById('deleteUserBtn').onclick = deleteCurrentUserWithPassword;
         
         document.getElementById('userSelector').addEventListener('change', function() {
             switchUser(this.value);
