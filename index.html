@@ -681,42 +681,51 @@
             .section-header h3 { font-size:1rem; }
             .month-filter-tip { font-size:0.7rem; padding:3px 10px; }
 
-            /* 手机端每日工时明细 - 日期显示优化：拉长显示框 */
+            /* ===== 手机端：大幅拉长日期和上下班输入框 ===== */
             .daily-section {
-                padding: 12px 8px;
+                padding: 10px 6px;
                 overflow-x: auto;
             }
             .daily-section table {
                 font-size: 0.7rem;
-                min-width: 750px;
+                min-width: 820px;
                 width: 100%;
             }
             .daily-section th,
             .daily-section td {
                 font-size: 0.7rem;
-                padding: 6px 4px;
+                padding: 5px 3px;
                 white-space: nowrap;
             }
-            /* 日期列 - 拉长显示框 */
+            /* 日期列 - 大幅拉长 */
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 105px;
-                max-width: 105px;
-                width: 105px;
+                min-width: 120px;
+                max-width: 120px;
+                width: 120px;
             }
             .daily-section .date-input {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
                 padding: 4px 6px;
-                max-width: 100px;
-                min-width: 90px;
+                max-width: 112px;
+                min-width: 100px;
                 width: 100%;
                 border-radius: 16px;
             }
+            /* 上班/下班时间列 - 大幅拉长 */
+            .daily-section th:nth-child(2),
+            .daily-section td:nth-child(2),
+            .daily-section th:nth-child(3),
+            .daily-section td:nth-child(3) {
+                min-width: 80px;
+                max-width: 80px;
+                width: 80px;
+            }
             .daily-section .time-input {
-                font-size: 0.65rem;
-                padding: 3px 4px;
-                max-width: 65px;
-                min-width: 55px;
+                font-size: 0.72rem;
+                padding: 4px 4px;
+                max-width: 72px;
+                min-width: 62px;
                 width: 100%;
                 border-radius: 16px;
             }
@@ -828,28 +837,36 @@
                 padding: 10px;
             }
         }
-        /* 针对极小屏（<380px）进一步优化日期列 */
+        /* 针对极小屏（<380px）进一步优化 */
         @media (max-width:380px) {
             .daily-section table {
-                min-width: 680px;
+                min-width: 740px;
             }
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 95px;
-                max-width: 95px;
-                width: 95px;
+                min-width: 108px;
+                max-width: 108px;
+                width: 108px;
             }
             .daily-section .date-input {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 3px 4px;
-                max-width: 88px;
-                min-width: 78px;
+                max-width: 100px;
+                min-width: 88px;
+            }
+            .daily-section th:nth-child(2),
+            .daily-section td:nth-child(2),
+            .daily-section th:nth-child(3),
+            .daily-section td:nth-child(3) {
+                min-width: 72px;
+                max-width: 72px;
+                width: 72px;
             }
             .daily-section .time-input {
-                font-size: 0.6rem;
-                padding: 2px 3px;
-                max-width: 55px;
-                min-width: 45px;
+                font-size: 0.65rem;
+                padding: 3px 3px;
+                max-width: 64px;
+                min-width: 54px;
             }
             .daily-section .hours-badge,
             .daily-section .money-badge {
