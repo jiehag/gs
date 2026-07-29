@@ -1053,98 +1053,107 @@
                 overflow-x: auto;
             }
             .daily-section table {
-                font-size: 0.65rem;
-                min-width: 950px;
+                font-size: 0.7rem;
+                min-width: 1050px;
                 width: 100%;
             }
             .daily-section th,
             .daily-section td {
-                font-size: 0.65rem;
-                padding: 4px 3px;
+                font-size: 0.7rem;
+                padding: 6px 4px;
                 white-space: nowrap;
             }
+            /* 日期列 - 拉长到足够显示完整日期 */
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 105px;
-                max-width: 105px;
-                width: 105px;
+                min-width: 130px;
+                max-width: 130px;
+                width: 130px;
             }
             .daily-section .date-input {
-                font-size: 0.65rem;
-                padding: 3px 4px;
-                max-width: 98px;
-                min-width: 88px;
+                font-size: 0.72rem;
+                padding: 4px 6px;
+                max-width: 122px;
+                min-width: 110px;
                 width: 100%;
-                border-radius: 14px;
+                border-radius: 16px;
             }
+            /* 上班/下班时间列 - 拉长 */
             .daily-section th:nth-child(2),
             .daily-section td:nth-child(2),
             .daily-section th:nth-child(3),
             .daily-section td:nth-child(3) {
-                min-width: 70px;
-                max-width: 70px;
-                width: 70px;
+                min-width: 90px;
+                max-width: 90px;
+                width: 90px;
             }
             .daily-section .time-input {
-                font-size: 0.62rem;
-                padding: 3px 3px;
-                max-width: 62px;
-                min-width: 52px;
+                font-size: 0.7rem;
+                padding: 4px 4px;
+                max-width: 82px;
+                min-width: 72px;
                 width: 100%;
-                border-radius: 14px;
+                border-radius: 16px;
             }
             .daily-section .event-input {
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 padding: 3px 4px;
-                min-width: 70px;
-                max-width: 90px;
-                border-radius: 14px;
+                min-width: 90px;
+                max-width: 110px;
+                border-radius: 16px;
+            }
+            .daily-section .deduct-input {
+                font-size: 0.65rem;
+                padding: 3px 4px;
+                max-width: 55px;
+                min-width: 45px;
+                border-radius: 16px;
             }
             .daily-section .hours-badge,
             .daily-section .money-badge {
-                font-size: 0.55rem;
-                padding: 2px 5px;
-                border-radius: 16px;
+                font-size: 0.6rem;
+                padding: 2px 6px;
+                border-radius: 20px;
             }
             .daily-section .exclude-check label {
-                font-size: 0.5rem;
+                font-size: 0.55rem;
             }
             .daily-section .exclude-check input[type="checkbox"] {
-                width: 11px;
-                height: 11px;
+                width: 12px;
+                height: 12px;
                 margin: 0;
                 flex-shrink: 0;
             }
             .daily-section .delete-day {
-                font-size: 0.7rem;
-                padding: 2px 4px;
+                font-size: 0.8rem;
+                padding: 2px 6px;
             }
             .daily-section .section-header h3 {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
             .daily-section .month-filter-tip {
-                font-size: 0.55rem;
-                padding: 2px 6px;
+                font-size: 0.6rem;
+                padding: 2px 8px;
                 white-space: nowrap;
             }
             .daily-section .right-actions .btn {
-                font-size: 0.6rem;
-                padding: 3px 10px;
+                font-size: 0.65rem;
+                padding: 4px 12px;
             }
             .daily-section .warning-tip {
-                font-size: 0.55rem;
-                padding: 6px 10px;
+                font-size: 0.6rem;
+                padding: 8px 12px;
                 border-left-width: 3px;
             }
             .daily-section .add-row-btn {
-                font-size: 0.65rem;
-                padding: 5px 14px;
+                font-size: 0.7rem;
+                padding: 6px 16px;
                 width: 100%;
                 justify-content: center;
             }
             .daily-section .footer-note {
-                font-size: 0.5rem;
-                padding-top: 10px;
+                font-size: 0.55rem;
+                padding-top: 12px;
             }
 
             .deduct-time-group {
@@ -1280,33 +1289,33 @@
         }
         @media (max-width:380px) {
             .daily-section table {
-                min-width: 850px;
+                min-width: 920px;
             }
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 95px;
-                max-width: 95px;
-                width: 95px;
+                min-width: 115px;
+                max-width: 115px;
+                width: 115px;
             }
             .daily-section .date-input {
-                font-size: 0.6rem;
-                padding: 2px 3px;
-                max-width: 88px;
-                min-width: 78px;
+                font-size: 0.65rem;
+                padding: 3px 4px;
+                max-width: 108px;
+                min-width: 95px;
             }
             .daily-section th:nth-child(2),
             .daily-section td:nth-child(2),
             .daily-section th:nth-child(3),
             .daily-section td:nth-child(3) {
-                min-width: 62px;
-                max-width: 62px;
-                width: 62px;
+                min-width: 78px;
+                max-width: 78px;
+                width: 78px;
             }
             .daily-section .time-input {
-                font-size: 0.55rem;
-                padding: 2px 2px;
-                max-width: 54px;
-                min-width: 44px;
+                font-size: 0.62rem;
+                padding: 3px 3px;
+                max-width: 70px;
+                min-width: 60px;
             }
             .daily-section .hours-badge,
             .daily-section .money-badge {
@@ -1504,7 +1513,6 @@
             warning: '⚠️',
             info: 'ℹ️'
         };
-        // 只使用type对应的图标，消息中不再包含图标
         toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
         container.appendChild(toast);
         setTimeout(() => { if (toast.parentNode) toast.remove(); }, duration);
