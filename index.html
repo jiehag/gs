@@ -68,11 +68,10 @@
         .section-header h3 { font-size:1.2rem; font-weight:600; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
         .month-filter-tip { font-size:0.8rem; color:#2c7a4b; background:#eaf6ef; padding:4px 14px; border-radius:40px; display:inline-block; font-weight:400; margin-left:6px; white-space:nowrap; }
         .section-header .right-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-        table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:1300px; }
+        table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:1500px; }
         th { text-align:left; padding:16px 12px; background:#f8fafd; color:#2c3e50; font-weight:600; border-bottom:2px solid #e2edf2; }
         td { padding:14px 12px; border-bottom:1px solid #ecf3f8; vertical-align:middle; }
-        .date-input, .time-input, .event-input, .deduct-input { border:1px solid #e2e8f0; border-radius:28px; padding:8px 12px; font-size:0.8rem; background:white; width:100%; max-width:130px; }
-        .deduct-input { max-width:95px; text-align:center; }
+        .date-input, .time-input, .event-input { border:1px solid #e2e8f0; border-radius:28px; padding:8px 12px; font-size:0.8rem; background:white; width:100%; max-width:130px; }
         .event-input { min-width:160px; }
         .hours-badge, .money-badge { background:#e9f4ef; color:#2c7a4b; font-weight:700; padding:5px 14px; border-radius:40px; display:inline-block; font-size:0.8rem; }
         .money-badge { background:#eef2ff; color:#1e4b6e; }
@@ -83,6 +82,15 @@
         .add-row-btn:hover { background:#e6f0f8; border-color:#2c7a4b; }
         .warning-tip { background:#fefce8; border-left:5px solid #e6b12e; padding:12px 20px; border-radius:24px; font-size:0.75rem; margin-bottom:24px; color:#7b6e3c; }
         .footer-note { text-align:center; margin-top:28px; font-size:0.7rem; color:#7c8ba0; border-top:1px solid #edf2f7; padding-top:20px; }
+        .conflict-badge { background:#fee2e2; color:#dc2626; padding:2px 8px; border-radius:40px; font-size:0.6rem; margin-left:4px; }
+        .period-badge { display:inline-block; padding:1px 8px; border-radius:40px; font-size:0.6rem; font-weight:600; margin-left:4px; }
+        .period-morning { background:#fef3c7; color:#92400e; }
+        .period-afternoon { background:#fde68a; color:#92400e; }
+        .period-evening { background:#dbeafe; color:#1e40af; }
+        .period-night { background:#e0e7ff; color:#3730a3; }
+        .period-early-morning { background:#c7d2fe; color:#312e81; }
+        .period-full-day { background:#d1fae5; color:#065f46; }
+        .period-late-night { background:#ddd6fe; color:#4c1d95; }
 
         /* 日历UI样式 - 增强 */
         .calendar-wrapper { background:#ffffff; border-radius:28px; border:1px solid #e9edf2; padding:20px 20px 10px; margin-bottom:30px; box-shadow:0 4px 12px rgba(0,0,0,0.02); }
@@ -282,10 +290,10 @@
         .user-modal .input-group-add input { flex:1; padding:10px 16px; border:2px solid #e2e8f0; border-radius:40px; font-size:0.9rem; outline:none; transition:0.2s; }
         .user-modal .input-group-add input:focus { border-color:#2c7a4b; }
 
-        /* ===== 全局设置弹窗 - 优化UI ===== */
+        /* ===== 全局设置弹窗 - 包含早餐 ===== */
         .settings-panel-modal .verify-panel {
-            max-width: 640px;
-            width: 640px;
+            max-width: 680px;
+            width: 680px;
             text-align: left;
             padding: 32px 36px 28px;
         }
@@ -347,33 +355,6 @@
             min-width: 40px;
             letter-spacing: 0.3px;
         }
-        .settings-panel-modal .settings-row .time-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: white;
-            padding: 2px 10px 2px 6px;
-            border-radius: 40px;
-            border: 1px solid #e2e8f0;
-        }
-        .settings-panel-modal .settings-row .time-group input[type="time"] {
-            border: none;
-            background: transparent;
-            padding: 6px 4px;
-            font-size: 0.82rem;
-            width: 80px;
-            font-weight: 500;
-            color: #0f172a;
-            outline: none;
-        }
-        .settings-panel-modal .settings-row .time-group input[type="time"]:focus {
-            background: #f1f5f9;
-            border-radius: 30px;
-        }
-        .settings-panel-modal .settings-row .time-group span {
-            color: #94a3b8;
-            font-size: 0.75rem;
-        }
         .settings-panel-modal .settings-row input[type="number"],
         .settings-panel-modal .settings-row input[type="password"] {
             border: 1px solid #e2e8f0;
@@ -424,7 +405,7 @@
             background: #1e6f3f;
         }
 
-        /* 午餐晚餐两行独立显示 + 美化重置按钮 */
+        /* 三餐独立行 + 开关 */
         .settings-panel-modal .meal-row {
             display: flex;
             flex-direction: column;
@@ -442,14 +423,66 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 8px 14px;
+            gap: 6px 12px;
         }
         .settings-panel-modal .meal-row .meal-item .row-label {
             font-weight: 600;
             font-size: 0.82rem;
             color: #1e293b;
-            min-width: 40px;
+            min-width: 36px;
             letter-spacing: 0.3px;
+        }
+        /* 开关样式 */
+        .settings-panel-modal .meal-row .meal-item .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch input[type="checkbox"] {
+            width: 34px;
+            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            background: #cbd5e1;
+            border-radius: 40px;
+            outline: none;
+            transition: background 0.25s, box-shadow 0.2s;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            border: none;
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch input[type="checkbox"]:checked {
+            background: #2c7a4b;
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch input[type="checkbox"]:checked::after {
+            transform: translateX(16px);
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch .status-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            min-width: 28px;
+            transition: color 0.25s;
+        }
+        .settings-panel-modal .meal-row .meal-item .toggle-switch input[type="checkbox"]:checked ~ .status-label {
+            color: #2c7a4b;
+            font-weight: 500;
         }
         .settings-panel-modal .meal-row .meal-item .time-group {
             display: flex;
@@ -459,6 +492,11 @@
             padding: 2px 10px 2px 6px;
             border-radius: 40px;
             border: 1px solid #e2e8f0;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .settings-panel-modal .meal-row .meal-item .time-group.disabled {
+            opacity: 0.5;
+            background: #f1f5f9;
         }
         .settings-panel-modal .meal-row .meal-item .time-group input[type="time"] {
             border: none;
@@ -469,6 +507,11 @@
             font-weight: 500;
             color: #0f172a;
             outline: none;
+            transition: color 0.2s;
+        }
+        .settings-panel-modal .meal-row .meal-item .time-group input[type="time"]:disabled {
+            color: #94a3b8;
+            cursor: not-allowed;
         }
         .settings-panel-modal .meal-row .meal-item .time-group input[type="time"]:focus {
             background: #f1f5f9;
@@ -571,6 +614,301 @@
         .highlight-row td:first-child { border-left:4px solid #2c7a4b; }
         .highlight-row td { background:#eafaf1 !important; }
 
+        /* 额外扣除时间段样式 */
+        .deduct-time-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8fafc;
+            padding: 2px 8px 2px 4px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+            flex-wrap: nowrap;
+        }
+        .deduct-time-group input[type="time"] {
+            border: none;
+            background: transparent;
+            padding: 4px 2px;
+            font-size: 0.75rem;
+            width: 65px;
+            font-weight: 500;
+            color: #0f172a;
+            outline: none;
+            border-radius: 30px;
+        }
+        .deduct-time-group input[type="time"]:focus {
+            background: #f1f5f9;
+        }
+        .deduct-time-group span {
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+        .deduct-time-group .deduct-duration {
+            font-size: 0.65rem;
+            color: #2c7a4b;
+            background: #e6f0eb;
+            padding: 1px 8px;
+            border-radius: 30px;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
+        }
+        .deduct-time-group .deduct-duration.empty {
+            color: #94a3b8;
+            background: #f1f5f9;
+        }
+
+        .day-summary-row td {
+            background: #f0f7f3 !important;
+            font-weight: 600;
+            border-top: 2px solid #2c7a4b;
+        }
+        .day-summary-row td:first-child {
+            border-left: 4px solid #2c7a4b;
+        }
+        .day-summary-row .hours-badge {
+            background: #2c7a4b;
+            color: white;
+        }
+        .day-summary-row .money-badge {
+            background: #1e4b6e;
+            color: white;
+        }
+
+        /* 新增记录日期选择弹窗 */
+        .date-picker-modal .verify-panel {
+            max-width: 420px;
+            width: 420px;
+            text-align: center;
+            padding: 28px 30px 24px;
+        }
+        .date-picker-modal .verify-panel .date-picker-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .date-picker-modal .verify-panel .date-picker-sub {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .date-picker-modal .verify-panel input[type="date"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 1rem;
+            background: #f8fafc;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #0f172a;
+        }
+        .date-picker-modal .verify-panel input[type="date"]:focus {
+            border-color: #2c7a4b;
+            box-shadow: 0 0 0 3px rgba(44, 122, 75, 0.1);
+            background: #ffffff;
+        }
+        .date-picker-modal .verify-panel .date-picker-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+        .date-picker-modal .verify-panel .date-picker-buttons .btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        /* 密码修改弹窗 */
+        .password-change-modal .verify-panel {
+            max-width: 420px;
+            width: 420px;
+            text-align: center;
+            padding: 28px 30px 24px;
+        }
+        .password-change-modal .verify-panel .pwd-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .password-change-modal .verify-panel .pwd-sub {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .password-change-modal .verify-panel .pwd-input-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .password-change-modal .verify-panel .pwd-input-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .password-change-modal .verify-panel .pwd-input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            background: #f8fafc;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #0f172a;
+        }
+        .password-change-modal .verify-panel .pwd-input-group input:focus {
+            border-color: #2c7a4b;
+            box-shadow: 0 0 0 3px rgba(44, 122, 75, 0.1);
+            background: #ffffff;
+        }
+        .password-change-modal .verify-panel .pwd-error {
+            color: #dc2626;
+            font-size: 0.75rem;
+            min-height: 20px;
+            margin-top: 4px;
+        }
+        .password-change-modal .verify-panel .pwd-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+        .password-change-modal .verify-panel .pwd-buttons .btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        /* Toast 提示 - 统一图标管理 */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            pointer-events: none;
+            max-width: 90vw;
+        }
+        .toast {
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            animation: toastIn 0.35s ease, toastOut 0.35s ease 2.5s forwards;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e293b;
+            min-width: 160px;
+            justify-content: center;
+        }
+        .toast.success { background: #2c7a4b; }
+        .toast.error { background: #dc2626; }
+        .toast.warning { background: #d97706; }
+        .toast.info { background: #2563eb; }
+        @keyframes toastIn {
+            from { opacity:0; transform:translateY(-20px) scale(0.95); }
+            to { opacity:1; transform:translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            from { opacity:1; transform:translateY(0) scale(1); }
+            to { opacity:0; transform:translateY(-20px) scale(0.95); }
+        }
+
+        /* Loading 遮罩 */
+        .loading-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: modalFadeIn 0.2s ease;
+        }
+        .loading-overlay .loading-box {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            min-width: 180px;
+        }
+        .loading-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #2c7a4b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .loading-overlay .loading-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        /* 确认删除弹窗 */
+        .confirm-modal .verify-panel {
+            max-width: 400px;
+            width: 400px;
+            text-align: center;
+            padding: 28px 30px 24px;
+        }
+        .confirm-modal .verify-panel .confirm-icon {
+            font-size: 48px;
+            color: #dc2626;
+            margin-bottom: 8px;
+        }
+        .confirm-modal .verify-panel .confirm-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .confirm-modal .verify-panel .confirm-sub {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .confirm-modal .verify-panel .confirm-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .confirm-modal .verify-panel .confirm-buttons .btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            min-width: 80px;
+            justify-content: center;
+        }
+
         @media (max-width:900px) {
             body { padding:16px; }
             .header-card { flex-direction:column; align-items:stretch; padding:16px 18px; gap:14px; }
@@ -583,12 +921,11 @@
             .section-header { flex-direction:column; align-items:flex-start; gap:12px; }
             .section-header .right-actions { width:100%; justify-content:flex-start; }
             .month-filter-tip { font-size:0.75rem; white-space:normal; }
-            table { font-size:0.75rem; min-width:1050px; }
+            table { font-size:0.75rem; min-width:1200px; }
             th { padding:10px 6px; font-size:0.7rem; }
             td { padding:10px 6px; }
-            .date-input, .time-input, .event-input, .deduct-input { padding:6px 8px; font-size:0.7rem; max-width:110px; }
+            .date-input, .time-input, .event-input { padding:6px 8px; font-size:0.7rem; max-width:110px; }
             .event-input { min-width:120px; }
-            .deduct-input { max-width:75px; }
             .hours-badge, .money-badge { padding:4px 10px; font-size:0.7rem; }
             .btn { padding:8px 16px; font-size:0.75rem; }
             .add-row-btn { width:100%; justify-content:center; }
@@ -616,16 +953,19 @@
                 gap: 10px;
             }
             .settings-panel-modal .meal-row .meal-item {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 6px;
+                flex-wrap: wrap;
+                gap: 4px 8px;
             }
             .settings-panel-modal .meal-row .meal-item .row-label {
-                min-width: auto;
+                min-width: 32px;
                 font-size: 0.78rem;
             }
+            .settings-panel-modal .meal-row .meal-item .toggle-switch {
+                font-size: 0.7rem;
+            }
             .settings-panel-modal .meal-row .meal-item .time-group {
-                width: 100%;
+                flex: 1;
+                min-width: 130px;
                 justify-content: space-between;
             }
             .settings-panel-modal .meal-row .meal-item .time-group input[type="time"] {
@@ -664,6 +1004,33 @@
                 justify-content: center;
                 padding: 12px;
             }
+
+            .deduct-time-group input[type="time"] {
+                width: 55px;
+                font-size: 0.7rem;
+                padding: 3px 2px;
+            }
+            .deduct-time-group .deduct-duration {
+                font-size: 0.6rem;
+                min-width: 28px;
+                padding: 1px 6px;
+            }
+
+            .date-picker-modal .verify-panel {
+                width: 92vw;
+                max-width: 92vw;
+                padding: 24px 20px 20px;
+            }
+            .password-change-modal .verify-panel {
+                width: 92vw;
+                max-width: 92vw;
+                padding: 24px 20px 20px;
+            }
+            .confirm-modal .verify-panel {
+                width: 92vw;
+                max-width: 92vw;
+                padding: 24px 20px 20px;
+            }
         }
         @media (max-width:480px) {
             body { padding:12px; }
@@ -681,113 +1048,121 @@
             .section-header h3 { font-size:1rem; }
             .month-filter-tip { font-size:0.7rem; padding:3px 10px; }
 
-            /* ===== 手机端：大幅拉长日期和上下班输入框 ===== */
             .daily-section {
                 padding: 10px 6px;
                 overflow-x: auto;
             }
             .daily-section table {
-                font-size: 0.7rem;
-                min-width: 820px;
+                font-size: 0.65rem;
+                min-width: 950px;
                 width: 100%;
             }
             .daily-section th,
             .daily-section td {
-                font-size: 0.7rem;
-                padding: 5px 3px;
+                font-size: 0.65rem;
+                padding: 4px 3px;
                 white-space: nowrap;
             }
-            /* 日期列 - 大幅拉长 */
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 120px;
-                max-width: 120px;
-                width: 120px;
+                min-width: 105px;
+                max-width: 105px;
+                width: 105px;
             }
             .daily-section .date-input {
-                font-size: 0.75rem;
-                padding: 4px 6px;
-                max-width: 112px;
-                min-width: 100px;
+                font-size: 0.65rem;
+                padding: 3px 4px;
+                max-width: 98px;
+                min-width: 88px;
                 width: 100%;
-                border-radius: 16px;
+                border-radius: 14px;
             }
-            /* 上班/下班时间列 - 大幅拉长 */
             .daily-section th:nth-child(2),
             .daily-section td:nth-child(2),
             .daily-section th:nth-child(3),
             .daily-section td:nth-child(3) {
-                min-width: 80px;
-                max-width: 80px;
-                width: 80px;
+                min-width: 70px;
+                max-width: 70px;
+                width: 70px;
             }
             .daily-section .time-input {
-                font-size: 0.72rem;
-                padding: 4px 4px;
-                max-width: 72px;
-                min-width: 62px;
+                font-size: 0.62rem;
+                padding: 3px 3px;
+                max-width: 62px;
+                min-width: 52px;
                 width: 100%;
-                border-radius: 16px;
+                border-radius: 14px;
             }
             .daily-section .event-input {
-                font-size: 0.65rem;
+                font-size: 0.6rem;
                 padding: 3px 4px;
-                min-width: 90px;
-                max-width: 110px;
-                border-radius: 16px;
-            }
-            .daily-section .deduct-input {
-                font-size: 0.65rem;
-                padding: 3px 4px;
-                max-width: 55px;
-                min-width: 45px;
-                border-radius: 16px;
+                min-width: 70px;
+                max-width: 90px;
+                border-radius: 14px;
             }
             .daily-section .hours-badge,
             .daily-section .money-badge {
-                font-size: 0.6rem;
-                padding: 2px 6px;
-                border-radius: 20px;
+                font-size: 0.55rem;
+                padding: 2px 5px;
+                border-radius: 16px;
             }
             .daily-section .exclude-check label {
-                font-size: 0.55rem;
+                font-size: 0.5rem;
             }
             .daily-section .exclude-check input[type="checkbox"] {
-                width: 12px;
-                height: 12px;
+                width: 11px;
+                height: 11px;
                 margin: 0;
                 flex-shrink: 0;
             }
             .daily-section .delete-day {
-                font-size: 0.8rem;
-                padding: 2px 6px;
+                font-size: 0.7rem;
+                padding: 2px 4px;
             }
             .daily-section .section-header h3 {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             .daily-section .month-filter-tip {
-                font-size: 0.6rem;
-                padding: 2px 8px;
+                font-size: 0.55rem;
+                padding: 2px 6px;
                 white-space: nowrap;
             }
             .daily-section .right-actions .btn {
-                font-size: 0.65rem;
-                padding: 4px 12px;
+                font-size: 0.6rem;
+                padding: 3px 10px;
             }
             .daily-section .warning-tip {
-                font-size: 0.6rem;
-                padding: 8px 12px;
+                font-size: 0.55rem;
+                padding: 6px 10px;
                 border-left-width: 3px;
             }
             .daily-section .add-row-btn {
-                font-size: 0.7rem;
-                padding: 6px 16px;
+                font-size: 0.65rem;
+                padding: 5px 14px;
                 width: 100%;
                 justify-content: center;
             }
             .daily-section .footer-note {
+                font-size: 0.5rem;
+                padding-top: 10px;
+            }
+
+            .deduct-time-group {
+                padding: 1px 4px 1px 2px;
+                gap: 2px;
+            }
+            .deduct-time-group input[type="time"] {
+                width: 42px;
                 font-size: 0.55rem;
-                padding-top: 12px;
+                padding: 2px 1px;
+            }
+            .deduct-time-group span {
+                font-size: 0.55rem;
+            }
+            .deduct-time-group .deduct-duration {
+                font-size: 0.5rem;
+                min-width: 22px;
+                padding: 0 4px;
             }
 
             .settings-panel-modal .verify-panel {
@@ -812,10 +1187,27 @@
                 border-radius: 16px;
                 gap: 8px;
             }
+            .settings-panel-modal .meal-row .meal-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 3px;
+            }
+            .settings-panel-modal .meal-row .meal-item .row-label {
+                min-width: auto;
+                font-size: 0.75rem;
+            }
+            .settings-panel-modal .meal-row .meal-item .toggle-switch {
+                justify-content: flex-start;
+                font-size: 0.7rem;
+            }
+            .settings-panel-modal .meal-row .meal-item .time-group {
+                width: 100%;
+                justify-content: space-between;
+            }
             .settings-panel-modal .meal-row .meal-item .time-group input[type="time"] {
+                width: 40%;
                 font-size: 0.75rem;
                 padding: 4px 2px;
-                width: 40%;
             }
             .settings-panel-modal .meal-row .meal-reset-row .btn-reset {
                 font-size: 0.68rem;
@@ -836,57 +1228,109 @@
                 font-size: 0.8rem;
                 padding: 10px;
             }
+
+            .date-picker-modal .verify-panel {
+                padding: 20px 16px 18px;
+            }
+            .date-picker-modal .verify-panel .date-picker-title {
+                font-size: 1rem;
+            }
+            .date-picker-modal .verify-panel input[type="date"] {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            .date-picker-modal .verify-panel .date-picker-buttons .btn {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+
+            .password-change-modal .verify-panel {
+                padding: 20px 16px 18px;
+            }
+            .password-change-modal .verify-panel .pwd-title {
+                font-size: 1rem;
+            }
+            .password-change-modal .verify-panel .pwd-input-group input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            .password-change-modal .verify-panel .pwd-buttons .btn {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+
+            .confirm-modal .verify-panel {
+                padding: 20px 16px 18px;
+            }
+            .confirm-modal .verify-panel .confirm-title {
+                font-size: 1rem;
+            }
+            .confirm-modal .verify-panel .confirm-buttons .btn {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+            .toast {
+                font-size: 0.75rem;
+                padding: 10px 18px;
+                min-width: 120px;
+            }
         }
-        /* 针对极小屏（<380px）进一步优化 */
         @media (max-width:380px) {
             .daily-section table {
-                min-width: 740px;
+                min-width: 850px;
             }
             .daily-section th:first-child,
             .daily-section td:first-child {
-                min-width: 108px;
-                max-width: 108px;
-                width: 108px;
+                min-width: 95px;
+                max-width: 95px;
+                width: 95px;
             }
             .daily-section .date-input {
-                font-size: 0.7rem;
-                padding: 3px 4px;
-                max-width: 100px;
-                min-width: 88px;
+                font-size: 0.6rem;
+                padding: 2px 3px;
+                max-width: 88px;
+                min-width: 78px;
             }
             .daily-section th:nth-child(2),
             .daily-section td:nth-child(2),
             .daily-section th:nth-child(3),
             .daily-section td:nth-child(3) {
-                min-width: 72px;
-                max-width: 72px;
-                width: 72px;
+                min-width: 62px;
+                max-width: 62px;
+                width: 62px;
             }
             .daily-section .time-input {
-                font-size: 0.65rem;
-                padding: 3px 3px;
-                max-width: 64px;
-                min-width: 54px;
+                font-size: 0.55rem;
+                padding: 2px 2px;
+                max-width: 54px;
+                min-width: 44px;
             }
             .daily-section .hours-badge,
             .daily-section .money-badge {
-                font-size: 0.55rem;
-                padding: 1px 4px;
+                font-size: 0.5rem;
+                padding: 1px 3px;
             }
             .daily-section .event-input {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
                 padding: 2px 3px;
-                min-width: 70px;
-                max-width: 90px;
-            }
-            .daily-section .deduct-input {
-                font-size: 0.6rem;
-                padding: 2px 3px;
-                max-width: 45px;
-                min-width: 35px;
+                min-width: 60px;
+                max-width: 80px;
             }
             .daily-section .exclude-check label {
+                font-size: 0.45rem;
+            }
+            .deduct-time-group input[type="time"] {
+                width: 36px;
                 font-size: 0.5rem;
+                padding: 1px 1px;
+            }
+            .deduct-time-group .deduct-duration {
+                font-size: 0.45rem;
+                min-width: 18px;
+                padding: 0 3px;
             }
         }
     </style>
@@ -981,17 +1425,28 @@
             </div>
         </div>
         <div class="warning-tip">
-            <i class="fas fa-info-circle"></i> 工时 = (上下班区间) - 午餐/晚餐重叠 - 额外扣除分钟/60。可独立勾选「不扣晚餐」，并支持每日自定义额外扣除。
+            <i class="fas fa-info-circle"></i> 同一日多行记录自动合并计算总工时，重叠时段自动扣除，并自动标识时段类型。
         </div>
         <div style="overflow-x:auto;">
             <table>
                 <thead>
-                    <tr><th><i class="fas fa-calendar-day"></i> 日期</th><th><i class="fas fa-hourglass-start"></i> 上班</th><th><i class="fas fa-hourglass-end"></i> 下班</th><th><i class="fas fa-egg"></i> 不扣晚餐</th><th><i class="fas fa-cut"></i> 额外扣除(分钟)</th><th><i class="fas fa-chart-simple"></i> 工时(h)</th><th><i class="fas fa-coins"></i> 报酬(元)</th><th><i class="fas fa-pen"></i> 事件备注</th><th></th></tr>
+                    <tr>
+                        <th><i class="fas fa-calendar-day"></i> 日期</th>
+                        <th><i class="fas fa-hourglass-start"></i> 上班</th>
+                        <th><i class="fas fa-hourglass-end"></i> 下班</th>
+                        <th><i class="fas fa-egg"></i> 不扣晚餐</th>
+                        <th><i class="fas fa-cut"></i> 额外扣除</th>
+                        <th><i class="fas fa-clock"></i> 时段</th>
+                        <th><i class="fas fa-chart-simple"></i> 工时(h)</th>
+                        <th><i class="fas fa-coins"></i> 报酬(元)</th>
+                        <th><i class="fas fa-pen"></i> 事件备注</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
-        <div class="add-row-btn" id="addNewDayBtn"><i class="fas fa-plus-circle"></i> 新增空白记录 (编辑后需保存)</div>
+        <div class="add-row-btn" id="addNewDayBtn"><i class="fas fa-plus-circle"></i> 添加工时记录</div>
         <div class="footer-note"><i class="fas fa-shield-alt"></i> 所有修改均为草稿，点击「保存所有修改」验证密码后正式生效 · 导出Excel基于已保存数据</div>
     </div>
 </div>
@@ -1007,7 +1462,17 @@
     let draftRecords = [];       
     let currentPassword = "123456";
     let hourlyRate = 25;
-    let mealSettings = { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
+    let mealSettings = { 
+        breakfastStart: "07:00",
+        breakfastEnd: "08:00",
+        lunchStart: "12:00", 
+        lunchEnd: "13:00", 
+        dinnerStart: "18:00", 
+        dinnerEnd: "19:00",
+        breakfastEnabled: true,
+        lunchEnabled: true,
+        dinnerEnabled: true
+    };
     let currentDisplayMonth = ''; 
     let highlightedDate = null; 
     
@@ -1018,6 +1483,92 @@
     let calYear = 2026, calMonth = 7; 
     let trendChart = null;
     let chartMode = 'hours'; 
+    let settingsVerified = false;
+
+    // ============================================================
+    //  Toast 提示 - 统一图标由type决定，消息中不再包含图标
+    // ============================================================
+    function showToast(message, type = 'info', duration = 2800) {
+        const container = document.getElementById('toastContainer') || (() => {
+            const c = document.createElement('div');
+            c.id = 'toastContainer';
+            c.className = 'toast-container';
+            document.body.appendChild(c);
+            return c;
+        })();
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        // 只使用type对应的图标，消息中不再包含图标
+        toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, duration);
+    }
+
+    // ============================================================
+    //  Loading 遮罩
+    // ============================================================
+    function showLoading(text = '保存中...') {
+        const overlay = document.createElement('div');
+        overlay.id = 'loadingOverlay';
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <div class="loading-text">${text}</div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+    function hideLoading() {
+        const el = document.getElementById('loadingOverlay');
+        if (el) el.remove();
+    }
+
+    // ============================================================
+    //  确认弹窗
+    // ============================================================
+    function showConfirmModal(options) {
+        const defaults = {
+            title: '确认操作',
+            message: '确定要执行此操作吗？',
+            confirmText: '确定',
+            confirmClass: 'btn-danger',
+            onConfirm: null,
+            onCancel: null
+        };
+        const config = { ...defaults, ...options };
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-mask confirm-modal';
+        modal.innerHTML = `
+            <div class="verify-panel">
+                <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="confirm-title">${config.title}</div>
+                <div class="confirm-sub">${config.message}</div>
+                <div class="confirm-buttons">
+                    <button class="btn btn-outline" id="confirmCancelBtn">取消</button>
+                    <button class="btn ${config.confirmClass}" id="confirmOkBtn">${config.confirmText}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const close = () => { modal.remove(); if (config.onCancel) config.onCancel(); };
+        const ok = () => { modal.remove(); if (config.onConfirm) config.onConfirm(); };
+        
+        document.getElementById('confirmCancelBtn').onclick = close;
+        document.getElementById('confirmOkBtn').onclick = ok;
+        modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+        
+        return { modal, close, ok };
+    }
 
     // ============================================================
     //  密码验证弹窗（通用）
@@ -1049,7 +1600,7 @@
                 ${config.previewHtml ? `<div class="changes-preview">${config.previewHtml}</div>` : ''}
                 <div class="input-group">
                     <i class="fas fa-key"></i>
-                    <input type="password" id="verifyPasswordInput" placeholder="请输入操作密码" autocomplete="off">
+                    <input type="password" id="verifyPasswordInput" placeholder="123456" autocomplete="off">
                 </div>
                 <div id="passwordErrorHint" class="error-hint"></div>
                 <div class="verify-buttons">
@@ -1128,7 +1679,17 @@
             allUsersData[currentUser] = {
                 records: [],
                 settings: {
-                    mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" },
+                    mealSettings: { 
+                        breakfastStart: "07:00",
+                        breakfastEnd: "08:00",
+                        lunchStart: "12:00", 
+                        lunchEnd: "13:00", 
+                        dinnerStart: "18:00", 
+                        dinnerEnd: "19:00",
+                        breakfastEnabled: true,
+                        lunchEnabled: true,
+                        dinnerEnabled: true
+                    },
                     hourlyRate: 25,
                     password: "123456"
                 }
@@ -1142,7 +1703,18 @@
         const userData = getCurrentUserData();
         workRecords = userData.records || [];
         const settings = userData.settings || {};
-        mealSettings = settings.mealSettings || { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" };
+        const ms = settings.mealSettings || {};
+        mealSettings = { 
+            breakfastStart: ms.breakfastStart || "07:00",
+            breakfastEnd: ms.breakfastEnd || "08:00",
+            lunchStart: ms.lunchStart || "12:00", 
+            lunchEnd: ms.lunchEnd || "13:00", 
+            dinnerStart: ms.dinnerStart || "18:00", 
+            dinnerEnd: ms.dinnerEnd || "19:00",
+            breakfastEnabled: ms.breakfastEnabled !== undefined ? ms.breakfastEnabled : true,
+            lunchEnabled: ms.lunchEnabled !== undefined ? ms.lunchEnabled : true,
+            dinnerEnabled: ms.dinnerEnabled !== undefined ? ms.dinnerEnabled : true
+        };
         hourlyRate = settings.hourlyRate || 25;
         currentPassword = settings.password || "123456";
         
@@ -1227,7 +1799,21 @@
         if (!allUsersData[currentUser]) {
             allUsersData[currentUser] = {
                 records: [],
-                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+                settings: { 
+                    mealSettings: { 
+                        breakfastStart: "07:00",
+                        breakfastEnd: "08:00",
+                        lunchStart: "12:00", 
+                        lunchEnd: "13:00", 
+                        dinnerStart: "18:00", 
+                        dinnerEnd: "19:00",
+                        breakfastEnabled: true,
+                        lunchEnabled: true,
+                        dinnerEnabled: true
+                    }, 
+                    hourlyRate: 25, 
+                    password: "123456" 
+                }
             };
             saveAllUsersData();
         }
@@ -1239,37 +1825,43 @@
     // ---------- 删除用户（带密码验证） ----------
     function deleteUserWithPassword(username) {
         if (username === '默认用户') {
-            alert('不能删除默认用户');
+            showToast('不能删除默认用户', 'warning');
             return;
         }
         if (username === currentUser) {
-            alert('不能删除当前登录用户，请先切换到其他用户');
+            showToast('不能删除当前登录用户，请先切换到其他用户', 'warning');
             return;
         }
         
-        if (!confirm(`⚠️ 确定要删除用户 "${username}" 及其所有数据吗？\n此操作不可撤销！`)) return;
-        
-        const userData = allUsersData[username];
-        const userPassword = userData?.settings?.password || '123456';
-        
-        showPasswordModal({
-            title: '⚠️ 删除用户确认',
-            subtitle: `请输入用户 "${username}" 的操作密码以确认删除`,
-            icon: 'danger',
-            previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除用户 "${username}" 的所有工时数据</p>`,
+        showConfirmModal({
+            title: '⚠️ 删除用户',
+            message: `确定要删除用户 "${username}" 及其所有数据吗？此操作不可撤销！`,
             confirmText: '确认删除',
             confirmClass: 'btn-danger',
-            onConfirm: (pwd) => {
-                if (pwd === userPassword) {
-                    delete allUsersData[username];
-                    saveAllUsersData();
-                    localStorage.removeItem(`draft_${username}`);
-                    populateUserSelector();
-                    alert(`✅ 用户 "${username}" 已删除`);
-                    return true;
-                } else {
-                    return false;
-                }
+            onConfirm: () => {
+                const userData = allUsersData[username];
+                const userPassword = userData?.settings?.password || '123456';
+                
+                showPasswordModal({
+                    title: '⚠️ 删除用户确认',
+                    subtitle: `请输入用户 "${username}" 的操作密码以确认删除`,
+                    icon: 'danger',
+                    previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除用户 "${username}" 的所有工时数据</p>`,
+                    confirmText: '确认删除',
+                    confirmClass: 'btn-danger',
+                    onConfirm: (pwd) => {
+                        if (pwd === userPassword) {
+                            delete allUsersData[username];
+                            saveAllUsersData();
+                            localStorage.removeItem(`draft_${username}`);
+                            populateUserSelector();
+                            showToast(`用户 "${username}" 已删除`, 'success');
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
             }
         });
     }
@@ -1331,18 +1923,32 @@
         document.getElementById('addUserBtn').onclick = () => {
             const input = document.getElementById('newUserNameInput');
             const name = input.value.trim();
-            if (!name) { alert('请输入用户名'); return; }
-            if (name.length > 20) { alert('用户名不能超过20个字符'); return; }
-            if (allUsersData[name]) { alert('用户名已存在'); return; }
+            if (!name) { showToast('请输入用户名', 'warning'); return; }
+            if (name.length > 20) { showToast('用户名不能超过20个字符', 'warning'); return; }
+            if (allUsersData[name]) { showToast('用户名已存在', 'warning'); return; }
             
             allUsersData[name] = {
                 records: [],
-                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+                settings: { 
+                    mealSettings: { 
+                        breakfastStart: "07:00",
+                        breakfastEnd: "08:00",
+                        lunchStart: "12:00", 
+                        lunchEnd: "13:00", 
+                        dinnerStart: "18:00", 
+                        dinnerEnd: "19:00",
+                        breakfastEnabled: true,
+                        lunchEnabled: true,
+                        dinnerEnabled: true
+                    }, 
+                    hourlyRate: 25, 
+                    password: "123456" 
+                }
             };
             saveAllUsersData();
             populateUserSelector();
             modal.remove();
-            alert(`用户 "${name}" 已创建`);
+            showToast(`用户 "${name}" 已创建`, 'success');
             switchUser(name);
         };
         document.getElementById('newUserNameInput').addEventListener('keypress', (e) => {
@@ -1355,44 +1961,65 @@
     // ---------- 删除当前用户（带密码验证） ----------
     function deleteCurrentUserWithPassword() {
         if (currentUser === '默认用户') {
-            alert('不能删除默认用户');
+            showToast('不能删除默认用户', 'warning');
             return;
         }
-        if (!confirm(`⚠️ 确定要删除当前用户 "${currentUser}" 及其所有数据吗？\n此操作不可撤销！`)) return;
         
-        const userPassword = allUsersData[currentUser]?.settings?.password || '123456';
-        
-        showPasswordModal({
+        showConfirmModal({
             title: '⚠️ 删除当前用户',
-            subtitle: `请输入用户 "${currentUser}" 的操作密码以确认删除`,
-            icon: 'danger',
-            previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除当前用户 "${currentUser}" 的所有工时数据</p>`,
+            message: `确定要删除当前用户 "${currentUser}" 及其所有数据吗？此操作不可撤销！`,
             confirmText: '确认删除',
             confirmClass: 'btn-danger',
-            onConfirm: (pwd) => {
-                if (pwd === userPassword) {
-                    if (!isDraftSaved) {
-                        if (!confirm('当前有未保存的草稿，删除用户将丢失草稿。继续吗？')) return false;
+            onConfirm: () => {
+                const userPassword = allUsersData[currentUser]?.settings?.password || '123456';
+                
+                showPasswordModal({
+                    title: '⚠️ 删除当前用户',
+                    subtitle: `请输入用户 "${currentUser}" 的操作密码以确认删除`,
+                    icon: 'danger',
+                    previewHtml: `<p style="color:#dc2626;font-weight:600;">将永久删除当前用户 "${currentUser}" 的所有工时数据</p>`,
+                    confirmText: '确认删除',
+                    confirmClass: 'btn-danger',
+                    onConfirm: (pwd) => {
+                        if (pwd === userPassword) {
+                            if (!isDraftSaved) {
+                                if (!confirm('当前有未保存的草稿，删除用户将丢失草稿。继续吗？')) return false;
+                            }
+                            delete allUsersData[currentUser];
+                            saveAllUsersData();
+                            localStorage.removeItem(`draft_${currentUser}`);
+                            currentUser = '默认用户';
+                            if (!allUsersData['默认用户']) {
+                                allUsersData['默认用户'] = {
+                                    records: [],
+                                    settings: { 
+                                        mealSettings: { 
+                                            breakfastStart: "07:00",
+                                            breakfastEnd: "08:00",
+                                            lunchStart: "12:00", 
+                                            lunchEnd: "13:00", 
+                                            dinnerStart: "18:00", 
+                                            dinnerEnd: "19:00",
+                                            breakfastEnabled: true,
+                                            lunchEnabled: true,
+                                            dinnerEnabled: true
+                                        }, 
+                                        hourlyRate: 25, 
+                                        password: "123456" 
+                                    }
+                                };
+                                saveAllUsersData();
+                            }
+                            highlightedDate = null;
+                            loadUserData();
+                            populateUserSelector();
+                            showToast('已删除当前用户，切换到默认用户', 'success');
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
-                    delete allUsersData[currentUser];
-                    saveAllUsersData();
-                    localStorage.removeItem(`draft_${currentUser}`);
-                    currentUser = '默认用户';
-                    if (!allUsersData['默认用户']) {
-                        allUsersData['默认用户'] = {
-                            records: [],
-                            settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
-                        };
-                        saveAllUsersData();
-                    }
-                    highlightedDate = null;
-                    loadUserData();
-                    populateUserSelector();
-                    alert('✅ 已删除当前用户，切换到默认用户');
-                    return true;
-                } else {
-                    return false;
-                }
+                });
             }
         });
     }
@@ -1402,32 +2029,287 @@
     // ============================================================
     function timeToMinutes(t) { if(!t) return null; let p=t.split(':'); if(p.length!==2) return null; let h=parseInt(p[0]), m=parseInt(p[1]); return isNaN(h)||isNaN(m)? null : h*60+m; }
     function getOverlap(s,e,bs,be) { let os=Math.max(s,bs), oe=Math.min(e,be); return os<oe ? oe-os : 0; }
+    function minutesToDisplay(mins) {
+        if (!mins || mins <= 0) return '';
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        if (h > 0 && m > 0) return `${h}h${m}分`;
+        if (h > 0) return `${h}h`;
+        return `${m}分`;
+    }
     
-    function calculateNetHours(startStr, endStr, excludeDinner, customDeductMinutes) {
+    function getPeriodLabels(startStr, endStr) {
+        if (!startStr || !endStr) return [];
+        const s = timeToMinutes(startStr);
+        const e = timeToMinutes(endStr);
+        if (s === null || e === null || s >= e) return [];
+        
+        const boundaries = [
+            { time: 0, label: '凌晨', cls: 'period-early-morning' },
+            { time: 6 * 60, label: '早上', cls: 'period-morning' },
+            { time: 9 * 60, label: '上午', cls: 'period-morning' },
+            { time: 12 * 60, label: '下午', cls: 'period-afternoon' },
+            { time: 17 * 60, label: '晚上', cls: 'period-evening' },
+            { time: 20 * 60, label: '夜晚', cls: 'period-night' },
+            { time: 23 * 60, label: '深夜', cls: 'period-late-night' },
+            { time: 24 * 60, label: '深夜', cls: 'period-late-night' }
+        ];
+        
+        const result = [];
+        let currentLabel = '';
+        let currentCls = '';
+        
+        for (let i = 0; i < boundaries.length - 1; i++) {
+            const start = boundaries[i].time;
+            const end = boundaries[i + 1].time;
+            if (s < end && e > start) {
+                if (boundaries[i].label !== currentLabel) {
+                    currentLabel = boundaries[i].label;
+                    currentCls = boundaries[i].cls;
+                    result.push({ label: currentLabel, cls: currentCls });
+                }
+            }
+        }
+        
+        if (result.length === 0) {
+            return [{ label: '全天', cls: 'period-full-day' }];
+        }
+        
+        return result;
+    }
+    
+    function calculateNetHours(startStr, endStr, excludeDinner, customDeductStart, customDeductEnd, isMerged) {
         if (!startStr || !endStr) return 0;
         let start = timeToMinutes(startStr), end = timeToMinutes(endStr);
         if (start===null || end===null || start>=end) return 0;
         let totalMins = end - start;
-        let ls = timeToMinutes(mealSettings.lunchStart), le = timeToMinutes(mealSettings.lunchEnd);
-        if (ls!==null && le!==null && ls<le) totalMins -= getOverlap(start,end,ls,le);
-        if (!excludeDinner) {
+        if (mealSettings.breakfastEnabled) {
+            let bs = timeToMinutes(mealSettings.breakfastStart), be = timeToMinutes(mealSettings.breakfastEnd);
+            if (bs!==null && be!==null && bs<be) totalMins -= getOverlap(start,end,bs,be);
+        }
+        if (mealSettings.lunchEnabled) {
+            let ls = timeToMinutes(mealSettings.lunchStart), le = timeToMinutes(mealSettings.lunchEnd);
+            if (ls!==null && le!==null && ls<le) totalMins -= getOverlap(start,end,ls,le);
+        }
+        if (mealSettings.dinnerEnabled && !excludeDinner) {
             let ds = timeToMinutes(mealSettings.dinnerStart), de = timeToMinutes(mealSettings.dinnerEnd);
             if (ds!==null && de!==null && ds<de) totalMins -= getOverlap(start,end,ds,de);
         }
-        let deduct = (customDeductMinutes && !isNaN(parseFloat(customDeductMinutes)) && customDeductMinutes>0) ? parseFloat(customDeductMinutes) : 0;
-        totalMins = Math.max(0, totalMins - deduct);
+        if (!isMerged && customDeductStart && customDeductEnd) {
+            let ds = timeToMinutes(customDeductStart), de = timeToMinutes(customDeductEnd);
+            if (ds!==null && de!==null && ds<de) {
+                totalMins -= getOverlap(start,end,ds,de);
+            }
+        }
+        totalMins = Math.max(0, totalMins);
         return Math.round((totalMins / 60) * 100) / 100;
     }
     function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
     
+    function calculateDayMergedHours(records) {
+        if (!records || records.length === 0) return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+        
+        const ranges = [];
+        for (const rec of records) {
+            if (!rec.startTime || !rec.endTime) continue;
+            const s = timeToMinutes(rec.startTime);
+            const e = timeToMinutes(rec.endTime);
+            if (s === null || e === null || s >= e) continue;
+            ranges.push({
+                start: s,
+                end: e,
+                excludeDinner: rec.excludeDinner || false,
+                deductStart: rec.deductStart || '',
+                deductEnd: rec.deductEnd || '',
+                original: rec
+            });
+        }
+        
+        if (ranges.length === 0) return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+        
+        ranges.sort((a, b) => a.start - b.start);
+        
+        const merged = [];
+        let current = { ...ranges[0] };
+        let hasConflict = false;
+        const conflicts = [];
+        
+        for (let i = 1; i < ranges.length; i++) {
+            const next = ranges[i];
+            if (next.start <= current.end) {
+                hasConflict = true;
+                conflicts.push({ a: current, b: next });
+                current.end = Math.max(current.end, next.end);
+                current.excludeDinner = current.excludeDinner || next.excludeDinner;
+                if (!Array.isArray(current.originals)) {
+                    current.originals = [current.original];
+                }
+                current.originals.push(next.original);
+                delete current.original;
+            } else {
+                merged.push(current);
+                current = { ...next };
+            }
+        }
+        merged.push(current);
+        
+        let totalMins = 0;
+        const mergedRanges = [];
+        for (const range of merged) {
+            let mins = range.end - range.start;
+            if (mealSettings.breakfastEnabled) {
+                let bs = timeToMinutes(mealSettings.breakfastStart), be = timeToMinutes(mealSettings.breakfastEnd);
+                if (bs!==null && be!==null && bs<be) mins -= getOverlap(range.start, range.end, bs, be);
+            }
+            if (mealSettings.lunchEnabled) {
+                let ls = timeToMinutes(mealSettings.lunchStart), le = timeToMinutes(mealSettings.lunchEnd);
+                if (ls!==null && le!==null && ls<le) mins -= getOverlap(range.start, range.end, ls, le);
+            }
+            if (mealSettings.dinnerEnabled && !range.excludeDinner) {
+                let ds = timeToMinutes(mealSettings.dinnerStart), de = timeToMinutes(mealSettings.dinnerEnd);
+                if (ds!==null && de!==null && ds<de) mins -= getOverlap(range.start, range.end, ds, de);
+            }
+            if (range.originals) {
+                const deductRanges = [];
+                for (const orig of range.originals) {
+                    if (orig.deductStart && orig.deductEnd) {
+                        const ds = timeToMinutes(orig.deductStart);
+                        const de = timeToMinutes(orig.deductEnd);
+                        if (ds !== null && de !== null && ds < de) {
+                            deductRanges.push({ start: ds, end: de });
+                        }
+                    }
+                }
+                if (deductRanges.length > 0) {
+                    deductRanges.sort((a, b) => a.start - b.start);
+                    let mergedDeduct = [];
+                    let cur = { ...deductRanges[0] };
+                    for (let i = 1; i < deductRanges.length; i++) {
+                        if (deductRanges[i].start <= cur.end) {
+                            cur.end = Math.max(cur.end, deductRanges[i].end);
+                        } else {
+                            mergedDeduct.push(cur);
+                            cur = { ...deductRanges[i] };
+                        }
+                    }
+                    mergedDeduct.push(cur);
+                    for (const d of mergedDeduct) {
+                        mins -= getOverlap(range.start, range.end, d.start, d.end);
+                    }
+                }
+            }
+            mins = Math.max(0, mins);
+            totalMins += mins;
+            
+            const startStr = formatTime(range.start);
+            const endStr = formatTime(range.end);
+            const periods = getPeriodLabels(startStr, endStr);
+            mergedRanges.push({
+                start: range.start,
+                end: range.end,
+                startStr: startStr,
+                endStr: endStr,
+                minutes: mins,
+                hours: Math.round(mins / 60 * 100) / 100,
+                periods: periods,
+                hasConflict: range.originals && range.originals.length > 1,
+                count: range.originals ? range.originals.length : 1
+            });
+        }
+        
+        const totalHours = Math.round(totalMins / 60 * 100) / 100;
+        return { 
+            totalHours, 
+            totalSalary: getSalary(totalHours),
+            mergedRanges,
+            hasConflict,
+            conflicts
+        };
+    }
+    
+    function formatTime(minutes) {
+        if (minutes === undefined || minutes === null) return '';
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    
     function updateDraftHoursAndSalary() {
         for (let rec of draftRecords) {
-            let deduct = (rec.customDeductMinutes && !isNaN(rec.customDeductMinutes)) ? rec.customDeductMinutes : 0;
             if (rec.startTime && rec.endTime) {
-                rec.hours = calculateNetHours(rec.startTime, rec.endTime, rec.excludeDinner || false, deduct);
+                rec.hours = calculateNetHours(
+                    rec.startTime, 
+                    rec.endTime, 
+                    rec.excludeDinner || false, 
+                    rec.deductStart || '', 
+                    rec.deductEnd || '',
+                    false
+                );
                 rec.salary = getSalary(rec.hours);
-            } else { rec.hours = 0; rec.salary = 0; }
+            } else { 
+                rec.hours = 0; 
+                rec.salary = 0; 
+            }
+            if (rec.deductStart && rec.deductEnd) {
+                const ds = timeToMinutes(rec.deductStart);
+                const de = timeToMinutes(rec.deductEnd);
+                if (ds !== null && de !== null && ds < de) {
+                    rec.deductMinutes = de - ds;
+                } else {
+                    rec.deductMinutes = 0;
+                }
+            } else {
+                rec.deductMinutes = 0;
+            }
         }
+        
+        const dateGroups = {};
+        for (const rec of draftRecords) {
+            if (!rec.dateStr) continue;
+            if (!dateGroups[rec.dateStr]) dateGroups[rec.dateStr] = [];
+            dateGroups[rec.dateStr].push(rec);
+        }
+        
+        for (const [dateStr, records] of Object.entries(dateGroups)) {
+            if (records.length > 1) {
+                const result = calculateDayMergedHours(records);
+                for (const rec of records) {
+                    rec.mergedHours = result.totalHours;
+                    rec.mergedSalary = result.totalSalary;
+                    rec.hasConflict = result.hasConflict;
+                    rec.conflictCount = result.conflicts ? result.conflicts.length : 0;
+                    rec.mergedRanges = result.mergedRanges;
+                    if (rec.startTime && rec.endTime) {
+                        const periods = getPeriodLabels(rec.startTime, rec.endTime);
+                        rec.periodLabels = periods;
+                        rec.periodLabel = periods.map(p => p.label).join('、');
+                        rec.periodCls = periods.length > 0 ? periods[0].cls : '';
+                    } else {
+                        rec.periodLabels = [];
+                        rec.periodLabel = '';
+                        rec.periodCls = '';
+                    }
+                }
+            } else {
+                const rec = records[0];
+                if (rec.startTime && rec.endTime) {
+                    const periods = getPeriodLabels(rec.startTime, rec.endTime);
+                    rec.periodLabels = periods;
+                    rec.periodLabel = periods.map(p => p.label).join('、');
+                    rec.periodCls = periods.length > 0 ? periods[0].cls : '';
+                } else {
+                    rec.periodLabels = [];
+                    rec.periodLabel = '';
+                    rec.periodCls = '';
+                }
+                rec.mergedHours = rec.hours;
+                rec.mergedSalary = rec.salary;
+                rec.hasConflict = false;
+                rec.conflictCount = 0;
+                rec.mergedRanges = [];
+            }
+        }
+        
         markDraftChanged();
     }
     
@@ -1454,9 +2336,9 @@
             const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             dateLabels.push(String(d));
             const rec = recordMap[dateStr];
-            if (rec && rec.hours !== undefined && rec.hours > 0) {
-                hoursData.push(Math.round(rec.hours * 100) / 100);
-                salaryData.push(Math.round(rec.salary * 100) / 100);
+            if (rec && rec.mergedHours !== undefined && rec.mergedHours > 0) {
+                hoursData.push(Math.round(rec.mergedHours * 100) / 100);
+                salaryData.push(Math.round(rec.mergedSalary * 100) / 100);
             } else {
                 hoursData.push(0);
                 salaryData.push(0);
@@ -1547,8 +2429,9 @@
             div.className = 'day-cell';
             let rec = recordMap[dateStr];
             let hasRecord = rec !== undefined;
-            let hasZeroHours = hasRecord && (rec.hours === 0 || rec.hours === undefined || rec.hours === null);
-            let hasValidHours = hasRecord && rec.hours !== undefined && rec.hours !== null && rec.hours > 0;
+            let hours = rec ? (rec.mergedHours || 0) : 0;
+            let hasZeroHours = hasRecord && hours === 0;
+            let hasValidHours = hasRecord && hours > 0;
             
             if (hasValidHours) div.classList.add('has-record');
             if (hasZeroHours) div.classList.add('has-zero-hours');
@@ -1558,11 +2441,10 @@
             
             if (hasRecord) {
                 let info = document.createElement('div'); info.className = 'day-info'; 
-                let h = rec.hours || 0; 
-                info.innerText = `${h.toFixed(1)}h`; 
+                info.innerText = `${hours.toFixed(1)}h`; 
                 div.appendChild(info);
                 let sal = document.createElement('div'); sal.className = 'day-salary'; 
-                sal.innerText = `¥${(rec.salary||0).toFixed(0)}`; 
+                sal.innerText = `¥${(rec.mergedSalary||0).toFixed(0)}`; 
                 div.appendChild(sal);
             }
             
@@ -1618,67 +2500,321 @@
         }
         if (filtered.length === 0) {
             let emptyRow = tbody.insertRow();
-            let td = emptyRow.insertCell(0); td.colSpan=9; td.style.textAlign='center'; td.style.padding='36px';
+            let td = emptyRow.insertCell(0); td.colSpan=10; td.style.textAlign='center'; td.style.padding='36px';
             td.innerHTML='<i class="fas fa-inbox" style="font-size:1.4rem; color:#94a3b8;"></i><p style="margin-top:8px;">暂无记录，点击下方新增</p>';
             updateMonthlySummaryFromDraft();
             return;
         }
-        for (let i=0; i<filtered.length; i++) {
-            const rec = filtered[i];
-            const realIdx = draftRecords.indexOf(rec);
-            const row = tbody.insertRow();
+        
+        const dateGroups = {};
+        for (const rec of filtered) {
+            if (!dateGroups[rec.dateStr]) dateGroups[rec.dateStr] = [];
+            dateGroups[rec.dateStr].push(rec);
+        }
+        
+        const sortedDates = Object.keys(dateGroups).sort();
+        
+        for (const dateStr of sortedDates) {
+            const records = dateGroups[dateStr];
+            const isMulti = records.length > 1;
             
-            if (highlightedDate && rec.dateStr === highlightedDate) {
-                row.className = 'highlight-row';
+            const dayResult = calculateDayMergedHours(records);
+            
+            if (isMulti) {
+                const summaryRow = tbody.insertRow();
+                summaryRow.className = 'day-summary-row';
+                
+                let dateCell = summaryRow.insertCell(0);
+                dateCell.innerHTML = `<span style="font-weight:700;">${dateStr}</span> <span class="badge" style="background:#2c7a4b;color:white;padding:1px 8px;border-radius:40px;font-size:0.6rem;">${records.length}段</span>`;
+                
+                let startCell = summaryRow.insertCell(1);
+                if (dayResult.mergedRanges.length > 0) {
+                    const rangeStrs = dayResult.mergedRanges.map(r => r.startStr).join(' + ');
+                    startCell.innerHTML = `<span style="font-weight:500;">${rangeStrs}</span>`;
+                } else {
+                    startCell.textContent = '—';
+                }
+                
+                let endCell = summaryRow.insertCell(2);
+                if (dayResult.mergedRanges.length > 0) {
+                    const rangeStrs = dayResult.mergedRanges.map(r => r.endStr).join(' + ');
+                    endCell.innerHTML = `<span style="font-weight:500;">${rangeStrs}</span>`;
+                } else {
+                    endCell.textContent = '—';
+                }
+                
+                let dinnerCell = summaryRow.insertCell(3);
+                const anyExclude = records.some(r => r.excludeDinner);
+                dinnerCell.textContent = anyExclude ? '🌙 部分不扣' : '—';
+                dinnerCell.style.fontSize = '0.7rem';
+                
+                let deductCell = summaryRow.insertCell(4);
+                const deductRanges = [];
+                for (const rec of records) {
+                    if (rec.deductStart && rec.deductEnd) {
+                        deductRanges.push(`${rec.deductStart}-${rec.deductEnd}`);
+                    }
+                }
+                deductCell.textContent = deductRanges.length > 0 ? deductRanges.join('; ') : '—';
+                deductCell.style.fontSize = '0.65rem';
+                
+                let periodCell = summaryRow.insertCell(5);
+                if (dayResult.mergedRanges.length > 0) {
+                    const allPeriods = [];
+                    for (const range of dayResult.mergedRanges) {
+                        if (range.periods && range.periods.length > 0) {
+                            for (const p of range.periods) {
+                                if (!allPeriods.some(ap => ap.label === p.label)) {
+                                    allPeriods.push(p);
+                                }
+                            }
+                        }
+                    }
+                    if (allPeriods.length > 0) {
+                        periodCell.innerHTML = allPeriods.map(p => 
+                            `<span class="period-badge ${p.cls}">${p.label}</span>`
+                        ).join(' ');
+                    } else {
+                        periodCell.textContent = '—';
+                    }
+                } else {
+                    periodCell.textContent = '—';
+                }
+                
+                let hourCell = summaryRow.insertCell(6);
+                let hourSpan = document.createElement('span'); 
+                hourSpan.className = 'hours-badge';
+                const totalH = dayResult.totalHours || 0;
+                hourSpan.textContent = `${totalH.toFixed(2)} h`;
+                if (dayResult.hasConflict) {
+                    hourSpan.style.background = '#fef3c7';
+                    hourSpan.style.color = '#92400e';
+                }
+                hourCell.appendChild(hourSpan);
+                if (dayResult.hasConflict) {
+                    hourCell.innerHTML += ` <span class="conflict-badge">⚠️ ${dayResult.conflicts ? dayResult.conflicts.length : 0}处重叠</span>`;
+                }
+                
+                let salaryCell = summaryRow.insertCell(7);
+                let salarySpan = document.createElement('span'); 
+                salarySpan.className = 'money-badge';
+                salarySpan.textContent = `¥ ${(dayResult.totalSalary || 0).toFixed(2)}`;
+                salaryCell.appendChild(salarySpan);
+                
+                let noteCell = summaryRow.insertCell(8);
+                noteCell.textContent = `${records.length}条记录`;
+                noteCell.style.fontSize = '0.7rem';
+                noteCell.style.color = '#64748b';
+                
+                let actionCell = summaryRow.insertCell(9);
+                actionCell.textContent = '—';
+                actionCell.style.color = '#94a3b8';
+                actionCell.style.fontSize = '0.7rem';
             }
             
-            let dateCell = row.insertCell(0);
-            let dateInput = document.createElement('input'); dateInput.type='date'; dateInput.value=rec.dateStr; dateInput.className='date-input';
-            dateInput.addEventListener('change', ((idx)=> (e)=> { let nd=e.target.value; if(nd && !isNaN(new Date(nd))) { draftRecords[idx].dateStr=nd; if (highlightedDate === draftRecords[idx].dateStr) highlightedDate = nd; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } })(realIdx));
-            dateCell.appendChild(dateInput);
-            let startCell = row.insertCell(1);
-            let startInput = document.createElement('input'); startInput.type='time'; startInput.value=rec.startTime||''; startInput.className='time-input';
-            startInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].startTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
-            startCell.appendChild(startInput);
-            let endCell = row.insertCell(2);
-            let endInput = document.createElement('input'); endInput.type='time'; endInput.value=rec.endTime||''; endInput.className='time-input';
-            endInput.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].endTime=e.target.value; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
-            endCell.appendChild(endInput);
-            let specialCell = row.insertCell(3);
-            let wrapper = document.createElement('div'); wrapper.className='exclude-check';
-            let chk = document.createElement('input'); chk.type='checkbox'; chk.checked=rec.excludeDinner===true;
-            let lbl = document.createElement('label'); lbl.innerText='🌙 不扣晚餐'; lbl.style.fontSize='0.75rem';
-            chk.addEventListener('change', ((idx)=> (e)=> { draftRecords[idx].excludeDinner=e.target.checked; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); })(realIdx));
-            wrapper.appendChild(chk); wrapper.appendChild(lbl);
-            specialCell.appendChild(wrapper);
-            let deductCell = row.insertCell(4);
-            let deductInput = document.createElement('input'); deductInput.type='number'; deductInput.min=0; deductInput.step=1; deductInput.value = (rec.customDeductMinutes!==undefined && rec.customDeductMinutes!==null) ? rec.customDeductMinutes : 0;
-            deductInput.className='deduct-input'; deductInput.placeholder='分钟';
-            deductInput.addEventListener('change', ((idx)=> (e=> { 
-                let val = parseInt(e.target.value,10);
-                if (isNaN(val)) val = 0;
-                draftRecords[idx].customDeductMinutes = Math.max(0, val);
-                updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart();
-            }))(realIdx));
-            deductCell.appendChild(deductInput);
-            let hourCell = row.insertCell(5);
-            let hourSpan = document.createElement('span'); hourSpan.className='hours-badge';
-            let hoursVal = rec.hours || 0;
-            hourSpan.innerText = `${hoursVal.toFixed(2)} h`;
-            if (hoursVal === 0) { hourSpan.style.background = '#fee2e2'; hourSpan.style.color = '#dc2626'; }
-            hourCell.appendChild(hourSpan);
-            let salaryCell = row.insertCell(6);
-            let salarySpan = document.createElement('span'); salarySpan.className='money-badge';
-            salarySpan.innerText = `¥ ${(rec.salary || 0).toFixed(2)}`;
-            salaryCell.appendChild(salarySpan);
-            let noteCell = row.insertCell(7);
-            let noteInput = document.createElement('input'); noteInput.type='text'; noteInput.placeholder='事件备注...'; noteInput.className='event-input'; noteInput.value=rec.note||'';
-            noteInput.addEventListener('change', ((idx)=> (e=> { draftRecords[idx].note=e.target.value; markDraftChanged(); }))(realIdx));
-            noteCell.appendChild(noteInput);
-            let actionCell = row.insertCell(8);
-            let delBtn = document.createElement('button'); delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; delBtn.className='delete-day';
-            delBtn.addEventListener('click', ((idx)=> (e=> { if(confirm(`删除 ${draftRecords[idx].dateStr} 记录？`)) { draftRecords.splice(idx,1); if (highlightedDate === draftRecords[idx]?.dateStr) highlightedDate = null; updateDraftHoursAndSalary(); renderTable(); renderCalendar(calYear, calMonth); renderChart(); } }))(realIdx));
-            actionCell.appendChild(delBtn);
+            for (const rec of records) {
+                const realIdx = draftRecords.indexOf(rec);
+                const row = tbody.insertRow();
+                
+                if (highlightedDate && rec.dateStr === highlightedDate) {
+                    row.className = 'highlight-row';
+                }
+                
+                let dateCell = row.insertCell(0);
+                if (isMulti) {
+                    dateCell.innerHTML = `<span style="color:#94a3b8;font-size:0.7rem;">↳ 同上</span>`;
+                } else {
+                    let dateInput = document.createElement('input'); 
+                    dateInput.type='date'; 
+                    dateInput.value=rec.dateStr; 
+                    dateInput.className='date-input';
+                    dateInput.addEventListener('change', ((idx)=> (e)=> { 
+                        let nd=e.target.value; 
+                        if(nd && !isNaN(new Date(nd))) { 
+                            draftRecords[idx].dateStr=nd; 
+                            if (highlightedDate === draftRecords[idx].dateStr) highlightedDate = nd; 
+                            updateDraftHoursAndSalary(); 
+                            renderTable(); 
+                            renderCalendar(calYear, calMonth); 
+                            renderChart(); 
+                        } 
+                    })(realIdx));
+                    dateCell.appendChild(dateInput);
+                }
+                
+                let startCell = row.insertCell(1);
+                let startInput = document.createElement('input'); 
+                startInput.type='time'; 
+                startInput.value=rec.startTime||''; 
+                startInput.className='time-input';
+                startInput.addEventListener('change', ((idx)=> (e)=> { 
+                    draftRecords[idx].startTime=e.target.value; 
+                    updateDraftHoursAndSalary(); 
+                    renderTable(); 
+                    renderCalendar(calYear, calMonth); 
+                    renderChart(); 
+                })(realIdx));
+                startCell.appendChild(startInput);
+                
+                let endCell = row.insertCell(2);
+                let endInput = document.createElement('input'); 
+                endInput.type='time'; 
+                endInput.value=rec.endTime||''; 
+                endInput.className='time-input';
+                endInput.addEventListener('change', ((idx)=> (e)=> { 
+                    draftRecords[idx].endTime=e.target.value; 
+                    updateDraftHoursAndSalary(); 
+                    renderTable(); 
+                    renderCalendar(calYear, calMonth); 
+                    renderChart(); 
+                })(realIdx));
+                endCell.appendChild(endInput);
+                
+                let specialCell = row.insertCell(3);
+                let wrapper = document.createElement('div'); 
+                wrapper.className='exclude-check';
+                let chk = document.createElement('input'); 
+                chk.type='checkbox'; 
+                chk.checked=rec.excludeDinner===true;
+                let lbl = document.createElement('label'); 
+                lbl.innerText='🌙'; 
+                lbl.style.fontSize='0.75rem';
+                chk.addEventListener('change', ((idx)=> (e)=> { 
+                    draftRecords[idx].excludeDinner=e.target.checked; 
+                    updateDraftHoursAndSalary(); 
+                    renderTable(); 
+                    renderCalendar(calYear, calMonth); 
+                    renderChart(); 
+                })(realIdx));
+                wrapper.appendChild(chk); 
+                wrapper.appendChild(lbl);
+                specialCell.appendChild(wrapper);
+                
+                let deductCell = row.insertCell(4);
+                let deductGroup = document.createElement('div');
+                deductGroup.className = 'deduct-time-group';
+                
+                let deductStart = document.createElement('input');
+                deductStart.type = 'time';
+                deductStart.value = rec.deductStart || '';
+                deductStart.style.width = '65px';
+                
+                let deductEnd = document.createElement('input');
+                deductEnd.type = 'time';
+                deductEnd.value = rec.deductEnd || '';
+                deductEnd.style.width = '65px';
+                
+                let dashSpan = document.createElement('span');
+                dashSpan.textContent = '—';
+                
+                let durationSpan = document.createElement('span');
+                durationSpan.className = 'deduct-duration';
+                const mins = rec.deductMinutes || 0;
+                if (mins > 0) {
+                    durationSpan.textContent = minutesToDisplay(mins);
+                    durationSpan.classList.remove('empty');
+                } else {
+                    durationSpan.textContent = '0分';
+                    durationSpan.classList.add('empty');
+                }
+                
+                const updateDeduct = (idx) => {
+                    const ds = deductStart.value;
+                    const de = deductEnd.value;
+                    draftRecords[idx].deductStart = ds;
+                    draftRecords[idx].deductEnd = de;
+                    let mins = 0;
+                    if (ds && de) {
+                        const dsm = timeToMinutes(ds);
+                        const dem = timeToMinutes(de);
+                        if (dsm !== null && dem !== null && dsm < dem) {
+                            mins = dem - dsm;
+                        }
+                    }
+                    draftRecords[idx].deductMinutes = mins;
+                    if (mins > 0) {
+                        durationSpan.textContent = minutesToDisplay(mins);
+                        durationSpan.classList.remove('empty');
+                    } else {
+                        durationSpan.textContent = '0分';
+                        durationSpan.classList.add('empty');
+                    }
+                    updateDraftHoursAndSalary();
+                    renderTable();
+                    renderCalendar(calYear, calMonth);
+                    renderChart();
+                };
+                
+                deductStart.addEventListener('change', ((idx)=> (e)=> { updateDeduct(idx); })(realIdx));
+                deductEnd.addEventListener('change', ((idx)=> (e)=> { updateDeduct(idx); })(realIdx));
+                
+                deductGroup.appendChild(deductStart);
+                deductGroup.appendChild(dashSpan);
+                deductGroup.appendChild(deductEnd);
+                deductGroup.appendChild(durationSpan);
+                deductCell.appendChild(deductGroup);
+                
+                let periodCell = row.insertCell(5);
+                if (rec.periodLabels && rec.periodLabels.length > 0) {
+                    periodCell.innerHTML = rec.periodLabels.map(p => 
+                        `<span class="period-badge ${p.cls}">${p.label}</span>`
+                    ).join(' ');
+                } else {
+                    periodCell.textContent = '—';
+                }
+                
+                let hourCell = row.insertCell(6);
+                let hourSpan = document.createElement('span'); 
+                hourSpan.className='hours-badge';
+                let hoursVal = rec.hours || 0;
+                hourSpan.innerText = `${hoursVal.toFixed(2)} h`;
+                if (hoursVal === 0) { 
+                    hourSpan.style.background = '#fee2e2'; 
+                    hourSpan.style.color = '#dc2626'; 
+                }
+                hourCell.appendChild(hourSpan);
+                
+                let salaryCell = row.insertCell(7);
+                let salarySpan = document.createElement('span'); 
+                salarySpan.className='money-badge';
+                salarySpan.innerText = `¥ ${(rec.salary || 0).toFixed(2)}`;
+                salaryCell.appendChild(salarySpan);
+                
+                let noteCell = row.insertCell(8);
+                let noteInput = document.createElement('input'); 
+                noteInput.type='text'; 
+                noteInput.placeholder='事件备注...'; 
+                noteInput.className='event-input'; 
+                noteInput.value=rec.note||'';
+                noteInput.addEventListener('change', ((idx)=> (e=> { 
+                    draftRecords[idx].note=e.target.value; 
+                    markDraftChanged(); 
+                }))(realIdx));
+                noteCell.appendChild(noteInput);
+                
+                let actionCell = row.insertCell(9);
+                let delBtn = document.createElement('button'); 
+                delBtn.innerHTML='<i class="fas fa-trash-alt"></i>'; 
+                delBtn.className='delete-day';
+                delBtn.addEventListener('click', ((idx)=> (e=> { 
+                    showConfirmModal({
+                        title: '删除记录',
+                        message: `确定要删除 ${draftRecords[idx].dateStr} 的工时记录吗？此操作不可撤销。`,
+                        confirmText: '确认删除',
+                        confirmClass: 'btn-danger',
+                        onConfirm: () => {
+                            draftRecords.splice(idx,1); 
+                            if (highlightedDate === draftRecords[idx]?.dateStr) highlightedDate = null; 
+                            updateDraftHoursAndSalary(); 
+                            renderTable(); 
+                            renderCalendar(calYear, calMonth); 
+                            renderChart();
+                            showToast('记录已删除', 'success');
+                        }
+                    });
+                }))(realIdx));
+                actionCell.appendChild(delBtn);
+            }
         }
         updateMonthlySummaryFromDraft();
     }
@@ -1701,10 +2837,21 @@
             return;
         }
         const monthRecords = draftRecords.filter(r=> r.dateStr && r.dateStr.startsWith(selectedYM));
-        const validRecords = monthRecords.filter(r => (r.hours || 0) > 0);
+        const dateGroups = {};
+        for (const rec of monthRecords) {
+            if (!dateGroups[rec.dateStr]) dateGroups[rec.dateStr] = [];
+            dateGroups[rec.dateStr].push(rec);
+        }
         let totalHours = 0, totalSalary = 0;
-        validRecords.forEach(r => { totalHours += r.hours || 0; totalSalary += getSalary(r.hours); });
-        let workDays = validRecords.length;
+        let workDays = 0;
+        for (const [dateStr, records] of Object.entries(dateGroups)) {
+            const result = calculateDayMergedHours(records);
+            if (result.totalHours > 0) {
+                totalHours += result.totalHours;
+                totalSalary += result.totalSalary;
+                workDays++;
+            }
+        }
         let avgDaily = workDays === 0 ? 0 : totalSalary / workDays;
         document.getElementById('totalHoursMonth').innerText = totalHours.toFixed(2);
         document.getElementById('workDaysCount').innerText = workDays;
@@ -1718,7 +2865,8 @@
         for(let draft of draftRecords){
             let found = workRecords.some(f=> 
                 f.dateStr===draft.dateStr && f.startTime===draft.startTime && f.endTime===draft.endTime &&
-                f.excludeDinner===draft.excludeDinner && f.note===draft.note && f.customDeductMinutes===draft.customDeductMinutes);
+                f.excludeDinner===draft.excludeDinner && f.note===draft.note && 
+                f.deductStart===draft.deductStart && f.deductEnd===draft.deductEnd);
             if(!found){
                 let existsSimilar = workRecords.some(f=> f.dateStr===draft.dateStr);
                 if(existsSimilar) modified.push(draft);
@@ -1728,11 +2876,12 @@
         for(let formal of workRecords){
             let exists = draftRecords.some(d=> 
                 d.dateStr===formal.dateStr && d.startTime===formal.startTime && d.endTime===formal.endTime &&
-                d.excludeDinner===formal.excludeDinner && d.note===formal.note && d.customDeductMinutes===formal.customDeductMinutes);
+                d.excludeDinner===formal.excludeDinner && d.note===formal.note &&
+                d.deductStart===formal.deductStart && d.deductEnd===formal.deductEnd);
             if(!exists) deleted.push(formal);
         }
         let desc='';
-        if(added.length) desc+=`<strong>📌 新增 (${added.length})</strong><ul>`+added.map(r=>`<li>${r.dateStr} ${r.startTime}-${r.endTime} 额外扣${r.customDeductMinutes||0}分 ${r.note?`备注:${r.note}`:''}</li>`).join('')+`</ul>`;
+        if(added.length) desc+=`<strong>📌 新增 (${added.length})</strong><ul>`+added.map(r=>`<li>${r.dateStr} ${r.startTime}-${r.endTime} ${r.deductStart&&r.deductEnd?'扣除 '+r.deductStart+'-'+r.deductEnd:''} ${r.note?`备注:${r.note}`:''}</li>`).join('')+`</ul>`;
         if(deleted.length) desc+=`<strong>🗑️ 删除 (${deleted.length})</strong><ul>`+deleted.map(r=>`<li>${r.dateStr} ${r.startTime}-${r.endTime}</li>`).join('')+`</ul>`;
         if(modified.length){
             let md=[];
@@ -1742,7 +2891,9 @@
                     let changes=[];
                     if(orig.excludeDinner !== draft.excludeDinner) changes.push(`不扣晚餐: ${orig.excludeDinner?'是→否':'否→是'}`);
                     if(orig.note !== draft.note) changes.push(`备注: "${orig.note||''}" → "${draft.note||''}"`);
-                    if((orig.customDeductMinutes||0) !== (draft.customDeductMinutes||0)) changes.push(`额外扣除: ${orig.customDeductMinutes||0}分 → ${draft.customDeductMinutes||0}分`);
+                    if((orig.deductStart||'') !== (draft.deductStart||'') || (orig.deductEnd||'') !== (draft.deductEnd||'')) {
+                        changes.push(`额外扣除: ${orig.deductStart||'--'}~${orig.deductEnd||'--'} → ${draft.deductStart||'--'}~${draft.deductEnd||'--'}`);
+                    }
                     if(changes.length) md.push(`${draft.dateStr} ${draft.startTime}-${draft.endTime} : ${changes.join(', ')}`);
                 } else md.push(`${draft.dateStr} 时段变化`);
             }
@@ -1761,11 +2912,18 @@
         else {
             for(let i=0;i<draftRecords.length;i++){
                 let d=draftRecords[i], w=workRecords[i];
-                if(!w || d.dateStr!==w.dateStr || d.startTime!==w.startTime || d.endTime!==w.endTime || d.excludeDinner!==w.excludeDinner || d.note!==w.note || (d.customDeductMinutes||0) !== (w.customDeductMinutes||0)){ hasDiff=true; break; }
+                if(!w || d.dateStr!==w.dateStr || d.startTime!==w.startTime || d.endTime!==w.endTime || 
+                   d.excludeDinner!==w.excludeDinner || d.note!==w.note || 
+                   d.deductStart!==w.deductStart || d.deductEnd!==w.deductEnd){ 
+                    hasDiff=true; break; 
+                }
             }
         }
         let rateChanged = (hourlyRate !== (allUsersData[currentUser]?.settings?.hourlyRate || 25));
-        if(!hasDiff && !rateChanged) { alert("无任何修改，无需保存。"); return; }
+        if(!hasDiff && !rateChanged) { 
+            showToast('无任何修改，无需保存', 'info');
+            return; 
+        }
         const changesHtml = generateChangesDescription();
         
         showPasswordModal({
@@ -1777,15 +2935,19 @@
             confirmClass: 'btn-primary',
             onConfirm: (pwd) => {
                 if (pwd === currentPassword) {
-                    workRecords = JSON.parse(JSON.stringify(draftRecords));
-                    saveUserData();
-                    localStorage.removeItem(`draft_${currentUser}`);
-                    isDraftSaved = true;
-                    updateDraftHoursAndSalary();
-                    renderTable();
-                    renderCalendar(calYear, calMonth);
-                    renderChart();
-                    alert("✅ 所有修改已安全保存");
+                    const loading = showLoading('保存中...');
+                    setTimeout(() => {
+                        workRecords = JSON.parse(JSON.stringify(draftRecords));
+                        saveUserData();
+                        localStorage.removeItem(`draft_${currentUser}`);
+                        isDraftSaved = true;
+                        updateDraftHoursAndSalary();
+                        renderTable();
+                        renderCalendar(calYear, calMonth);
+                        renderChart();
+                        hideLoading();
+                        showToast('所有修改已安全保存', 'success');
+                    }, 300);
                     return true;
                 } else {
                     return false;
@@ -1794,57 +2956,279 @@
         });
     }
     
-    // ---------- 其他操作 ----------
-    function addBlankRecord(){
-        let today = new Date(); let yyyy=today.getFullYear(), mm=String(today.getMonth()+1).padStart(2,'0'), dd=String(today.getDate()).padStart(2,'0');
-        let newRec = { dateStr:`${yyyy}-${mm}-${dd}`, startTime:"09:00", endTime:"17:00", note:"", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 };
-        newRec.hours = calculateNetHours("09:00","17:00", false, 0);
-        newRec.salary = getSalary(newRec.hours);
-        draftRecords.push(newRec);
-        updateDraftHoursAndSalary();
-        renderTable();
-        renderCalendar(calYear, calMonth);
-        renderChart();
-        populateMonthSelect();
-    }
-    
-    function resetDemo(){
-        if(confirm("重置当前用户的示例数据？")){
-            let demo = [
-                { dateStr:"2026-06-07", startTime:"08:30", endTime:"16:30", note:"日常保洁", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-06-08", startTime:"10:00", endTime:"20:00", note:"加班午休延长", excludeDinner:true, customDeductMinutes:30, hours:0, salary:0 },
-                { dateStr:"2026-06-10", startTime:"12:00", endTime:"19:00", note:"照看儿童", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 },
-                { dateStr:"2026-07-01", startTime:"09:00", endTime:"18:00", note:"七月新记录", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-07-03", startTime:"08:00", endTime:"17:00", note:"七月保洁", excludeDinner:true, customDeductMinutes:20, hours:0, salary:0 },
-                { dateStr:"2026-07-05", startTime:"09:30", endTime:"18:30", note:"日常清洁", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-07-07", startTime:"08:00", endTime:"16:00", note:"半日班", excludeDinner:true, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-07-10", startTime:"10:00", endTime:"19:00", note:"晚班", excludeDinner:false, customDeductMinutes:15, hours:0, salary:0 },
-                { dateStr:"2026-07-12", startTime:"09:00", endTime:"17:30", note:"正常班", excludeDinner:false, customDeductMinutes:0, hours:0, salary:0 },
-                { dateStr:"2026-07-15", startTime:"08:30", endTime:"20:00", note:"长班", excludeDinner:true, customDeductMinutes:45, hours:0, salary:0 }
-            ];
-            workRecords = JSON.parse(JSON.stringify(demo));
-            draftRecords = JSON.parse(JSON.stringify(demo));
+    // ---------- 新增记录 - 弹出日期选择 ----------
+    function showAddRecordDatePicker() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const defaultDate = `${yyyy}-${mm}-${dd}`;
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal-mask date-picker-modal';
+        modal.id = 'addRecordDatePicker';
+        modal.innerHTML = `
+            <div class="verify-panel">
+                <div class="date-picker-title"><i class="fas fa-calendar-plus" style="color:#2c7a4b;"></i> 选择日期</div>
+                <div class="date-picker-sub">请选择要添加记录的日期</div>
+                <input type="date" id="newRecordDateInput" value="${defaultDate}" min="2000-01-01" max="2099-12-31">
+                <div class="date-picker-buttons">
+                    <button class="btn btn-outline" id="datePickerCancelBtn">取消</button>
+                    <button class="btn btn-primary" id="datePickerConfirmBtn">确认添加</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const dateInput = document.getElementById('newRecordDateInput');
+        dateInput.focus();
+        dateInput.select();
+        
+        const confirmBtn = document.getElementById('datePickerConfirmBtn');
+        const cancelBtn = document.getElementById('datePickerCancelBtn');
+        
+        const closeModal = () => {
+            modal.remove();
+        };
+        
+        const addRecord = () => {
+            const selectedDate = dateInput.value;
+            if (!selectedDate) {
+                showToast('请选择有效的日期', 'warning');
+                return;
+            }
+            if (isNaN(new Date(selectedDate).getTime())) {
+                showToast('请选择有效的日期', 'warning');
+                return;
+            }
+            closeModal();
+            const newRec = { 
+                dateStr: selectedDate, 
+                startTime: "09:00", 
+                endTime: "17:00", 
+                note: "", 
+                excludeDinner: false, 
+                deductStart: '', 
+                deductEnd: '',
+                deductMinutes: 0,
+                hours: 0, 
+                salary: 0,
+                mergedHours: 0,
+                mergedSalary: 0,
+                hasConflict: false,
+                conflictCount: 0,
+                periodLabel: '',
+                periodCls: '',
+                periodLabels: []
+            };
+            newRec.hours = calculateNetHours("09:00", "17:00", false, '', '', false);
+            newRec.salary = getSalary(newRec.hours);
+            draftRecords.push(newRec);
             updateDraftHoursAndSalary();
-            saveUserData();
-            localStorage.removeItem(`draft_${currentUser}`);
-            isDraftSaved = true;
-            highlightedDate = null;
-            populateMonthSelect();
             renderTable();
             renderCalendar(calYear, calMonth);
             renderChart();
-        }
+            populateMonthSelect();
+            showToast('工时记录已添加', 'success');
+        };
+        
+        confirmBtn.addEventListener('click', addRecord);
+        cancelBtn.addEventListener('click', closeModal);
+        
+        dateInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addRecord();
+            }
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+    
+    // ---------- 密码修改弹窗（带原始密码验证） ----------
+    function showPasswordChangeModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal-mask password-change-modal';
+        modal.id = 'passwordChangeModal';
+        modal.innerHTML = `
+            <div class="verify-panel">
+                <div class="pwd-title"><i class="fas fa-key" style="color:#2c7a4b;"></i> 修改操作密码</div>
+                <div class="pwd-sub">请输入原始密码和新密码</div>
+                <div class="pwd-input-group">
+                    <label>原始密码</label>
+                    <input type="password" id="pwdOldInput" placeholder="请输入当前密码" autocomplete="off">
+                </div>
+                <div class="pwd-input-group">
+                    <label>新密码</label>
+                    <input type="password" id="pwdNewInput" placeholder="请输入新密码" autocomplete="off">
+                </div>
+                <div class="pwd-input-group">
+                    <label>确认新密码</label>
+                    <input type="password" id="pwdConfirmInput" placeholder="请再次输入新密码" autocomplete="off">
+                </div>
+                <div id="pwdErrorHint" class="pwd-error"></div>
+                <div class="pwd-buttons">
+                    <button class="btn btn-outline" id="pwdCancelBtn">取消</button>
+                    <button class="btn btn-primary" id="pwdConfirmBtn">确认修改</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const oldInput = document.getElementById('pwdOldInput');
+        const newInput = document.getElementById('pwdNewInput');
+        const confirmInput = document.getElementById('pwdConfirmInput');
+        const errorHint = document.getElementById('pwdErrorHint');
+        const confirmBtn = document.getElementById('pwdConfirmBtn');
+        const cancelBtn = document.getElementById('pwdCancelBtn');
+        
+        const closeModal = () => {
+            modal.remove();
+        };
+        
+        const handleChange = () => {
+            const oldPwd = oldInput.value;
+            const newPwd = newInput.value;
+            const confirmPwd = confirmInput.value;
+            
+            errorHint.textContent = '';
+            
+            if (oldPwd !== currentPassword) {
+                errorHint.textContent = '❌ 原始密码错误';
+                oldInput.focus();
+                oldInput.select();
+                return;
+            }
+            
+            if (!newPwd || newPwd.length < 4) {
+                errorHint.textContent = '❌ 新密码至少4个字符';
+                newInput.focus();
+                newInput.select();
+                return;
+            }
+            
+            if (newPwd !== confirmPwd) {
+                errorHint.textContent = '❌ 两次输入的新密码不一致';
+                confirmInput.focus();
+                confirmInput.select();
+                return;
+            }
+            
+            currentPassword = newPwd;
+            const userData = getCurrentUserData();
+            userData.settings.password = currentPassword;
+            saveAllUsersData();
+            
+            showToast('操作密码已成功更新', 'success');
+            closeModal();
+        };
+        
+        oldInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') newInput.focus(); });
+        newInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') confirmInput.focus(); });
+        confirmInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleChange(); });
+        
+        confirmBtn.addEventListener('click', handleChange);
+        cancelBtn.addEventListener('click', closeModal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        oldInput.focus();
+    }
+    
+    // ---------- 其他操作 ----------
+    function addBlankRecord(){
+        showAddRecordDatePicker();
+    }
+    
+    function resetDemo(){
+        showConfirmModal({
+            title: '重置示例数据',
+            message: '确定要重置当前用户的示例数据吗？当前数据将被覆盖。',
+            confirmText: '确认重置',
+            confirmClass: 'btn-danger',
+            onConfirm: () => {
+                let demo = [
+                    { dateStr:"2026-06-07", startTime:"08:30", endTime:"16:30", note:"日常保洁", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-06-08", startTime:"10:00", endTime:"14:00", note:"上午班", excludeDinner:true, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-06-08", startTime:"14:30", endTime:"20:00", note:"下午+晚班", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-06-10", startTime:"12:00", endTime:"19:00", note:"照看儿童", excludeDinner:false, deductStart:'15:00', deductEnd:'15:15', deductMinutes:15, hours:0, salary:0 },
+                    { dateStr:"2026-07-01", startTime:"09:00", endTime:"18:00", note:"七月新记录", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-03", startTime:"08:00", endTime:"12:00", note:"七月保洁上午", excludeDinner:true, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-03", startTime:"13:00", endTime:"17:00", note:"七月保洁下午", excludeDinner:true, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-05", startTime:"09:30", endTime:"18:30", note:"日常清洁", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-07", startTime:"08:00", endTime:"16:00", note:"半日班", excludeDinner:true, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-10", startTime:"10:00", endTime:"14:00", note:"早班", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-10", startTime:"15:00", endTime:"19:00", note:"晚班", excludeDinner:false, deductStart:'16:30', deductEnd:'16:45', deductMinutes:15, hours:0, salary:0 },
+                    { dateStr:"2026-07-12", startTime:"09:00", endTime:"17:30", note:"正常班", excludeDinner:false, deductStart:'', deductEnd:'', deductMinutes:0, hours:0, salary:0 },
+                    { dateStr:"2026-07-15", startTime:"08:30", endTime:"20:00", note:"长班", excludeDinner:true, deductStart:'13:00', deductEnd:'13:45', deductMinutes:45, hours:0, salary:0 }
+                ];
+                workRecords = JSON.parse(JSON.stringify(demo));
+                draftRecords = JSON.parse(JSON.stringify(demo));
+                updateDraftHoursAndSalary();
+                saveUserData();
+                localStorage.removeItem(`draft_${currentUser}`);
+                isDraftSaved = true;
+                highlightedDate = null;
+                populateMonthSelect();
+                renderTable();
+                renderCalendar(calYear, calMonth);
+                renderChart();
+                showToast('示例数据已重置', 'success');
+            }
+        });
     }
     
     function applySettingsRefresh(){
-        mealSettings.lunchStart = document.getElementById('lunchStart').value;
-        mealSettings.lunchEnd = document.getElementById('lunchEnd').value;
-        mealSettings.dinnerStart = document.getElementById('dinnerStart').value;
-        mealSettings.dinnerEnd = document.getElementById('dinnerEnd').value;
-        if(timeToMinutes(mealSettings.lunchStart)>=timeToMinutes(mealSettings.lunchEnd)){ alert("午餐时间错误，已重置"); mealSettings.lunchStart="12:00"; mealSettings.lunchEnd="13:00"; document.getElementById('lunchStart').value="12:00"; document.getElementById('lunchEnd').value="13:00"; }
-        if(timeToMinutes(mealSettings.dinnerStart)>=timeToMinutes(mealSettings.dinnerEnd)){ alert("晚餐时间错误，已重置"); mealSettings.dinnerStart="18:00"; mealSettings.dinnerEnd="19:00"; document.getElementById('dinnerStart').value="18:00"; document.getElementById('dinnerEnd').value="19:00"; }
-        let newRate = parseFloat(document.getElementById('hourlyRate').value);
-        if(!isNaN(newRate) && newRate>=0) hourlyRate = newRate;
+        const modalBreakfastStart = document.getElementById('modalBreakfastStart');
+        const modalBreakfastEnd = document.getElementById('modalBreakfastEnd');
+        const modalLunchStart = document.getElementById('modalLunchStart');
+        const modalLunchEnd = document.getElementById('modalLunchEnd');
+        const modalDinnerStart = document.getElementById('modalDinnerStart');
+        const modalDinnerEnd = document.getElementById('modalDinnerEnd');
+        const modalBreakfastEnabled = document.getElementById('modalBreakfastEnabled');
+        const modalLunchEnabled = document.getElementById('modalLunchEnabled');
+        const modalDinnerEnabled = document.getElementById('modalDinnerEnabled');
+        const modalHourlyRate = document.getElementById('modalHourlyRate');
+        
+        if (modalBreakfastStart && modalBreakfastEnd && modalLunchStart && modalLunchEnd && modalDinnerStart && modalDinnerEnd) {
+            mealSettings.breakfastStart = modalBreakfastStart.value;
+            mealSettings.breakfastEnd = modalBreakfastEnd.value;
+            mealSettings.lunchStart = modalLunchStart.value;
+            mealSettings.lunchEnd = modalLunchEnd.value;
+            mealSettings.dinnerStart = modalDinnerStart.value;
+            mealSettings.dinnerEnd = modalDinnerEnd.value;
+            if (modalBreakfastEnabled) mealSettings.breakfastEnabled = modalBreakfastEnabled.checked;
+            if (modalLunchEnabled) mealSettings.lunchEnabled = modalLunchEnabled.checked;
+            if (modalDinnerEnabled) mealSettings.dinnerEnabled = modalDinnerEnabled.checked;
+            if (modalHourlyRate) {
+                let rate = parseFloat(modalHourlyRate.value);
+                if (!isNaN(rate) && rate >= 0) hourlyRate = rate;
+            }
+        }
+        
+        if(mealSettings.breakfastEnabled && timeToMinutes(mealSettings.breakfastStart) >= timeToMinutes(mealSettings.breakfastEnd)){ 
+            showToast('早餐时间错误，已重置', 'warning');
+            mealSettings.breakfastStart="07:00"; 
+            mealSettings.breakfastEnd="08:00"; 
+        }
+        if(mealSettings.lunchEnabled && timeToMinutes(mealSettings.lunchStart) >= timeToMinutes(mealSettings.lunchEnd)){ 
+            showToast('午餐时间错误，已重置', 'warning');
+            mealSettings.lunchStart="12:00"; 
+            mealSettings.lunchEnd="13:00"; 
+        }
+        if(mealSettings.dinnerEnabled && timeToMinutes(mealSettings.dinnerStart) >= timeToMinutes(mealSettings.dinnerEnd)){ 
+            showToast('晚餐时间错误，已重置', 'warning');
+            mealSettings.dinnerStart="18:00"; 
+            mealSettings.dinnerEnd="19:00"; 
+        }
+        
         updateDraftHoursAndSalary();
         renderTable();
         renderCalendar(calYear, calMonth);
@@ -1853,16 +3237,11 @@
         userData.settings.mealSettings = { ...mealSettings };
         userData.settings.hourlyRate = hourlyRate;
         saveAllUsersData();
+        showToast('设置已应用', 'success');
     }
     
-    function changePassword(){ 
-        let newPwd = document.getElementById('globalPasswordInput').value.trim(); 
-        if(!newPwd){ alert("密码不能为空"); return; } 
-        currentPassword=newPwd; 
-        const userData = getCurrentUserData();
-        userData.settings.password = currentPassword;
-        saveAllUsersData();
-        alert("操作密码已更新"); 
+    function changePassword(){
+        showPasswordChangeModal();
     }
     
     function exportJSON(){ 
@@ -1876,6 +3255,7 @@
         a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"})); 
         a.download=`工时数据_${currentUser}_${new Date().toISOString().slice(0,19)}.json`; 
         a.click(); 
+        showToast('JSON备份已导出', 'success');
     }
     
     function importJSON(file){ 
@@ -1888,7 +3268,20 @@
                     draftRecords = JSON.parse(JSON.stringify(workRecords));
                 }
                 if(data.settings) {
-                    if(data.settings.mealSettings) mealSettings = data.settings.mealSettings;
+                    if(data.settings.mealSettings) {
+                        const ms = data.settings.mealSettings;
+                        mealSettings = { 
+                            breakfastStart: ms.breakfastStart || "07:00",
+                            breakfastEnd: ms.breakfastEnd || "08:00",
+                            lunchStart: ms.lunchStart || "12:00", 
+                            lunchEnd: ms.lunchEnd || "13:00", 
+                            dinnerStart: ms.dinnerStart || "18:00", 
+                            dinnerEnd: ms.dinnerEnd || "19:00",
+                            breakfastEnabled: ms.breakfastEnabled !== undefined ? ms.breakfastEnabled : true,
+                            lunchEnabled: ms.lunchEnabled !== undefined ? ms.lunchEnabled : true,
+                            dinnerEnabled: ms.dinnerEnabled !== undefined ? ms.dinnerEnabled : true
+                        };
+                    }
                     if(data.settings.hourlyRate) hourlyRate = data.settings.hourlyRate;
                     if(data.settings.password) currentPassword = data.settings.password;
                 }
@@ -1898,35 +3291,91 @@
                 isDraftSaved = true;
                 highlightedDate = null;
                 loadUserData();
-                alert("导入成功"); 
-            } catch(err){ alert("文件无效"); } 
+                showToast('数据导入成功', 'success');
+            } catch(err){ 
+                showToast('文件格式无效', 'error');
+            } 
         }; 
         reader.readAsText(file); 
     }
     
     function exportToExcel(){
-        if(workRecords.length===0){ alert("暂无正式数据，请先保存记录"); return; }
-        let sheetData = [["日期","上班","下班","不扣晚餐","额外扣除(分钟)","工时(小时)","报酬(元)","事件备注"]];
-        workRecords.forEach(rec=>{
-            let hoursVal = rec.hours || 0;
-            let salaryVal = getSalary(hoursVal);
-            sheetData.push([ rec.dateStr, rec.startTime||"", rec.endTime||"", rec.excludeDinner?"是":"否", (rec.customDeductMinutes!==undefined?rec.customDeductMinutes:0), hoursVal.toFixed(2), salaryVal.toFixed(2), rec.note||"" ]);
-        });
+        if(workRecords.length===0){ 
+            showToast('暂无正式数据，请先保存记录', 'warning');
+            return; 
+        }
+        let sheetData = [["日期","上班","下班","不扣晚餐","额外扣除开始","额外扣除结束","额外扣除(分钟)","时段","工时(小时)","报酬(元)","事件备注"]];
+        const dateGroups = {};
+        for (const rec of workRecords) {
+            if (!dateGroups[rec.dateStr]) dateGroups[rec.dateStr] = [];
+            dateGroups[rec.dateStr].push(rec);
+        }
+        for (const [dateStr, records] of Object.entries(dateGroups)) {
+            const result = calculateDayMergedHours(records);
+            for (const rec of records) {
+                const periods = getPeriodLabels(rec.startTime, rec.endTime);
+                const periodLabels = periods.map(p => p.label).join('、');
+                sheetData.push([ 
+                    dateStr, 
+                    rec.startTime||"", 
+                    rec.endTime||"", 
+                    rec.excludeDinner?"是":"否", 
+                    rec.deductStart||"", 
+                    rec.deductEnd||"",
+                    rec.deductMinutes || 0,
+                    periodLabels,
+                    rec.hours ? rec.hours.toFixed(2) : '0.00',
+                    rec.salary ? rec.salary.toFixed(2) : '0.00',
+                    rec.note||"" 
+                ]);
+            }
+            if (records.length > 1) {
+                sheetData.push([
+                    '--- 合计 ---',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    result.totalHours.toFixed(2),
+                    result.totalSalary.toFixed(2),
+                    `${records.length}条记录合并`
+                ]);
+            }
+        }
         let summarySheet = [["统计项","数值"]];
-        let validRecords = workRecords.filter(r => (r.hours || 0) > 0);
-        let totalHours = validRecords.reduce((s,r)=>s+(r.hours||0),0);
-        let totalSalary = validRecords.reduce((s,r)=>s+getSalary(r.hours||0),0);
+        const allGroups = {};
+        for (const rec of workRecords) {
+            if (!allGroups[rec.dateStr]) allGroups[rec.dateStr] = [];
+            allGroups[rec.dateStr].push(rec);
+        }
+        let totalHours = 0, totalSalary = 0, workDays = 0;
+        for (const [dateStr, records] of Object.entries(allGroups)) {
+            const result = calculateDayMergedHours(records);
+            if (result.totalHours > 0) {
+                totalHours += result.totalHours;
+                totalSalary += result.totalSalary;
+                workDays++;
+            }
+        }
         summarySheet.push(["用户", currentUser]);
         summarySheet.push(["总工时(小时)",totalHours.toFixed(2)]);
         summarySheet.push(["总报酬(元)",totalSalary.toFixed(2)]);
-        summarySheet.push(["工作天数(工时>0)",validRecords.length]);
+        summarySheet.push(["工作天数(工时>0)",workDays]);
         summarySheet.push(["时薪(元/小时)",hourlyRate]);
+        summarySheet.push(["早餐时段",`${mealSettings.breakfastStart} - ${mealSettings.breakfastEnd}`]);
         summarySheet.push(["午餐时段",`${mealSettings.lunchStart} - ${mealSettings.lunchEnd}`]);
         summarySheet.push(["晚餐时段",`${mealSettings.dinnerStart} - ${mealSettings.dinnerEnd}`]);
+        summarySheet.push(["早餐启用", mealSettings.breakfastEnabled ? "是" : "否"]);
+        summarySheet.push(["午餐启用", mealSettings.lunchEnabled ? "是" : "否"]);
+        summarySheet.push(["晚餐启用", mealSettings.dinnerEnabled ? "是" : "否"]);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetData), "工时明细");
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summarySheet), "汇总统计");
         XLSX.writeFile(wb, `钟点工报表_${currentUser}_${new Date().toISOString().slice(0,19)}.xlsx`);
+        showToast('Excel报表已导出', 'success');
     }
     
     function populateMonthSelect(){
@@ -1965,7 +3414,21 @@
         if (users.length === 0) {
             allUsersData['默认用户'] = {
                 records: [],
-                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+                settings: { 
+                    mealSettings: { 
+                        breakfastStart: "07:00",
+                        breakfastEnd: "08:00",
+                        lunchStart: "12:00", 
+                        lunchEnd: "13:00", 
+                        dinnerStart: "18:00", 
+                        dinnerEnd: "19:00",
+                        breakfastEnabled: true,
+                        lunchEnabled: true,
+                        dinnerEnabled: true
+                    }, 
+                    hourlyRate: 25, 
+                    password: "123456" 
+                }
             };
             saveAllUsersData();
             users.push('默认用户');
@@ -1975,9 +3438,31 @@
     }
     
     // ============================================================
-    //  全局设置弹窗 - 午餐晚餐两行并行显示 + 美化重置按钮
+    //  全局设置弹窗 - 包含早餐
     // ============================================================
     function showGlobalSettingsModal() {
+        showPasswordModal({
+            title: '全局设置',
+            subtitle: '请输入操作密码以访问设置',
+            icon: 'lock',
+            confirmText: '进入设置',
+            confirmClass: 'btn-primary',
+            onConfirm: (pwd) => {
+                if (pwd === currentPassword) {
+                    settingsVerified = true;
+                    openSettingsPanel();
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            onCancel: () => {
+                settingsVerified = false;
+            }
+        });
+    }
+    
+    function openSettingsPanel() {
         const existing = document.getElementById('settingsPanelModal');
         if (existing) existing.remove();
         
@@ -1994,22 +3479,41 @@
                     </div>
                 </div>
                 <div class="settings-body">
-                    <!-- 午餐晚餐两行并行显示 -->
                     <div class="meal-row">
                         <div class="meal-item">
-                            <span class="row-label"><i class="fas fa-utensils"></i> 午餐</span>
-                            <div class="time-group">
-                                <input type="time" id="modalLunchStart" value="${mealSettings.lunchStart}">
+                            <span class="row-label"><i class="fas fa-coffee"></i> 早餐</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="modalBreakfastEnabled" ${mealSettings.breakfastEnabled ? 'checked' : ''}>
+                                <span class="status-label">${mealSettings.breakfastEnabled ? '启用' : '禁用'}</span>
+                            </label>
+                            <div class="time-group ${!mealSettings.breakfastEnabled ? 'disabled' : ''}">
+                                <input type="time" id="modalBreakfastStart" value="${mealSettings.breakfastStart}" ${!mealSettings.breakfastEnabled ? 'disabled' : ''}>
                                 <span>—</span>
-                                <input type="time" id="modalLunchEnd" value="${mealSettings.lunchEnd}">
+                                <input type="time" id="modalBreakfastEnd" value="${mealSettings.breakfastEnd}" ${!mealSettings.breakfastEnabled ? 'disabled' : ''}>
+                            </div>
+                        </div>
+                        <div class="meal-item">
+                            <span class="row-label"><i class="fas fa-utensils"></i> 午餐</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="modalLunchEnabled" ${mealSettings.lunchEnabled ? 'checked' : ''}>
+                                <span class="status-label">${mealSettings.lunchEnabled ? '启用' : '禁用'}</span>
+                            </label>
+                            <div class="time-group ${!mealSettings.lunchEnabled ? 'disabled' : ''}">
+                                <input type="time" id="modalLunchStart" value="${mealSettings.lunchStart}" ${!mealSettings.lunchEnabled ? 'disabled' : ''}>
+                                <span>—</span>
+                                <input type="time" id="modalLunchEnd" value="${mealSettings.lunchEnd}" ${!mealSettings.lunchEnabled ? 'disabled' : ''}>
                             </div>
                         </div>
                         <div class="meal-item">
                             <span class="row-label"><i class="fas fa-moon"></i> 晚餐</span>
-                            <div class="time-group">
-                                <input type="time" id="modalDinnerStart" value="${mealSettings.dinnerStart}">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="modalDinnerEnabled" ${mealSettings.dinnerEnabled ? 'checked' : ''}>
+                                <span class="status-label">${mealSettings.dinnerEnabled ? '启用' : '禁用'}</span>
+                            </label>
+                            <div class="time-group ${!mealSettings.dinnerEnabled ? 'disabled' : ''}">
+                                <input type="time" id="modalDinnerStart" value="${mealSettings.dinnerStart}" ${!mealSettings.dinnerEnabled ? 'disabled' : ''}>
                                 <span>—</span>
-                                <input type="time" id="modalDinnerEnd" value="${mealSettings.dinnerEnd}">
+                                <input type="time" id="modalDinnerEnd" value="${mealSettings.dinnerEnd}" ${!mealSettings.dinnerEnabled ? 'disabled' : ''}>
                             </div>
                         </div>
                         <div class="meal-reset-row">
@@ -2018,59 +3522,125 @@
                             </button>
                         </div>
                     </div>
-                    <!-- 时薪与密码 -->
                     <div class="settings-row">
                         <span class="row-label"><i class="fas fa-tag"></i> 时薪</span>
                         <input type="number" id="modalHourlyRate" value="${hourlyRate}" step="0.5" min="0">
                         <span class="unit-hint">元/时</span>
                         <span class="row-label" style="margin-left:8px;"><i class="fas fa-lock"></i> 密码</span>
-                        <input type="password" id="modalPasswordInput" value="${currentPassword}" placeholder="操作密码">
-                        <button class="btn-sm primary" id="modalChangePwdBtn"><i class="fas fa-key"></i> 更新</button>
+                        <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:160px;">
+                            <input type="password" id="modalPasswordInput" value="${currentPassword}" placeholder="当前密码" style="flex:1; min-width:80px; border:1px solid #e2e8f0; border-radius:40px; padding:7px 14px; font-size:0.82rem; background:white; font-weight:500; color:#0f172a; outline:none; transition:border-color 0.2s, box-shadow 0.2s;">
+                            <button class="btn-sm primary" id="modalChangePwdBtn"><i class="fas fa-edit"></i> 修改</button>
+                        </div>
                     </div>
                 </div>
                 <div class="settings-footer">
-                    <button class="btn btn-outline" id="modalSettingsCloseBtn"><i class="fas fa-times"></i> 取消</button>
+                    <button class="btn btn-outline" id="modalSettingsCloseBtn">取消</button>
                     <button class="btn btn-primary" id="modalSettingsSaveBtn"><i class="fas fa-check"></i> 保存设置</button>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
         
-        // 重置时段
+        const breakfastEnabled = document.getElementById('modalBreakfastEnabled');
+        const breakfastStart = document.getElementById('modalBreakfastStart');
+        const breakfastEnd = document.getElementById('modalBreakfastEnd');
+        const breakfastTimeGroup = breakfastStart.closest('.time-group');
+        const breakfastStatusLabel = breakfastEnabled.nextElementSibling;
+        
+        breakfastEnabled.addEventListener('change', function() {
+            const checked = this.checked;
+            breakfastStart.disabled = !checked;
+            breakfastEnd.disabled = !checked;
+            if (breakfastTimeGroup) {
+                breakfastTimeGroup.classList.toggle('disabled', !checked);
+            }
+            breakfastStatusLabel.textContent = checked ? '启用' : '禁用';
+        });
+        
+        const lunchEnabled = document.getElementById('modalLunchEnabled');
+        const lunchStart = document.getElementById('modalLunchStart');
+        const lunchEnd = document.getElementById('modalLunchEnd');
+        const lunchTimeGroup = lunchStart.closest('.time-group');
+        const lunchStatusLabel = lunchEnabled.nextElementSibling;
+        
+        lunchEnabled.addEventListener('change', function() {
+            const checked = this.checked;
+            lunchStart.disabled = !checked;
+            lunchEnd.disabled = !checked;
+            if (lunchTimeGroup) {
+                lunchTimeGroup.classList.toggle('disabled', !checked);
+            }
+            lunchStatusLabel.textContent = checked ? '启用' : '禁用';
+        });
+        
+        const dinnerEnabled = document.getElementById('modalDinnerEnabled');
+        const dinnerStart = document.getElementById('modalDinnerStart');
+        const dinnerEnd = document.getElementById('modalDinnerEnd');
+        const dinnerTimeGroup = dinnerStart.closest('.time-group');
+        const dinnerStatusLabel = dinnerEnabled.nextElementSibling;
+        
+        dinnerEnabled.addEventListener('change', function() {
+            const checked = this.checked;
+            dinnerStart.disabled = !checked;
+            dinnerEnd.disabled = !checked;
+            if (dinnerTimeGroup) {
+                dinnerTimeGroup.classList.toggle('disabled', !checked);
+            }
+            dinnerStatusLabel.textContent = checked ? '启用' : '禁用';
+        });
+        
         document.getElementById('modalResetMealBtn').onclick = function() {
+            document.getElementById('modalBreakfastStart').value = "07:00";
+            document.getElementById('modalBreakfastEnd').value = "08:00";
             document.getElementById('modalLunchStart').value = "12:00";
             document.getElementById('modalLunchEnd').value = "13:00";
             document.getElementById('modalDinnerStart').value = "18:00";
             document.getElementById('modalDinnerEnd').value = "19:00";
         };
         
-        // 修改密码
-        document.getElementById('modalChangePwdBtn').onclick = function() {
-            const newPwd = document.getElementById('modalPasswordInput').value.trim();
-            if (!newPwd) { alert("密码不能为空"); return; }
-            currentPassword = newPwd;
-            const userData = getCurrentUserData();
-            userData.settings.password = currentPassword;
-            saveAllUsersData();
-            alert("✅ 操作密码已更新");
+        document.getElementById('modalChangePwdBtn').onclick = function(e) {
+            e.stopPropagation();
+            showPasswordChangeModal();
         };
         
-        // 保存设置
         document.getElementById('modalSettingsSaveBtn').onclick = function() {
+            const bs = document.getElementById('modalBreakfastStart').value;
+            const be = document.getElementById('modalBreakfastEnd').value;
             const ls = document.getElementById('modalLunchStart').value;
             const le = document.getElementById('modalLunchEnd').value;
             const ds = document.getElementById('modalDinnerStart').value;
             const de = document.getElementById('modalDinnerEnd').value;
+            const bsEnabled = document.getElementById('modalBreakfastEnabled').checked;
+            const lsEnabled = document.getElementById('modalLunchEnabled').checked;
+            const dsEnabled = document.getElementById('modalDinnerEnabled').checked;
             const rate = parseFloat(document.getElementById('modalHourlyRate').value);
             
-            if (timeToMinutes(ls) >= timeToMinutes(le)) { alert("⚠️ 午餐开始时间必须早于结束时间"); return; }
-            if (timeToMinutes(ds) >= timeToMinutes(de)) { alert("⚠️ 晚餐开始时间必须早于结束时间"); return; }
-            if (isNaN(rate) || rate < 0) { alert("⚠️ 请输入有效的时薪（≥0）"); return; }
+            if (bsEnabled && timeToMinutes(bs) >= timeToMinutes(be)) { 
+                showToast('早餐开始时间必须早于结束时间', 'warning');
+                return; 
+            }
+            if (lsEnabled && timeToMinutes(ls) >= timeToMinutes(le)) { 
+                showToast('午餐开始时间必须早于结束时间', 'warning');
+                return; 
+            }
+            if (dsEnabled && timeToMinutes(ds) >= timeToMinutes(de)) { 
+                showToast('晚餐开始时间必须早于结束时间', 'warning');
+                return; 
+            }
+            if (isNaN(rate) || rate < 0) { 
+                showToast('请输入有效的时薪（≥0）', 'warning');
+                return; 
+            }
             
+            mealSettings.breakfastStart = bs;
+            mealSettings.breakfastEnd = be;
             mealSettings.lunchStart = ls;
             mealSettings.lunchEnd = le;
             mealSettings.dinnerStart = ds;
             mealSettings.dinnerEnd = de;
+            mealSettings.breakfastEnabled = bsEnabled;
+            mealSettings.lunchEnabled = lsEnabled;
+            mealSettings.dinnerEnabled = dsEnabled;
             hourlyRate = rate;
             
             const userData = getCurrentUserData();
@@ -2083,12 +3653,28 @@
             renderCalendar(calYear, calMonth);
             renderChart();
             
-            alert("✅ 设置已保存并生效");
+            showToast('设置已保存并生效', 'success');
             modal.remove();
+            settingsVerified = false;
         };
         
-        document.getElementById('modalSettingsCloseBtn').onclick = function() { modal.remove(); };
-        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+        document.getElementById('modalSettingsCloseBtn').onclick = function() { 
+            modal.remove(); 
+            settingsVerified = false;
+        };
+        modal.addEventListener('click', (e) => { 
+            if (e.target === modal) { 
+                modal.remove(); 
+                settingsVerified = false;
+            } 
+        });
+        
+        const pwdInput = document.getElementById('modalPasswordInput');
+        if (pwdInput) {
+            pwdInput.addEventListener('focus', function() {
+                this.select();
+            });
+        }
     }
     
     // ---------- 下拉菜单初始化 ----------
@@ -2099,7 +3685,11 @@
         toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('show'); });
         document.addEventListener('click', (e) => { if (!toggleBtn.contains(e.target) && !menu.contains(e.target)) { menu.classList.remove('show'); } });
         
-        document.getElementById('globalSettingsMenuItem').onclick = (e) => { e.stopPropagation(); showGlobalSettingsModal(); menu.classList.remove('show'); };
+        document.getElementById('globalSettingsMenuItem').onclick = (e) => { 
+            e.stopPropagation(); 
+            menu.classList.remove('show');
+            showGlobalSettingsModal();
+        };
         document.getElementById('manageUsersMenuItem').onclick = (e) => { e.stopPropagation(); showUserManagementModal(); menu.classList.remove('show'); };
         document.getElementById('exportExcelMenuItem').onclick = (e) => { e.stopPropagation(); exportToExcel(); menu.classList.remove('show'); };
         document.getElementById('exportDataMenuItem').onclick = (e) => { e.stopPropagation(); exportJSON(); menu.classList.remove('show'); };
@@ -2163,7 +3753,21 @@
         if (!allUsersData['默认用户']) {
             allUsersData['默认用户'] = {
                 records: [],
-                settings: { mealSettings: { lunchStart: "12:00", lunchEnd: "13:00", dinnerStart: "18:00", dinnerEnd: "19:00" }, hourlyRate: 25, password: "123456" }
+                settings: { 
+                    mealSettings: { 
+                        breakfastStart: "07:00",
+                        breakfastEnd: "08:00",
+                        lunchStart: "12:00", 
+                        lunchEnd: "13:00", 
+                        dinnerStart: "18:00", 
+                        dinnerEnd: "19:00",
+                        breakfastEnabled: true,
+                        lunchEnabled: true,
+                        dinnerEnabled: true
+                    }, 
+                    hourlyRate: 25, 
+                    password: "123456" 
+                }
             };
             saveAllUsersData();
         }
