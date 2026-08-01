@@ -10,6 +10,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== 原有样式保留，仅新增存储进度相关样式 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -92,7 +93,7 @@
             background: white;
             border-radius: 24px;
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-            min-width: 210px;
+            min-width: 230px;
             z-index: 100;
             border: 1px solid #e9edf2;
             overflow: hidden;
@@ -1863,24 +1864,61 @@
         .virtual-row {
             display: table-row;
         }
-        .table-pagination {
+
+        /* ===== 存储进度条样式 ===== */
+        .storage-progress-item {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 8px;
-            padding: 16px 0 8px;
-            font-size: 0.8rem;
+            gap: 12px;
+            padding: 6px 0;
+            font-size: 0.78rem;
+            color: #475569;
+            width: 100%;
         }
-        .table-pagination .page-info {
+        .storage-progress-item .label {
+            min-width: 60px;
             font-weight: 500;
             color: #1e293b;
         }
-        .table-pagination .page-total {
-            color: #94a3b8;
+        .storage-progress-item .bar-track {
+            flex: 1;
+            height: 6px;
+            background: #e9edf2;
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 80px;
+        }
+        .storage-progress-item .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #2c7a4b, #38a169);
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+        .storage-progress-item .bar-fill.warning {
+            background: linear-gradient(90deg, #d97706, #f59e0b);
+        }
+        .storage-progress-item .bar-fill.danger {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+        }
+        .storage-progress-item .size-text {
+            min-width: 70px;
+            text-align: right;
             font-size: 0.7rem;
-            margin-left: 12px;
+            color: #94a3b8;
+            font-variant-numeric: tabular-nums;
+        }
+        .storage-progress-item .size-text .used {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .storage-progress-divider {
+            border: none;
+            border-top: 1px solid #e9edf2;
+            margin: 8px 0;
         }
 
+        /* ===== 移动端适配 ===== */
         @media (max-width: 900px) {
             body {
                 padding: 16px;
@@ -2451,14 +2489,6 @@
             .fab-main .fab-label {
                 font-size: 0.4rem;
             }
-            .table-pagination {
-                flex-wrap: wrap;
-                gap: 6px;
-            }
-            .table-pagination .btn-sm {
-                padding: 3px 10px;
-                font-size: 0.65rem;
-            }
         }
 
         @media (max-width: 380px) {
@@ -2559,6 +2589,25 @@
                         <div class="settings-menu-item" id="exportExcelMenuItem"><i class="fas fa-file-excel"></i> 导出Excel</div>
                         <div class="settings-menu-item" id="exportDataMenuItem"><i class="fas fa-download"></i> JSON备份</div>
                         <div class="settings-menu-item" id="importTriggerMenuItem"><i class="fas fa-upload"></i> 导入备份</div>
+                        <div class="settings-divider"></div>
+                        <div class="settings-menu-item" id="storageStatusMenuItem" style="flex-direction:column; align-items:stretch; cursor:default; padding:12px 18px;">
+                            <div style="display:flex; align-items:center; gap:10px; width:100%;">
+                                <i class="fas fa-database" style="color:#2c7a4b; width:20px;"></i>
+                                <span style="font-weight:500; font-size:0.82rem;">存储空间</span>
+                                <span class="badge" id="storageBadge" style="font-size:0.6rem; margin-left:auto;">📊</span>
+                            </div>
+                            <div class="storage-progress-item" style="padding:6px 0 2px 30px;">
+                                <span class="label" style="min-width:44px; font-size:0.7rem;">已用</span>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="storageBarFill" style="width:0%;"></div>
+                                </div>
+                                <span class="size-text" id="storageSizeText"><span class="used">0</span> / <span id="storageTotalText">10</span> MB</span>
+                            </div>
+                            <div style="display:flex; gap:12px; padding:2px 0 0 30px; font-size:0.6rem; color:#94a3b8;">
+                                <span><i class="fas fa-file-alt"></i> 数据: <span id="storageRecordCount">0</span> 条</span>
+                                <span><i class="fas fa-user"></i> 用户: <span id="storageUserCount">0</span> 个</span>
+                            </div>
+                        </div>
                         <div class="settings-divider"></div>
                         <div class="settings-menu-item" id="resetDemoMenuItem"><i class="fas fa-undo-alt"></i> 重置示例</div>
                         <div class="settings-menu-item" id="deleteUserMenuItem" style="color:#dc2626;"><i class="fas fa-trash-alt" style="color:#dc2626;"></i> 删除当前用户</div>
@@ -2662,13 +2711,13 @@
         // ============================================================
         //  全局状态
         // ============================================================
-        let allUsersData = {};
-        let currentUser = '默认用户';
-        let workRecords = [];
-        let draftRecords = [];
-        let currentPassword = "123456";
-        let hourlyRate = 25;
-        let mealSettings = {
+        var allUsersData = {};
+        var currentUser = '默认用户';
+        var workRecords = [];
+        var draftRecords = [];
+        var currentPassword = "123456";
+        var hourlyRate = 25;
+        var mealSettings = {
             breakfastStart: "07:00",
             breakfastEnd: "08:00",
             lunchStart: "12:00",
@@ -2680,20 +2729,108 @@
             dinnerEnabled: true,
             clockPrecision: 'real'
         };
-        let currentDisplayMonth = '';
-        let highlightedDate = null;
-        let autoSaveTimer = null;
-        const AUTO_SAVE_DELAY = 3000;
-        let isDraftSaved = true;
-        let calYear = 2026,
+        var currentDisplayMonth = '';
+        var highlightedDate = null;
+        var autoSaveTimer = null;
+        var AUTO_SAVE_DELAY = 3000;
+        var isDraftSaved = true;
+        var calYear = 2026,
             calMonth = 7;
-        let trendChart = null;
-        let chartMode = 'hours';
-        let settingsVerified = false;
-        let _recentlyChangedDates = [];
-        let _useIncrementalEngine = true;
-        let _useVirtualScroll = true;
-        let _renderedDataHash = '';
+        var trendChart = null;
+        var chartMode = 'hours';
+        var settingsVerified = false;
+        var _recentlyChangedDates = [];
+        var _useIncrementalEngine = true;
+        var _useVirtualScroll = true;
+
+        // ============================================================
+        //  存储空间计算与更新
+        // ============================================================
+        function getStorageSize() {
+            var total = 0;
+            try {
+                for (var key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        var val = localStorage.getItem(key);
+                        if (val) total += val.length * 2; // UTF-16 编码
+                    }
+                }
+            } catch (e) {}
+            return total;
+        }
+
+        function updateStorageProgress() {
+            var sizeBytes = getStorageSize();
+            var sizeMB = sizeBytes / (1024 * 1024);
+            var totalMB = 10; // 假设最大 10MB
+            var percent = Math.min((sizeBytes / (totalMB * 1024 * 1024)) * 100, 100);
+
+            var bar = document.getElementById('storageBarFill');
+            var sizeText = document.getElementById('storageSizeText');
+            var badge = document.getElementById('storageBadge');
+            var recordCount = document.getElementById('storageRecordCount');
+            var userCount = document.getElementById('storageUserCount');
+
+            if (bar) {
+                bar.style.width = percent + '%';
+                bar.className = 'bar-fill';
+                if (percent > 80) bar.classList.add('danger');
+                else if (percent > 60) bar.classList.add('warning');
+            }
+
+            if (sizeText) {
+                var usedEl = sizeText.querySelector('.used');
+                if (usedEl) usedEl.textContent = sizeMB.toFixed(2);
+                var totalEl = document.getElementById('storageTotalText');
+                if (totalEl) totalEl.textContent = totalMB.toFixed(0);
+            }
+
+            if (badge) {
+                badge.textContent = percent > 80 ? '⚠️ ' + percent.toFixed(0) + '%' : '📊 ' + percent.toFixed(0) + '%';
+                badge.style.background = percent > 80 ? '#fee2e2' : '#eef2ff';
+                badge.style.color = percent > 80 ? '#dc2626' : '#1e4b6e';
+            }
+
+            if (recordCount) {
+                var totalRecs = 0;
+                for (var u in allUsersData) {
+                    if (allUsersData[u] && allUsersData[u].records) {
+                        totalRecs += allUsersData[u].records.length;
+                    }
+                }
+                recordCount.textContent = totalRecs;
+            }
+
+            if (userCount) {
+                userCount.textContent = Object.keys(allUsersData).length;
+            }
+        }
+
+        // 在数据变更时更新存储进度
+        function refreshStorageProgress() {
+            setTimeout(updateStorageProgress, 100);
+        }
+
+        // 重写保存相关函数，加入存储进度更新
+        var _origSaveAllUsersData = saveAllUsersData;
+        saveAllUsersData = function() {
+            _origSaveAllUsersData();
+            refreshStorageProgress();
+        };
+
+        // 重写 loadUserData 加入存储进度更新
+        var _origLoadUserData = loadUserData;
+        loadUserData = function() {
+            _origLoadUserData();
+            refreshStorageProgress();
+        };
+
+        // 重写 switchUser 加入存储进度更新
+        var _origSwitchUser = switchUser;
+        switchUser = function(username) {
+            _origSwitchUser(username);
+            refreshStorageProgress();
+        };
 
         // ============================================================
         //  Toast 提示
@@ -2913,11 +3050,6 @@
             return timeStr;
         }
 
-        function formatTime(minutes) {
-            if (minutes === undefined || minutes === null) return '';
-            return formatTimeWithOvernight(minutes);
-        }
-
         function getPeriodLabels(startStr, endStr) {
             if (!startStr || !endStr) return [];
             var s = timeToMinutes(startStr);
@@ -3101,7 +3233,7 @@
                     mergedDeduct.push({ start: curD.start, end: curD.end });
                     for (var md = 0; md < mergedDeduct.length; md++) {
                         mins -= getOverlapWithOvernight(range.start, range.end, mergedDeduct[md].start, mergedDeduct[md]
-                        .end);
+                            .end);
                     }
                 }
 
@@ -3537,6 +3669,242 @@
         }
 
         // ============================================================
+        //  用户数据管理
+        // ============================================================
+        function getUsersList() {
+            try {
+                var data = localStorage.getItem('allUsersData');
+                if (data) {
+                    allUsersData = JSON.parse(data);
+                    return Object.keys(allUsersData);
+                }
+            } catch (e) { console.warn('读取用户数据失败', e); }
+            return [];
+        }
+
+        function saveAllUsersData() {
+            try { localStorage.setItem('allUsersData', JSON.stringify(allUsersData)); } catch (e) { console.warn(
+                    '保存用户数据失败', e); }
+            refreshStorageProgress();
+        }
+
+        function getCurrentUserData() {
+            if (!allUsersData[currentUser]) {
+                allUsersData[currentUser] = {
+                    records: [],
+                    settings: {
+                        mealSettings: {
+                            breakfastStart: "07:00",
+                            breakfastEnd: "08:00",
+                            lunchStart: "12:00",
+                            lunchEnd: "13:00",
+                            dinnerStart: "18:00",
+                            dinnerEnd: "19:00",
+                            breakfastEnabled: true,
+                            lunchEnabled: true,
+                            dinnerEnabled: true,
+                            clockPrecision: 'real'
+                        },
+                        hourlyRate: 25,
+                        password: "123456"
+                    }
+                };
+                saveAllUsersData();
+            }
+            return allUsersData[currentUser];
+        }
+
+        function loadUserData() {
+            var userData = getCurrentUserData();
+            workRecords = userData.records || [];
+            var settings = userData.settings || {};
+            var ms = settings.mealSettings || {};
+            mealSettings = {
+                breakfastStart: ms.breakfastStart || "07:00",
+                breakfastEnd: ms.breakfastEnd || "08:00",
+                lunchStart: ms.lunchStart || "12:00",
+                lunchEnd: ms.lunchEnd || "13:00",
+                dinnerStart: ms.dinnerStart || "18:00",
+                dinnerEnd: ms.dinnerEnd || "19:00",
+                breakfastEnabled: ms.breakfastEnabled !== undefined ? ms.breakfastEnabled : true,
+                lunchEnabled: ms.lunchEnabled !== undefined ? ms.lunchEnabled : true,
+                dinnerEnabled: ms.dinnerEnabled !== undefined ? ms.dinnerEnabled : true,
+                clockPrecision: ms.clockPrecision || 'real'
+            };
+            hourlyRate = settings.hourlyRate || 25;
+            currentPassword = settings.password || "123456";
+
+            var hasDraft = false;
+            var draftKey = 'draft_' + currentUser;
+            var savedDraft = localStorage.getItem(draftKey);
+            if (savedDraft) {
+                try {
+                    var parsed = JSON.parse(savedDraft);
+                    if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                        if (confirm('检测到用户 "' + currentUser + '" 有未保存的草稿数据，是否恢复？')) {
+                            draftRecords = parsed;
+                            hasDraft = true;
+                        }
+                    }
+                } catch (e) { console.warn('草稿恢复失败', e); }
+            }
+            if (!hasDraft) {
+                draftRecords = JSON.parse(JSON.stringify(workRecords));
+            }
+
+            document.getElementById('currentUserDisplay').textContent = currentUser;
+
+            calcEngine.clearCache();
+            calcEngine.setDataSource(function(dateStr) {
+                return draftRecords.filter(function(r) { return r.dateStr === dateStr; });
+            });
+            calcEngine.onUpdate(function() {
+                renderTableIncremental();
+                updateMonthlySummaryFromDraft();
+                renderChart();
+            });
+
+            var allDates = [];
+            for (var i = 0; i < draftRecords.length; i++) {
+                if (draftRecords[i].dateStr && allDates.indexOf(draftRecords[i].dateStr) === -1) {
+                    allDates.push(draftRecords[i].dateStr);
+                }
+            }
+            if (allDates.length > 0) calcEngine.markDirtyBatch(allDates);
+
+            renderTableIncremental();
+            renderCalendar(calYear, calMonth);
+            renderChart();
+            populateMonthSelect();
+            updateMonthlySummaryFromDraft();
+
+            refreshStorageProgress();
+            setTimeout(updateFabState, 300);
+        }
+
+        function saveUserData() {
+            var userData = getCurrentUserData();
+            userData.records = workRecords;
+            userData.settings = {
+                mealSettings: mealSettings,
+                hourlyRate: hourlyRate,
+                password: currentPassword
+            };
+            saveAllUsersData();
+            localStorage.removeItem('draft_' + currentUser);
+            isDraftSaved = true;
+            refreshStorageProgress();
+            setTimeout(updateFabState, 200);
+        }
+
+        function switchUser(username) {
+            if (username === currentUser) return;
+            if (!isDraftSaved) {
+                if (!confirm('当前用户 "' + currentUser + '" 有未保存的修改，切换用户将丢失草稿。确定切换吗？')) {
+                    document.getElementById('userSelector').value = currentUser;
+                    return;
+                }
+            }
+            localStorage.removeItem('draft_' + currentUser);
+            currentUser = username;
+            if (!allUsersData[currentUser]) {
+                allUsersData[currentUser] = {
+                    records: [],
+                    settings: {
+                        mealSettings: {
+                            breakfastStart: "07:00",
+                            breakfastEnd: "08:00",
+                            lunchStart: "12:00",
+                            lunchEnd: "13:00",
+                            dinnerStart: "18:00",
+                            dinnerEnd: "19:00",
+                            breakfastEnabled: true,
+                            lunchEnabled: true,
+                            dinnerEnabled: true,
+                            clockPrecision: 'real'
+                        },
+                        hourlyRate: 25,
+                        password: "123456"
+                    }
+                };
+                saveAllUsersData();
+            }
+            highlightedDate = null;
+            loadUserData();
+            document.getElementById('userSelector').value = currentUser;
+            refreshStorageProgress();
+            setTimeout(updateFabState, 200);
+        }
+
+        function populateUserSelector() {
+            var select = document.getElementById('userSelector');
+            var users = getUsersList();
+            if (users.length === 0) {
+                allUsersData['默认用户'] = {
+                    records: [],
+                    settings: {
+                        mealSettings: {
+                            breakfastStart: "07:00",
+                            breakfastEnd: "08:00",
+                            lunchStart: "12:00",
+                            lunchEnd: "13:00",
+                            dinnerStart: "18:00",
+                            dinnerEnd: "19:00",
+                            breakfastEnabled: true,
+                            lunchEnabled: true,
+                            dinnerEnabled: true,
+                            clockPrecision: 'real'
+                        },
+                        hourlyRate: 25,
+                        password: "123456"
+                    }
+                };
+                saveAllUsersData();
+                users.push('默认用户');
+            }
+            select.innerHTML = users.map(function(u) { return '<option value="' + u + '">' + u + '</option>'; }).join('');
+            select.value = currentUser;
+        }
+
+        function populateMonthSelect() {
+            var select = document.getElementById('monthSelect');
+            var months = new Set();
+            for (var i = 0; i < workRecords.length; i++) {
+                var r = workRecords[i];
+                if (r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0, 7));
+            }
+            for (var j = 0; j < draftRecords.length; j++) {
+                var r2 = draftRecords[j];
+                if (r2.dateStr && r2.dateStr.length >= 7) months.add(r2.dateStr.substring(0, 7));
+            }
+            var arr = Array.from(months).sort();
+            if (arr.length === 0) { var now2 = new Date();
+                arr = [now2.getFullYear() + '-' + String(now2.getMonth() + 1).padStart(2, '0')]; }
+            select.innerHTML = arr.map(function(ym) { return '<option value="' + ym + '">' + ym.replace('-', '年') +
+                    '月</option>'; }).join('');
+            var now3 = new Date();
+            var currentMonth = now3.getFullYear() + '-' + String(now3.getMonth() + 1).padStart(2, '0');
+            if (arr.indexOf(currentMonth) !== -1) {
+                select.value = currentMonth;
+                currentDisplayMonth = currentMonth;
+            } else if (currentDisplayMonth && arr.indexOf(currentDisplayMonth) !== -1) {
+                select.value = currentDisplayMonth;
+            } else {
+                if (currentDisplayMonth) { currentDisplayMonth = ''; }
+                select.value = arr[0] || '';
+            }
+            updateMonthlySummaryFromDraft();
+            renderTableIncremental();
+            renderChart();
+            if (select.value) {
+                var pts = select.value.split('-');
+                calYear = parseInt(pts[0]);
+                calMonth = parseInt(pts[1]);
+                renderCalendar(calYear, calMonth);
+            }
+        }
+
+        // ============================================================
         //  表格行创建函数
         // ============================================================
         function createTableRow(index, rec) {
@@ -3552,7 +3920,6 @@
             }
             if (realIdx === -1) realIdx = index;
 
-            // 日期
             var dateCell = row.insertCell(0);
             var dateInput = document.createElement('input');
             dateInput.type = 'date';
@@ -3576,7 +3943,6 @@
             })(realIdx);
             dateCell.appendChild(dateInput);
 
-            // 上班
             var startCell = row.insertCell(1);
             var startInput = document.createElement('input');
             startInput.type = 'time';
@@ -3594,7 +3960,6 @@
             })(realIdx);
             startCell.appendChild(startInput);
 
-            // 下班
             var endCell = row.insertCell(2);
             var endInput = document.createElement('input');
             endInput.type = 'time';
@@ -3612,7 +3977,6 @@
             })(realIdx);
             endCell.appendChild(endInput);
 
-            // 不扣晚餐
             var specialCell = row.insertCell(3);
             var wrapper = document.createElement('div');
             wrapper.className = 'exclude-check';
@@ -3636,7 +4000,6 @@
             wrapper.appendChild(lbl);
             specialCell.appendChild(wrapper);
 
-            // 额外扣除
             var deductCell = row.insertCell(4);
             var deductGroup = document.createElement('div');
             deductGroup.className = 'deduct-time-group';
@@ -3701,7 +4064,6 @@
             deductGroup.appendChild(durationSpan);
             deductCell.appendChild(deductGroup);
 
-            // 时段
             var periodCell = row.insertCell(5);
             var periodHtml = '';
             var isOvernight = rec.startTime && rec.endTime && rec.startTime >= rec.endTime;
@@ -3718,7 +4080,6 @@
             }
             periodCell.innerHTML = periodHtml;
 
-            // 工时
             var hourCell = row.insertCell(6);
             var hourSpan = document.createElement('span');
             hourSpan.className = 'hours-badge';
@@ -3730,14 +4091,12 @@
             }
             hourCell.appendChild(hourSpan);
 
-            // 报酬
             var salaryCell = row.insertCell(7);
             var salarySpan = document.createElement('span');
             salarySpan.className = 'money-badge';
             salarySpan.innerText = '¥ ' + (rec.salary || 0).toFixed(2);
             salaryCell.appendChild(salarySpan);
 
-            // 备注
             var noteCell = row.insertCell(8);
             var noteInput = document.createElement('input');
             noteInput.type = 'text';
@@ -3753,7 +4112,6 @@
             })(realIdx);
             noteCell.appendChild(noteInput);
 
-            // 删除
             var actionCell = row.insertCell(9);
             var delBtn = document.createElement('button');
             delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
@@ -3827,7 +4185,6 @@
             virtualRenderer.setRowBuilder(createTableRow);
             virtualRenderer.setData(filtered);
 
-            // 对于少量数据，额外处理汇总行
             if (filtered.length <= 80) {
                 renderSummaryRows(filtered);
             }
@@ -3846,16 +4203,12 @@
                 dateGroups[rec.dateStr].push(rec);
             }
 
-            // 移除现有的汇总行
             var existing = tbody.querySelectorAll('.day-summary-row');
             for (var ei = 0; ei < existing.length; ei++) existing[ei].remove();
 
-            var sortedDates = Object.keys(dateGroups).sort();
-            // 在虚拟渲染后插入汇总行
             setTimeout(function() {
                 var rows = tbody.querySelectorAll('tr:not(.virtual-spacer)');
                 var currentDate = '';
-                var insertAfter = null;
 
                 for (var ri = 0; ri < rows.length; ri++) {
                     var row = rows[ri];
@@ -3863,7 +4216,6 @@
                     if (dateInput) {
                         var dateVal = dateInput.value;
                         if (dateVal && dateGroups[dateVal] && dateGroups[dateVal].length > 1) {
-                            // 找到该日期的第一行，在其前插入汇总行
                             if (currentDate !== dateVal) {
                                 currentDate = dateVal;
                                 var summaryRow = createSummaryRow(dateVal, dateGroups[dateVal]);
@@ -4064,7 +4416,7 @@
                     if (num) {
                         var dayNum = parseInt(num.innerText);
                         var checkDate = year + '-' + String(month).padStart(2, '0') + '-' + String(dayNum).padStart(2,
-                        '0');
+                            '0');
                         if (checkDate === highlightedDate) {
                             cell.style.boxShadow = '0 0 0 3px #2c7a4b';
                             cell.style.borderColor = '#2c7a4b';
@@ -4240,238 +4592,6 @@
         }
 
         // ============================================================
-        //  用户数据管理
-        // ============================================================
-        function getUsersList() {
-            try {
-                var data = localStorage.getItem('allUsersData');
-                if (data) {
-                    allUsersData = JSON.parse(data);
-                    return Object.keys(allUsersData);
-                }
-            } catch (e) { console.warn('读取用户数据失败', e); }
-            return [];
-        }
-
-        function saveAllUsersData() {
-            try { localStorage.setItem('allUsersData', JSON.stringify(allUsersData)); } catch (e) { console.warn(
-                    '保存用户数据失败', e); }
-        }
-
-        function getCurrentUserData() {
-            if (!allUsersData[currentUser]) {
-                allUsersData[currentUser] = {
-                    records: [],
-                    settings: {
-                        mealSettings: {
-                            breakfastStart: "07:00",
-                            breakfastEnd: "08:00",
-                            lunchStart: "12:00",
-                            lunchEnd: "13:00",
-                            dinnerStart: "18:00",
-                            dinnerEnd: "19:00",
-                            breakfastEnabled: true,
-                            lunchEnabled: true,
-                            dinnerEnabled: true,
-                            clockPrecision: 'real'
-                        },
-                        hourlyRate: 25,
-                        password: "123456"
-                    }
-                };
-                saveAllUsersData();
-            }
-            return allUsersData[currentUser];
-        }
-
-        function loadUserData() {
-            var userData = getCurrentUserData();
-            workRecords = userData.records || [];
-            var settings = userData.settings || {};
-            var ms = settings.mealSettings || {};
-            mealSettings = {
-                breakfastStart: ms.breakfastStart || "07:00",
-                breakfastEnd: ms.breakfastEnd || "08:00",
-                lunchStart: ms.lunchStart || "12:00",
-                lunchEnd: ms.lunchEnd || "13:00",
-                dinnerStart: ms.dinnerStart || "18:00",
-                dinnerEnd: ms.dinnerEnd || "19:00",
-                breakfastEnabled: ms.breakfastEnabled !== undefined ? ms.breakfastEnabled : true,
-                lunchEnabled: ms.lunchEnabled !== undefined ? ms.lunchEnabled : true,
-                dinnerEnabled: ms.dinnerEnabled !== undefined ? ms.dinnerEnabled : true,
-                clockPrecision: ms.clockPrecision || 'real'
-            };
-            hourlyRate = settings.hourlyRate || 25;
-            currentPassword = settings.password || "123456";
-
-            var hasDraft = false;
-            var draftKey = 'draft_' + currentUser;
-            var savedDraft = localStorage.getItem(draftKey);
-            if (savedDraft) {
-                try {
-                    var parsed = JSON.parse(savedDraft);
-                    if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-                        if (confirm('检测到用户 "' + currentUser + '" 有未保存的草稿数据，是否恢复？')) {
-                            draftRecords = parsed;
-                            hasDraft = true;
-                        }
-                    }
-                } catch (e) { console.warn('草稿恢复失败', e); }
-            }
-            if (!hasDraft) {
-                draftRecords = JSON.parse(JSON.stringify(workRecords));
-            }
-
-            document.getElementById('currentUserDisplay').textContent = currentUser;
-
-            calcEngine.clearCache();
-            calcEngine.setDataSource(function(dateStr) {
-                return draftRecords.filter(function(r) { return r.dateStr === dateStr; });
-            });
-            calcEngine.onUpdate(function() {
-                renderTableIncremental();
-                updateMonthlySummaryFromDraft();
-                renderChart();
-            });
-
-            var allDates = [];
-            for (var i = 0; i < draftRecords.length; i++) {
-                if (draftRecords[i].dateStr && allDates.indexOf(draftRecords[i].dateStr) === -1) {
-                    allDates.push(draftRecords[i].dateStr);
-                }
-            }
-            if (allDates.length > 0) calcEngine.markDirtyBatch(allDates);
-
-            renderTableIncremental();
-            renderCalendar(calYear, calMonth);
-            renderChart();
-            populateMonthSelect();
-            updateMonthlySummaryFromDraft();
-
-            setTimeout(updateFabState, 300);
-        }
-
-        function saveUserData() {
-            var userData = getCurrentUserData();
-            userData.records = workRecords;
-            userData.settings = {
-                mealSettings: mealSettings,
-                hourlyRate: hourlyRate,
-                password: currentPassword
-            };
-            saveAllUsersData();
-            localStorage.removeItem('draft_' + currentUser);
-            isDraftSaved = true;
-            setTimeout(updateFabState, 200);
-        }
-
-        function switchUser(username) {
-            if (username === currentUser) return;
-            if (!isDraftSaved) {
-                if (!confirm('当前用户 "' + currentUser + '" 有未保存的修改，切换用户将丢失草稿。确定切换吗？')) {
-                    document.getElementById('userSelector').value = currentUser;
-                    return;
-                }
-            }
-            localStorage.removeItem('draft_' + currentUser);
-            currentUser = username;
-            if (!allUsersData[currentUser]) {
-                allUsersData[currentUser] = {
-                    records: [],
-                    settings: {
-                        mealSettings: {
-                            breakfastStart: "07:00",
-                            breakfastEnd: "08:00",
-                            lunchStart: "12:00",
-                            lunchEnd: "13:00",
-                            dinnerStart: "18:00",
-                            dinnerEnd: "19:00",
-                            breakfastEnabled: true,
-                            lunchEnabled: true,
-                            dinnerEnabled: true,
-                            clockPrecision: 'real'
-                        },
-                        hourlyRate: 25,
-                        password: "123456"
-                    }
-                };
-                saveAllUsersData();
-            }
-            highlightedDate = null;
-            loadUserData();
-            document.getElementById('userSelector').value = currentUser;
-            setTimeout(updateFabState, 200);
-        }
-
-        function populateUserSelector() {
-            var select = document.getElementById('userSelector');
-            var users = getUsersList();
-            if (users.length === 0) {
-                allUsersData['默认用户'] = {
-                    records: [],
-                    settings: {
-                        mealSettings: {
-                            breakfastStart: "07:00",
-                            breakfastEnd: "08:00",
-                            lunchStart: "12:00",
-                            lunchEnd: "13:00",
-                            dinnerStart: "18:00",
-                            dinnerEnd: "19:00",
-                            breakfastEnabled: true,
-                            lunchEnabled: true,
-                            dinnerEnabled: true,
-                            clockPrecision: 'real'
-                        },
-                        hourlyRate: 25,
-                        password: "123456"
-                    }
-                };
-                saveAllUsersData();
-                users.push('默认用户');
-            }
-            select.innerHTML = users.map(function(u) { return '<option value="' + u + '">' + u + '</option>'; }).join('');
-            select.value = currentUser;
-        }
-
-        function populateMonthSelect() {
-            var select = document.getElementById('monthSelect');
-            var months = new Set();
-            for (var i = 0; i < workRecords.length; i++) {
-                var r = workRecords[i];
-                if (r.dateStr && r.dateStr.length >= 7) months.add(r.dateStr.substring(0, 7));
-            }
-            for (var j = 0; j < draftRecords.length; j++) {
-                var r2 = draftRecords[j];
-                if (r2.dateStr && r2.dateStr.length >= 7) months.add(r2.dateStr.substring(0, 7));
-            }
-            var arr = Array.from(months).sort();
-            if (arr.length === 0) { var now2 = new Date();
-                arr = [now2.getFullYear() + '-' + String(now2.getMonth() + 1).padStart(2, '0')]; }
-            select.innerHTML = arr.map(function(ym) { return '<option value="' + ym + '">' + ym.replace('-', '年') +
-                    '月</option>'; }).join('');
-            var now3 = new Date();
-            var currentMonth = now3.getFullYear() + '-' + String(now3.getMonth() + 1).padStart(2, '0');
-            if (arr.indexOf(currentMonth) !== -1) {
-                select.value = currentMonth;
-                currentDisplayMonth = currentMonth;
-            } else if (currentDisplayMonth && arr.indexOf(currentDisplayMonth) !== -1) {
-                select.value = currentDisplayMonth;
-            } else {
-                if (currentDisplayMonth) { currentDisplayMonth = ''; }
-                select.value = arr[0] || '';
-            }
-            updateMonthlySummaryFromDraft();
-            renderTableIncremental();
-            renderChart();
-            if (select.value) {
-                var pts = select.value.split('-');
-                calYear = parseInt(pts[0]);
-                calMonth = parseInt(pts[1]);
-                renderCalendar(calYear, calMonth);
-            }
-        }
-
-        // ============================================================
         //  保存验证
         // ============================================================
         function generateChangesDescription() {
@@ -4626,6 +4746,7 @@
                             renderCalendar(calYear, calMonth);
                             renderChart();
                             hideLoading();
+                            refreshStorageProgress();
                             showToast('所有修改已安全保存', 'success');
                         }, 300);
                         return true;
@@ -4697,6 +4818,7 @@
                 renderCalendar(calYear, calMonth);
                 renderChart();
                 populateMonthSelect();
+                refreshStorageProgress();
                 showToast('工时记录已添加', 'success');
             };
 
@@ -4744,7 +4866,8 @@
             var modal = document.getElementById('userModal');
 
             window._switchUser = function(name) { switchUser(name);
-                modal.remove(); };
+                modal.remove();
+                refreshStorageProgress(); };
             window._deleteUser = function(name) { modal.remove();
                 setTimeout(function() { deleteUserWithPassword(name); }, 100); };
 
@@ -4778,6 +4901,7 @@
                 saveAllUsersData();
                 populateUserSelector();
                 modal.remove();
+                refreshStorageProgress();
                 showToast('用户 "' + name + '" 已创建', 'success');
                 switchUser(name);
             };
@@ -4813,6 +4937,7 @@
                                 saveAllUsersData();
                                 localStorage.removeItem('draft_' + username);
                                 populateUserSelector();
+                                refreshStorageProgress();
                                 showToast('用户 "' + username + '" 已删除', 'success');
                                 return true;
                             } else return false;
@@ -4874,6 +4999,7 @@
                                 highlightedDate = null;
                                 loadUserData();
                                 populateUserSelector();
+                                refreshStorageProgress();
                                 showToast('已删除当前用户，切换到默认用户', 'success');
                                 return true;
                             } else return false;
@@ -5082,6 +5208,7 @@
                 renderCalendar(calYear, calMonth);
                 renderChart();
                 updateFabState();
+                refreshStorageProgress();
 
                 showToast('设置已保存并生效', 'success');
                 modal.remove();
@@ -5149,6 +5276,7 @@
                 var userData = getCurrentUserData();
                 userData.settings.password = currentPassword;
                 saveAllUsersData();
+                refreshStorageProgress();
                 showToast('操作密码已成功更新', 'success');
                 closeModal();
             };
@@ -5240,6 +5368,7 @@
                     renderTableIncremental();
                     renderCalendar(calYear, calMonth);
                     renderChart();
+                    refreshStorageProgress();
                     showToast('示例数据已重置（含跨夜示例）', 'success');
                 }
             });
@@ -5304,6 +5433,7 @@
                     calcEngine.clearCache();
                     calcEngine.markDirtyBatch(allDates5);
                     loadUserData();
+                    refreshStorageProgress();
                     showToast('数据导入成功', 'success');
                 } catch (err) {
                     showToast('文件格式无效', 'error');
@@ -5392,7 +5522,8 @@
             summarySheet.push(["工作天数(工时>0)", workDays2]);
             summarySheet.push(["时薪(元/小时)", hourlyRate]);
             summarySheet.push(["打卡精度", mealSettings.clockPrecision === 'real' ? '实时累计' :
-                '整点计算（签到向上取整，签退向下取整）']);
+                '整点计算（签到向上取整，签退向下取整）'
+            ]);
             summarySheet.push(["早餐时段", mealSettings.breakfastStart + ' - ' + mealSettings.breakfastEnd]);
             summarySheet.push(["午餐时段", mealSettings.lunchStart + ' - ' + mealSettings.lunchEnd]);
             summarySheet.push(["晚餐时段", mealSettings.dinnerStart + ' - ' + mealSettings.dinnerEnd]);
@@ -5408,7 +5539,7 @@
         }
 
         // ============================================================
-        //  FAB 签到/签退
+        //  FAB 签到/签退 (修复版)
         // ============================================================
         function getTodayUnclosedRecord() {
             var today6 = new Date().toISOString().slice(0, 10);
@@ -5486,7 +5617,7 @@
                     tooltip.style.display = 'block';
                 } else if (todayRecs.length > 0) {
                     var totalH2 = todayRecs.reduce(function(sum, r) { return sum + (r.mergedHours || r.hours || 0); },
-                    0);
+                        0);
                     if (totalH2 > 0) {
                         tooltip.innerHTML = '📊 今日已记录 ' + totalH2.toFixed(2) + 'h';
                         tooltip.style.display = 'block';
@@ -5584,6 +5715,7 @@
                     renderCalendar(calYear, calMonth);
                     renderChart();
                     updateFabState();
+                    refreshStorageProgress();
                     closeSheet();
                     showToast('🛌 今日已标记为休息日，0工时', 'info');
                 }
@@ -5648,6 +5780,7 @@
                 renderCalendar(calYear, calMonth);
                 renderChart();
                 updateFabState();
+                refreshStorageProgress();
                 closeSheet();
                 showToast('✅ 签到成功！' + startTime3 + ' 已记录', 'success');
             };
@@ -5739,11 +5872,64 @@
                 }
                 if (idx !== -1) {
                     var dateStr6 = draftRecords[idx].dateStr;
+
                     draftRecords[idx].endTime = endTime2;
                     draftRecords[idx].note = noteInput2.value.trim() || draftRecords[idx].note || '';
                     draftRecords[idx].excludeDinner = excludeDinner.checked;
                     draftRecords[idx].clockOutTime = new Date().toISOString();
                     draftRecords[idx].status = 'completed';
+
+                    var hours = calculateNetHours(
+                        draftRecords[idx].startTime,
+                        draftRecords[idx].endTime,
+                        draftRecords[idx].excludeDinner || false,
+                        draftRecords[idx].deductStart || '',
+                        draftRecords[idx].deductEnd || '',
+                        false
+                    );
+                    draftRecords[idx].hours = hours;
+                    draftRecords[idx].salary = getSalary(hours);
+
+                    if (draftRecords[idx].deductStart && draftRecords[idx].deductEnd) {
+                        var dsm3 = timeToMinutes(draftRecords[idx].deductStart);
+                        var dem3 = timeToMinutes(draftRecords[idx].deductEnd);
+                        if (dsm3 !== null && dem3 !== null && dsm3 < dem3) {
+                            draftRecords[idx].deductMinutes = dem3 - dsm3;
+                        } else {
+                            draftRecords[idx].deductMinutes = 0;
+                        }
+                    } else {
+                        draftRecords[idx].deductMinutes = 0;
+                    }
+
+                    if (draftRecords[idx].startTime && draftRecords[idx].endTime) {
+                        var periods4 = getPeriodLabels(draftRecords[idx].startTime, draftRecords[idx].endTime);
+                        draftRecords[idx].periodLabels = periods4;
+                        draftRecords[idx].periodLabel = periods4.map(function(p) { return p.label; }).join('、');
+                        draftRecords[idx].periodCls = periods4.length > 0 ? periods4[0].cls : '';
+                    }
+
+                    var sameDayRecords = draftRecords.filter(function(r) {
+                        return r.dateStr === dateStr6 && r.startTime && r.endTime;
+                    });
+
+                    if (sameDayRecords.length > 1) {
+                        var mergedResult2 = calculateDayMergedHours(sameDayRecords);
+                        for (var mi3 = 0; mi3 < sameDayRecords.length; mi3++) {
+                            sameDayRecords[mi3].mergedHours = mergedResult2.totalHours;
+                            sameDayRecords[mi3].mergedSalary = mergedResult2.totalSalary;
+                            sameDayRecords[mi3].hasConflict = mergedResult2.hasConflict;
+                            sameDayRecords[mi3].conflictCount = mergedResult2.conflicts ? mergedResult2.conflicts
+                                .length : 0;
+                            sameDayRecords[mi3].mergedRanges = mergedResult2.mergedRanges;
+                        }
+                    } else {
+                        draftRecords[idx].mergedHours = draftRecords[idx].hours;
+                        draftRecords[idx].mergedSalary = draftRecords[idx].salary;
+                        draftRecords[idx].hasConflict = false;
+                        draftRecords[idx].conflictCount = 0;
+                        draftRecords[idx].mergedRanges = [];
+                    }
 
                     trackChange(dateStr6);
                     updateDraftHoursAndSalary();
@@ -5751,11 +5937,13 @@
                     renderCalendar(calYear, calMonth);
                     renderChart();
                     updateFabState();
+                    refreshStorageProgress();
                     closeSheet2();
 
-                    var hours4 = draftRecords[idx].mergedHours || draftRecords[idx].hours || 0;
-                    var salary2 = draftRecords[idx].mergedSalary || draftRecords[idx].salary || 0;
-                    showToast('✅ 签退成功！今日工时 ' + hours4.toFixed(2) + 'h，报酬 ¥' + salary2.toFixed(2), 'success');
+                    var finalHours = draftRecords[idx].mergedHours || draftRecords[idx].hours || 0;
+                    var finalSalary = draftRecords[idx].mergedSalary || draftRecords[idx].salary || 0;
+                    showToast('✅ 签退成功！今日工时 ' + finalHours.toFixed(2) + 'h，报酬 ¥' + finalSalary.toFixed(2),
+                        'success');
                 } else {
                     showToast('记录异常，请刷新重试', 'error');
                     closeSheet2();
@@ -5797,14 +5985,15 @@
         }
 
         // ============================================================
-        //  下拉菜单初始化
+        //  下拉菜单初始化 (含存储进度)
         // ============================================================
         function initSettingsDropdown() {
             var toggleBtn = document.getElementById('settingsToggleBtn');
             var menu = document.getElementById('settingsMenu');
             if (!toggleBtn || !menu) return;
             toggleBtn.addEventListener('click', function(e) { e.stopPropagation();
-                menu.classList.toggle('show'); });
+                menu.classList.toggle('show');
+                if (menu.classList.contains('show')) { refreshStorageProgress(); } });
             document.addEventListener('click', function(e) {
                 if (!toggleBtn.contains(e.target) && !menu.contains(e.target)) { menu.classList.remove('show'); }
             });
@@ -5958,6 +6147,10 @@
             bindEvents();
             initSettingsDropdown();
             initFab();
+            refreshStorageProgress();
+
+            // 定期刷新存储进度
+            setInterval(refreshStorageProgress, 30000);
 
             var resizeTimer2;
             window.addEventListener('resize', function() {
@@ -5965,10 +6158,11 @@
                 resizeTimer2 = setTimeout(function() { if (trendChart) trendChart.resize(); }, 300);
             });
 
-            console.log('🚀 钟点工时管家 · 高性能版已启动');
+            console.log('🚀 钟点工时管家 · 高性能版已启动 (含存储进度条)');
             console.log('📊 当前数据: ' + draftRecords.length + ' 条记录');
             console.log('⚡ 增量计算引擎: ' + (_useIncrementalEngine ? '启用' : '禁用'));
             console.log('📋 虚拟滚动: ' + (_useVirtualScroll ? '启用' : '禁用'));
+            console.log('💾 存储空间: ' + (getStorageSize() / (1024 * 1024)).toFixed(2) + ' MB');
         }
 
         init();
