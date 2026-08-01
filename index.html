@@ -3414,6 +3414,9 @@
 
         function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
 
+        // ============================================================
+        //  【修复】calculateDayMergedHours - 修复额外扣除不生效问题
+        // ============================================================
         function calculateDayMergedHours(records) {
             if (!records || records.length === 0) return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
 
@@ -3424,7 +3427,6 @@
                 let e = timeToMinutes(rec.endTime);
                 if (s === null || e === null) continue;
 
-                // 处理跨夜：如果开始时间 >= 结束时间，将结束时间加24小时
                 const adjusted = getAdjustedTimes(s, e);
                 ranges.push({
                     start: adjusted.start,
@@ -3469,6 +3471,8 @@
             const mergedRanges = [];
             for (const range of merged) {
                 let mins = range.end - range.start;
+
+                // 早餐扣减
                 if (mealSettings.breakfastEnabled) {
                     let bs = timeToMinutes(mealSettings.breakfastStart),
                         be = timeToMinutes(mealSettings.breakfastEnd);
@@ -3476,6 +3480,7 @@
                         mins -= getOverlapWithOvernight(range.start, range.end, bs, be);
                     }
                 }
+                // 午餐扣减
                 if (mealSettings.lunchEnabled) {
                     let ls = timeToMinutes(mealSettings.lunchStart),
                         le = timeToMinutes(mealSettings.lunchEnd);
@@ -3483,6 +3488,7 @@
                         mins -= getOverlapWithOvernight(range.start, range.end, ls, le);
                     }
                 }
+                // 晚餐扣减
                 if (mealSettings.dinnerEnabled && !range.excludeDinner) {
                     let ds = timeToMinutes(mealSettings.dinnerStart),
                         de = timeToMinutes(mealSettings.dinnerEnd);
@@ -3490,8 +3496,12 @@
                         mins -= getOverlapWithOvernight(range.start, range.end, ds, de);
                     }
                 }
+
+                // ====== 【修复】额外扣除逻辑（支持单条和多条记录） ======
+                const deductRanges = [];
+
+                // 处理多条记录合并的情况
                 if (range.originals) {
-                    const deductRanges = [];
                     for (const orig of range.originals) {
                         if (orig.deductStart && orig.deductEnd) {
                             const ds = timeToMinutes(orig.deductStart);
@@ -3501,24 +3511,36 @@
                             }
                         }
                     }
-                    if (deductRanges.length > 0) {
-                        deductRanges.sort((a, b) => a.start - b.start);
-                        let mergedDeduct = [];
-                        let cur = { ...deductRanges[0] };
-                        for (let i = 1; i < deductRanges.length; i++) {
-                            if (deductRanges[i].start <= cur.end) {
-                                cur.end = Math.max(cur.end, deductRanges[i].end);
-                            } else {
-                                mergedDeduct.push(cur);
-                                cur = { ...deductRanges[i] };
-                            }
-                        }
-                        mergedDeduct.push(cur);
-                        for (const d of mergedDeduct) {
-                            mins -= getOverlapWithOvernight(range.start, range.end, d.start, d.end);
-                        }
+                }
+
+                // 【修复】处理单条记录的情况（range.original 存在）
+                if (range.original && range.original.deductStart && range.original.deductEnd) {
+                    const ds = timeToMinutes(range.original.deductStart);
+                    const de = timeToMinutes(range.original.deductEnd);
+                    if (ds !== null && de !== null) {
+                        deductRanges.push({ start: ds, end: de });
                     }
                 }
+
+                // 合并重叠的扣除区间并扣减
+                if (deductRanges.length > 0) {
+                    deductRanges.sort((a, b) => a.start - b.start);
+                    const mergedDeduct = [];
+                    let cur = { ...deductRanges[0] };
+                    for (let i = 1; i < deductRanges.length; i++) {
+                        if (deductRanges[i].start <= cur.end) {
+                            cur.end = Math.max(cur.end, deductRanges[i].end);
+                        } else {
+                            mergedDeduct.push(cur);
+                            cur = { ...deductRanges[i] };
+                        }
+                    }
+                    mergedDeduct.push(cur);
+                    for (const d of mergedDeduct) {
+                        mins -= getOverlapWithOvernight(range.start, range.end, d.start, d.end);
+                    }
+                }
+
                 mins = Math.max(0, mins);
                 totalMins += mins;
 
