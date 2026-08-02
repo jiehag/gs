@@ -1863,22 +1863,43 @@
         .virtual-row {
             display: table-row;
         }
-        .table-pagination {
+
+        .sheet-deduct-group {
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 8px;
-            padding: 16px 0 8px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+        }
+        .sheet-deduct-group input[type="time"] {
+            border: none;
+            background: transparent;
+            padding: 4px 6px;
             font-size: 0.8rem;
-        }
-        .table-pagination .page-info {
+            width: 70px;
             font-weight: 500;
-            color: #1e293b;
+            color: #0f172a;
+            outline: none;
+            border-radius: 30px;
         }
-        .table-pagination .page-total {
+        .sheet-deduct-group input[type="time"]:focus {
+            background: #f1f5f9;
+        }
+        .sheet-deduct-group span {
             color: #94a3b8;
             font-size: 0.7rem;
-            margin-left: 12px;
+        }
+        .sheet-deduct-group .deduct-preview {
+            font-size: 0.65rem;
+            color: #2c7a4b;
+            background: #e6f0eb;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
         }
 
         @media (max-width: 900px) {
@@ -2136,6 +2157,14 @@
             }
             .fab-sheet .sheet-buttons .btn-rest {
                 flex: 1;
+            }
+            .sheet-deduct-group {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .sheet-deduct-group input[type="time"] {
+                width: 60px;
+                font-size: 0.7rem;
             }
         }
 
@@ -2451,13 +2480,18 @@
             .fab-main .fab-label {
                 font-size: 0.4rem;
             }
-            .table-pagination {
-                flex-wrap: wrap;
-                gap: 6px;
+            .sheet-deduct-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                padding: 8px 12px;
             }
-            .table-pagination .btn-sm {
-                padding: 3px 10px;
-                font-size: 0.65rem;
+            .sheet-deduct-group input[type="time"] {
+                width: 100%;
+                font-size: 0.75rem;
+            }
+            .sheet-deduct-group .deduct-preview {
+                align-self: center;
             }
         }
 
@@ -2624,6 +2658,8 @@
                 <i class="fas fa-info-circle"></i> 同一日多行记录自动合并计算总工时，重叠时段自动扣除，并自动标识时段类型。支持跨夜工作（如 22:00-02:00）。
                 <br><i class="fas fa-clock"></i> 整点计算模式：签到向上取整（9:05→9:30），签退向下取整（9:55→9:30）。
                 <br><i class="fas fa-rocket"></i> <span id="perfStatusTip">⚡ 高性能模式已启用（增量计算+虚拟滚动）</span>
+                <br><i class="fas fa-bolt" style="color:#d97706;"></i> <span style="font-weight:600;color:#b45309;">📌 签到/签退自动保存，无需额外操作</span>
+                <br><i class="fas fa-check-circle" style="color:#2c7a4b;"></i> <span style="font-weight:600;color:#2c7a4b;">✅ 额外扣除已修复：修改后工时立即更新</span>
             </div>
             <div style="overflow-x:auto; position:relative;">
                 <table>
@@ -2662,13 +2698,13 @@
         // ============================================================
         //  全局状态
         // ============================================================
-        let allUsersData = {};
-        let currentUser = '默认用户';
-        let workRecords = [];
-        let draftRecords = [];
-        let currentPassword = "123456";
-        let hourlyRate = 25;
-        let mealSettings = {
+        var allUsersData = {};
+        var currentUser = '默认用户';
+        var workRecords = [];
+        var draftRecords = [];
+        var currentPassword = "123456";
+        var hourlyRate = 25;
+        var mealSettings = {
             breakfastStart: "07:00",
             breakfastEnd: "08:00",
             lunchStart: "12:00",
@@ -2680,20 +2716,30 @@
             dinnerEnabled: true,
             clockPrecision: 'real'
         };
-        let currentDisplayMonth = '';
-        let highlightedDate = null;
-        let autoSaveTimer = null;
-        const AUTO_SAVE_DELAY = 3000;
-        let isDraftSaved = true;
-        let calYear = 2026,
+        var currentDisplayMonth = '';
+        var highlightedDate = null;
+        var autoSaveTimer = null;
+        var AUTO_SAVE_DELAY = 3000;
+        var isDraftSaved = true;
+        var calYear = 2026,
             calMonth = 7;
-        let trendChart = null;
-        let chartMode = 'hours';
-        let settingsVerified = false;
-        let _recentlyChangedDates = [];
-        let _useIncrementalEngine = true;
-        let _useVirtualScroll = true;
-        let _renderedDataHash = '';
+        var trendChart = null;
+        var chartMode = 'hours';
+        var settingsVerified = false;
+        var _recentlyChangedDates = [];
+        var _useIncrementalEngine = true;
+        var _useVirtualScroll = true;
+
+        // ============================================================
+        //  辅助函数：获取本地日期字符串
+        // ============================================================
+        function getLocalDateStr(date) {
+            date = date || new Date();
+            var y = date.getFullYear();
+            var m = String(date.getMonth() + 1).padStart(2, '0');
+            var d = String(date.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + d;
+        }
 
         // ============================================================
         //  Toast 提示
@@ -2879,6 +2925,9 @@
 
         function getAdjustedTimes(start, end) {
             if (start === null || end === null) return { start: start, end: end, isOvernight: false, adjustedEnd: end };
+            if (start === end) {
+                return { start: start, end: end, isOvernight: false, adjustedEnd: end };
+            }
             if (start >= end) {
                 return { start: start, end: end + 24 * 60, isOvernight: true, adjustedEnd: end + 24 * 60 };
             }
@@ -2911,11 +2960,6 @@
             var timeStr = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
             if (day > 0) return '+' + day + 'd ' + timeStr;
             return timeStr;
-        }
-
-        function formatTime(minutes) {
-            if (minutes === undefined || minutes === null) return '';
-            return formatTimeWithOvernight(minutes);
         }
 
         function getPeriodLabels(startStr, endStr) {
@@ -2955,6 +2999,43 @@
         function getSalary(hours) { return Math.round(hours * hourlyRate * 100) / 100; }
 
         // ============================================================
+        //  统一额外扣除计算函数
+        // ============================================================
+        function applyDeductionToMinutes(totalMins, startMinutes, endMinutes, deductStart, deductEnd) {
+            if (deductStart && deductEnd) {
+                var ds = timeToMinutes(deductStart);
+                var de = timeToMinutes(deductEnd);
+                if (ds !== null && de !== null) {
+                    totalMins -= getOverlapWithOvernight(startMinutes, endMinutes, ds, de);
+                }
+            }
+            return Math.max(0, totalMins);
+        }
+
+        function applyDeductionsToMergedRanges(startMinutes, endMinutes, deductRanges) {
+            var totalMins = endMinutes - startMinutes;
+            if (!deductRanges || deductRanges.length === 0) return totalMins;
+
+            var sorted = deductRanges.slice().sort(function(a, b) { return a.start - b.start; });
+            var merged = [];
+            var cur = { start: sorted[0].start, end: sorted[0].end };
+            for (var i = 1; i < sorted.length; i++) {
+                if (sorted[i].start <= cur.end) {
+                    cur.end = Math.max(cur.end, sorted[i].end);
+                } else {
+                    merged.push({ start: cur.start, end: cur.end });
+                    cur = { start: sorted[i].start, end: sorted[i].end };
+                }
+            }
+            merged.push({ start: cur.start, end: cur.end });
+
+            for (var mi = 0; mi < merged.length; mi++) {
+                totalMins -= getOverlapWithOvernight(startMinutes, endMinutes, merged[mi].start, merged[mi].end);
+            }
+            return Math.max(0, totalMins);
+        }
+
+        // ============================================================
         //  工时计算核心
         // ============================================================
         function calculateNetHours(startStr, endStr, excludeDinner, customDeductStart, customDeductEnd, isMerged) {
@@ -2967,6 +3048,7 @@
                 e = adjusted.end;
             var totalMins = e - s;
             if (totalMins <= 0) return 0;
+
             if (mealSettings.breakfastEnabled) {
                 var bs = timeToMinutes(mealSettings.breakfastStart),
                     be = timeToMinutes(mealSettings.breakfastEnd);
@@ -2982,17 +3064,88 @@
                     de = timeToMinutes(mealSettings.dinnerEnd);
                 if (ds !== null && de !== null) totalMins -= getOverlapWithOvernight(s, e, ds, de);
             }
-            if (!isMerged && customDeductStart && customDeductEnd) {
-                var cds = timeToMinutes(customDeductStart),
-                    cde = timeToMinutes(customDeductEnd);
-                if (cds !== null && cde !== null) totalMins -= getOverlapWithOvernight(s, e, cds, cde);
+
+            if (!isMerged) {
+                totalMins = applyDeductionToMinutes(totalMins, s, e, customDeductStart, customDeductEnd);
             }
+
             totalMins = Math.max(0, totalMins);
             return Math.round((totalMins / 60) * 100) / 100;
         }
 
+        // ============================================================
+        //  数据完整性保障
+        // ============================================================
+        function ensureRecordFields(record) {
+            if (!record) return record;
+            if (record.deductMinutes === undefined) record.deductMinutes = 0;
+            if (record.hours === undefined) record.hours = 0;
+            if (record.salary === undefined) record.salary = 0;
+            if (record.mergedHours === undefined) record.mergedHours = 0;
+            if (record.mergedSalary === undefined) record.mergedSalary = 0;
+            if (record.hasConflict === undefined) record.hasConflict = false;
+            if (record.conflictCount === undefined) record.conflictCount = 0;
+            if (record.periodLabels === undefined) record.periodLabels = [];
+            if (record.periodLabel === undefined) record.periodLabel = '';
+            if (record.periodCls === undefined) record.periodCls = '';
+            if (record.mergedRanges === undefined) record.mergedRanges = [];
+            if (record.excludeDinner === undefined) record.excludeDinner = false;
+            if (record.deductStart === undefined) record.deductStart = '';
+            if (record.deductEnd === undefined) record.deductEnd = '';
+            if (record.status === undefined) record.status = '';
+            if (record.clockSource === undefined) record.clockSource = '';
+            return record;
+        }
+
+        // ============================================================
+        //  立即重新计算单条记录
+        // ============================================================
+        function recalculateSingleRecord(record) {
+            if (!record) return;
+            if (record.startTime && record.endTime) {
+                record.hours = calculateNetHours(
+                    record.startTime,
+                    record.endTime,
+                    record.excludeDinner || false,
+                    record.deductStart || '',
+                    record.deductEnd || '',
+                    false
+                );
+                record.salary = getSalary(record.hours);
+            } else {
+                record.hours = 0;
+                record.salary = 0;
+            }
+
+            if (record.deductStart && record.deductEnd) {
+                var dsm = timeToMinutes(record.deductStart);
+                var dem = timeToMinutes(record.deductEnd);
+                if (dsm !== null && dem !== null && dsm < dem) {
+                    record.deductMinutes = dem - dsm;
+                } else {
+                    record.deductMinutes = 0;
+                }
+            } else {
+                record.deductMinutes = 0;
+            }
+
+            if (record.startTime && record.endTime) {
+                var periods = getPeriodLabels(record.startTime, record.endTime);
+                record.periodLabels = periods;
+                record.periodLabel = periods.map(function(p) { return p.label; }).join('、');
+                record.periodCls = periods.length > 0 ? periods[0].cls : '';
+            }
+
+            return record;
+        }
+
+        // ============================================================
+        //  合并计算（支持多段记录）
+        // ============================================================
         function calculateDayMergedHours(records) {
-            if (!records || records.length === 0) return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+            if (!records || records.length === 0) {
+                return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+            }
 
             var ranges = [];
             for (var ri = 0; ri < records.length; ri++) {
@@ -3013,7 +3166,9 @@
                 });
             }
 
-            if (ranges.length === 0) return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+            if (ranges.length === 0) {
+                return { totalHours: 0, totalSalary: 0, mergedRanges: [] };
+            }
 
             ranges.sort(function(a, b) { return a.start - b.start; });
 
@@ -3025,7 +3180,7 @@
 
             for (var i = 1; i < ranges.length; i++) {
                 var next = ranges[i];
-                if (next.start <= current.end) {
+                if (next.start < current.end) {
                     hasConflict = true;
                     conflicts.push({ a: current, b: next });
                     current.end = Math.max(current.end, next.end);
@@ -3054,19 +3209,25 @@
                 var mins = range.end - range.start;
 
                 if (mealSettings.breakfastEnabled) {
-                    var bs2 = timeToMinutes(mealSettings.breakfastStart),
-                        be2 = timeToMinutes(mealSettings.breakfastEnd);
-                    if (bs2 !== null && be2 !== null) mins -= getOverlapWithOvernight(range.start, range.end, bs2, be2);
+                    var bs2 = timeToMinutes(mealSettings.breakfastStart);
+                    var be2 = timeToMinutes(mealSettings.breakfastEnd);
+                    if (bs2 !== null && be2 !== null) {
+                        mins -= getOverlapWithOvernight(range.start, range.end, bs2, be2);
+                    }
                 }
                 if (mealSettings.lunchEnabled) {
-                    var ls2 = timeToMinutes(mealSettings.lunchStart),
-                        le2 = timeToMinutes(mealSettings.lunchEnd);
-                    if (ls2 !== null && le2 !== null) mins -= getOverlapWithOvernight(range.start, range.end, ls2, le2);
+                    var ls2 = timeToMinutes(mealSettings.lunchStart);
+                    var le2 = timeToMinutes(mealSettings.lunchEnd);
+                    if (ls2 !== null && le2 !== null) {
+                        mins -= getOverlapWithOvernight(range.start, range.end, ls2, le2);
+                    }
                 }
                 if (mealSettings.dinnerEnabled && !range.excludeDinner) {
-                    var ds2 = timeToMinutes(mealSettings.dinnerStart),
-                        de2 = timeToMinutes(mealSettings.dinnerEnd);
-                    if (ds2 !== null && de2 !== null) mins -= getOverlapWithOvernight(range.start, range.end, ds2, de2);
+                    var ds2 = timeToMinutes(mealSettings.dinnerStart);
+                    var de2 = timeToMinutes(mealSettings.dinnerEnd);
+                    if (ds2 !== null && de2 !== null) {
+                        mins -= getOverlapWithOvernight(range.start, range.end, ds2, de2);
+                    }
                 }
 
                 var deductRanges = [];
@@ -3076,33 +3237,22 @@
                         if (orig.deductStart && orig.deductEnd) {
                             var dds = timeToMinutes(orig.deductStart);
                             var dde = timeToMinutes(orig.deductEnd);
-                            if (dds !== null && dde !== null) deductRanges.push({ start: dds, end: dde });
+                            if (dds !== null && dde !== null) {
+                                deductRanges.push({ start: dds, end: dde });
+                            }
                         }
                     }
                 }
                 if (range.original && range.original.deductStart && range.original.deductEnd) {
                     var ods = timeToMinutes(range.original.deductStart);
                     var ode = timeToMinutes(range.original.deductEnd);
-                    if (ods !== null && ode !== null) deductRanges.push({ start: ods, end: ode });
+                    if (ods !== null && ode !== null) {
+                        deductRanges.push({ start: ods, end: ode });
+                    }
                 }
 
                 if (deductRanges.length > 0) {
-                    deductRanges.sort(function(a, b) { return a.start - b.start; });
-                    var mergedDeduct = [];
-                    var curD = { start: deductRanges[0].start, end: deductRanges[0].end };
-                    for (var di = 1; di < deductRanges.length; di++) {
-                        if (deductRanges[di].start <= curD.end) {
-                            curD.end = Math.max(curD.end, deductRanges[di].end);
-                        } else {
-                            mergedDeduct.push({ start: curD.start, end: curD.end });
-                            curD = { start: deductRanges[di].start, end: deductRanges[di].end };
-                        }
-                    }
-                    mergedDeduct.push({ start: curD.start, end: curD.end });
-                    for (var md = 0; md < mergedDeduct.length; md++) {
-                        mins -= getOverlapWithOvernight(range.start, range.end, mergedDeduct[md].start, mergedDeduct[md]
-                        .end);
-                    }
+                    mins = applyDeductionsToMergedRanges(range.start, range.end, deductRanges);
                 }
 
                 mins = Math.max(0, mins);
@@ -3426,7 +3576,7 @@
         };
 
         // ============================================================
-        //  核心数据操作
+        //  核心数据操作 - 【修复】额外扣除后工时立即更新
         // ============================================================
         function trackChange(dateStr) {
             if (dateStr && _recentlyChangedDates.indexOf(dateStr) === -1) {
@@ -3441,44 +3591,40 @@
         }
 
         function updateDraftHoursAndSalary() {
+            for (var ri = 0; ri < draftRecords.length; ri++) {
+                draftRecords[ri] = ensureRecordFields(draftRecords[ri]);
+            }
+
             if (_useIncrementalEngine) {
                 var changedDates = getRecentlyChangedDates();
+
+                // 立即重新计算所有记录的单个工时
+                for (var ri2 = 0; ri2 < draftRecords.length; ri2++) {
+                    recalculateSingleRecord(draftRecords[ri2]);
+                }
+
                 if (changedDates.length > 0) {
                     calcEngine.markDirtyBatch(changedDates);
-                    return;
-                }
-                var allDates = [];
-                for (var i = 0; i < draftRecords.length; i++) {
-                    if (draftRecords[i].dateStr && allDates.indexOf(draftRecords[i].dateStr) === -1) {
-                        allDates.push(draftRecords[i].dateStr);
+                } else {
+                    var allDates = [];
+                    for (var di = 0; di < draftRecords.length; di++) {
+                        if (draftRecords[di].dateStr && allDates.indexOf(draftRecords[di].dateStr) === -1) {
+                            allDates.push(draftRecords[di].dateStr);
+                        }
                     }
+                    if (allDates.length > 0) calcEngine.markDirtyBatch(allDates);
                 }
-                if (allDates.length > 0) calcEngine.markDirtyBatch(allDates);
                 return;
             }
 
             // 传统模式
-            for (var ri = 0; ri < draftRecords.length; ri++) {
-                var rec = draftRecords[ri];
-                if (rec.startTime && rec.endTime) {
-                    rec.hours = calculateNetHours(rec.startTime, rec.endTime, rec.excludeDinner || false,
-                        rec.deductStart || '', rec.deductEnd || '', false);
-                    rec.salary = getSalary(rec.hours);
-                } else {
-                    rec.hours = 0;
-                    rec.salary = 0;
-                }
-                if (rec.deductStart && rec.deductEnd) {
-                    var dsm = timeToMinutes(rec.deductStart);
-                    var dem = timeToMinutes(rec.deductEnd);
-                    if (dsm !== null && dem !== null && dsm < dem) rec.deductMinutes = dem - dsm;
-                    else rec.deductMinutes = 0;
-                } else rec.deductMinutes = 0;
+            for (var ri3 = 0; ri3 < draftRecords.length; ri3++) {
+                recalculateSingleRecord(draftRecords[ri3]);
             }
 
             var dateGroups = {};
-            for (var di = 0; di < draftRecords.length; di++) {
-                var r = draftRecords[di];
+            for (var di2 = 0; di2 < draftRecords.length; di2++) {
+                var r = draftRecords[di2];
                 if (!r.dateStr) continue;
                 if (!dateGroups[r.dateStr]) dateGroups[r.dateStr] = [];
                 dateGroups[r.dateStr].push(r);
@@ -3488,41 +3634,33 @@
                 var records = dateGroups[dateStr];
                 if (records.length > 1) {
                     var result = calculateDayMergedHours(records);
-                    for (var ri2 = 0; ri2 < records.length; ri2++) {
-                        var rec2 = records[ri2];
-                        rec2.mergedHours = result.totalHours;
-                        rec2.mergedSalary = result.totalSalary;
-                        rec2.hasConflict = result.hasConflict;
-                        rec2.conflictCount = result.conflicts ? result.conflicts.length : 0;
-                        rec2.mergedRanges = result.mergedRanges;
-                        if (rec2.startTime && rec2.endTime) {
-                            var periods = getPeriodLabels(rec2.startTime, rec2.endTime);
-                            rec2.periodLabels = periods;
-                            rec2.periodLabel = periods.map(function(p) { return p.label; }).join('、');
-                            rec2.periodCls = periods.length > 0 ? periods[0].cls : '';
-                        } else {
-                            rec2.periodLabels = [];
-                            rec2.periodLabel = '';
-                            rec2.periodCls = '';
+                    for (var ri4 = 0; ri4 < records.length; ri4++) {
+                        var rec3 = records[ri4];
+                        rec3.mergedHours = result.totalHours;
+                        rec3.mergedSalary = result.totalSalary;
+                        rec3.hasConflict = result.hasConflict;
+                        rec3.conflictCount = result.conflicts ? result.conflicts.length : 0;
+                        rec3.mergedRanges = result.mergedRanges;
+                        if (rec3.startTime && rec3.endTime) {
+                            var periods2 = getPeriodLabels(rec3.startTime, rec3.endTime);
+                            rec3.periodLabels = periods2;
+                            rec3.periodLabel = periods2.map(function(p) { return p.label; }).join('、');
+                            rec3.periodCls = periods2.length > 0 ? periods2[0].cls : '';
                         }
                     }
                 } else {
-                    var rec3 = records[0];
-                    if (rec3.startTime && rec3.endTime) {
-                        var periods2 = getPeriodLabels(rec3.startTime, rec3.endTime);
-                        rec3.periodLabels = periods2;
-                        rec3.periodLabel = periods2.map(function(p) { return p.label; }).join('、');
-                        rec3.periodCls = periods2.length > 0 ? periods2[0].cls : '';
-                    } else {
-                        rec3.periodLabels = [];
-                        rec3.periodLabel = '';
-                        rec3.periodCls = '';
+                    var rec4 = records[0];
+                    if (rec4.startTime && rec4.endTime) {
+                        var periods3 = getPeriodLabels(rec4.startTime, rec4.endTime);
+                        rec4.periodLabels = periods3;
+                        rec4.periodLabel = periods3.map(function(p) { return p.label; }).join('、');
+                        rec4.periodCls = periods3.length > 0 ? periods3[0].cls : '';
                     }
-                    rec3.mergedHours = rec3.hours;
-                    rec3.mergedSalary = rec3.salary;
-                    rec3.hasConflict = false;
-                    rec3.conflictCount = 0;
-                    rec3.mergedRanges = [];
+                    rec4.mergedHours = rec4.hours;
+                    rec4.mergedSalary = rec4.salary;
+                    rec4.hasConflict = false;
+                    rec4.conflictCount = 0;
+                    rec4.mergedRanges = [];
                 }
             }
             markDraftChanged();
@@ -3537,10 +3675,11 @@
         }
 
         // ============================================================
-        //  表格行创建函数
+        //  表格行创建函数 - 【关键修复】额外扣除绑定
         // ============================================================
         function createTableRow(index, rec) {
             if (!rec) return null;
+            rec = ensureRecordFields(rec);
             var row = document.createElement('tr');
             if (highlightedDate && rec.dateStr === highlightedDate) {
                 row.className = 'highlight-row';
@@ -3636,7 +3775,9 @@
             wrapper.appendChild(lbl);
             specialCell.appendChild(wrapper);
 
-            // 额外扣除
+            // ============================================================
+            //  【关键修复】额外扣除单元格 - 修改后工时立即更新
+            // ============================================================
             var deductCell = row.insertCell(4);
             var deductGroup = document.createElement('div');
             deductGroup.className = 'deduct-time-group';
@@ -3671,13 +3812,17 @@
                     var de = deductEnd.value;
                     draftRecords[idx].deductStart = ds;
                     draftRecords[idx].deductEnd = de;
+
                     var mins3 = 0;
                     if (ds && de) {
                         var dsm2 = timeToMinutes(ds);
                         var dem2 = timeToMinutes(de);
-                        if (dsm2 !== null && dem2 !== null && dsm2 < dem2) mins3 = dem2 - dsm2;
+                        if (dsm2 !== null && dem2 !== null && dsm2 < dem2) {
+                            mins3 = dem2 - dsm2;
+                        }
                     }
                     draftRecords[idx].deductMinutes = mins3;
+
                     if (mins3 > 0) {
                         durationSpan.textContent = minutesToDisplay(mins3);
                         durationSpan.classList.remove('empty');
@@ -3685,8 +3830,31 @@
                         durationSpan.textContent = '0分';
                         durationSpan.classList.add('empty');
                     }
-                    trackChange(draftRecords[idx].dateStr);
-                    updateDraftHoursAndSalary();
+
+                    // ✅ 关键修复：立即重新计算当前记录的工时
+                    var recToUpdate = draftRecords[idx];
+                    if (recToUpdate.startTime && recToUpdate.endTime) {
+                        recToUpdate.hours = calculateNetHours(
+                            recToUpdate.startTime,
+                            recToUpdate.endTime,
+                            recToUpdate.excludeDinner || false,
+                            recToUpdate.deductStart || '',
+                            recToUpdate.deductEnd || '',
+                            false
+                        );
+                        recToUpdate.salary = getSalary(recToUpdate.hours);
+                    }
+
+                    if (recToUpdate.startTime && recToUpdate.endTime) {
+                        var periods = getPeriodLabels(recToUpdate.startTime, recToUpdate.endTime);
+                        recToUpdate.periodLabels = periods;
+                        recToUpdate.periodLabel = periods.map(function(p) { return p.label; }).join('、');
+                        recToUpdate.periodCls = periods.length > 0 ? periods[0].cls : '';
+                    }
+
+                    trackChange(recToUpdate.dateStr);
+                    calcEngine.markDirty(recToUpdate.dateStr);
+
                     renderTableIncremental();
                     renderCalendar(calYear, calMonth);
                     renderChart();
@@ -3792,6 +3960,10 @@
             var tbody = document.getElementById('tableBody');
             if (!tbody) return;
 
+            for (var i = 0; i < draftRecords.length; i++) {
+                draftRecords[i] = ensureRecordFields(draftRecords[i]);
+            }
+
             var sorted = draftRecords.slice().sort(function(a, b) {
                 return new Date(a.dateStr) - new Date(b.dateStr);
             });
@@ -3827,7 +3999,6 @@
             virtualRenderer.setRowBuilder(createTableRow);
             virtualRenderer.setData(filtered);
 
-            // 对于少量数据，额外处理汇总行
             if (filtered.length <= 80) {
                 renderSummaryRows(filtered);
             }
@@ -3846,16 +4017,12 @@
                 dateGroups[rec.dateStr].push(rec);
             }
 
-            // 移除现有的汇总行
             var existing = tbody.querySelectorAll('.day-summary-row');
             for (var ei = 0; ei < existing.length; ei++) existing[ei].remove();
 
-            var sortedDates = Object.keys(dateGroups).sort();
-            // 在虚拟渲染后插入汇总行
             setTimeout(function() {
                 var rows = tbody.querySelectorAll('tr:not(.virtual-spacer)');
                 var currentDate = '';
-                var insertAfter = null;
 
                 for (var ri = 0; ri < rows.length; ri++) {
                     var row = rows[ri];
@@ -3863,7 +4030,6 @@
                     if (dateInput) {
                         var dateVal = dateInput.value;
                         if (dateVal && dateGroups[dateVal] && dateGroups[dateVal].length > 1) {
-                            // 找到该日期的第一行，在其前插入汇总行
                             if (currentDate !== dateVal) {
                                 currentDate = dateVal;
                                 var summaryRow = createSummaryRow(dateVal, dateGroups[dateVal]);
@@ -3982,8 +4148,7 @@
             var firstDay = new Date(year, month - 1, 1).getDay();
             var daysInMonth = new Date(year, month, 0).getDate();
             var today = new Date();
-            var todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today
-                .getDate()).padStart(2, '0');
+            var todayStr = getLocalDateStr(today);
             var weekdays = ['日', '一', '二', '三', '四', '五', '六'];
             for (var wi = 0; wi < weekdays.length; wi++) {
                 var div = document.createElement('div');
@@ -4064,7 +4229,7 @@
                     if (num) {
                         var dayNum = parseInt(num.innerText);
                         var checkDate = year + '-' + String(month).padStart(2, '0') + '-' + String(dayNum).padStart(2,
-                        '0');
+                            '0');
                         if (checkDate === highlightedDate) {
                             cell.style.boxShadow = '0 0 0 3px #2c7a4b';
                             cell.style.borderColor = '#2c7a4b';
@@ -4312,7 +4477,7 @@
                     var parsed = JSON.parse(savedDraft);
                     if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                         if (confirm('检测到用户 "' + currentUser + '" 有未保存的草稿数据，是否恢复？')) {
-                            draftRecords = parsed;
+                            draftRecords = parsed.map(function(rec) { return ensureRecordFields(rec); });
                             hasDraft = true;
                         }
                     }
@@ -4320,6 +4485,9 @@
             }
             if (!hasDraft) {
                 draftRecords = JSON.parse(JSON.stringify(workRecords));
+                for (var i = 0; i < draftRecords.length; i++) {
+                    draftRecords[i] = ensureRecordFields(draftRecords[i]);
+                }
             }
 
             document.getElementById('currentUserDisplay').textContent = currentUser;
@@ -4335,9 +4503,9 @@
             });
 
             var allDates = [];
-            for (var i = 0; i < draftRecords.length; i++) {
-                if (draftRecords[i].dateStr && allDates.indexOf(draftRecords[i].dateStr) === -1) {
-                    allDates.push(draftRecords[i].dateStr);
+            for (var i2 = 0; i2 < draftRecords.length; i2++) {
+                if (draftRecords[i2].dateStr && allDates.indexOf(draftRecords[i2].dateStr) === -1) {
+                    allDates.push(draftRecords[i2].dateStr);
                 }
             }
             if (allDates.length > 0) calcEngine.markDirtyBatch(allDates);
@@ -4363,6 +4531,17 @@
             localStorage.removeItem('draft_' + currentUser);
             isDraftSaved = true;
             setTimeout(updateFabState, 200);
+        }
+
+        function saveClockRecordDirectly() {
+            for (var i = 0; i < draftRecords.length; i++) {
+                draftRecords[i] = ensureRecordFields(draftRecords[i]);
+            }
+            workRecords = JSON.parse(JSON.stringify(draftRecords));
+            saveUserData();
+            localStorage.removeItem('draft_' + currentUser);
+            isDraftSaved = true;
+            loadUserData();
         }
 
         function switchUser(username) {
@@ -4609,6 +4788,9 @@
                     if (pwd === currentPassword) {
                         var loading = showLoading('保存中...');
                         setTimeout(function() {
+                            for (var i2 = 0; i2 < draftRecords.length; i2++) {
+                                draftRecords[i2] = ensureRecordFields(draftRecords[i2]);
+                            }
                             workRecords = JSON.parse(JSON.stringify(draftRecords));
                             saveUserData();
                             localStorage.removeItem('draft_' + currentUser);
@@ -5223,6 +5405,9 @@
                     ];
                     workRecords = JSON.parse(JSON.stringify(demo));
                     draftRecords = JSON.parse(JSON.stringify(demo));
+                    for (var i = 0; i < draftRecords.length; i++) {
+                        draftRecords[i] = ensureRecordFields(draftRecords[i]);
+                    }
                     updateDraftHoursAndSalary();
                     saveUserData();
                     localStorage.removeItem('draft_' + currentUser);
@@ -5270,6 +5455,9 @@
                     if (data.records) {
                         workRecords = data.records;
                         draftRecords = JSON.parse(JSON.stringify(workRecords));
+                        for (var i = 0; i < draftRecords.length; i++) {
+                            draftRecords[i] = ensureRecordFields(draftRecords[i]);
+                        }
                     }
                     if (data.settings) {
                         if (data.settings.mealSettings) {
@@ -5392,7 +5580,8 @@
             summarySheet.push(["工作天数(工时>0)", workDays2]);
             summarySheet.push(["时薪(元/小时)", hourlyRate]);
             summarySheet.push(["打卡精度", mealSettings.clockPrecision === 'real' ? '实时累计' :
-                '整点计算（签到向上取整，签退向下取整）']);
+                '整点计算（签到向上取整，签退向下取整）'
+            ]);
             summarySheet.push(["早餐时段", mealSettings.breakfastStart + ' - ' + mealSettings.breakfastEnd]);
             summarySheet.push(["午餐时段", mealSettings.lunchStart + ' - ' + mealSettings.lunchEnd]);
             summarySheet.push(["晚餐时段", mealSettings.dinnerStart + ' - ' + mealSettings.dinnerEnd]);
@@ -5411,7 +5600,7 @@
         //  FAB 签到/签退
         // ============================================================
         function getTodayUnclosedRecord() {
-            var today6 = new Date().toISOString().slice(0, 10);
+            var today6 = getLocalDateStr();
             for (var i = 0; i < draftRecords.length; i++) {
                 var r = draftRecords[i];
                 if (r.dateStr === today6 && r.status === 'clocked_in' && r.startTime && !r.endTime) return r;
@@ -5420,12 +5609,12 @@
         }
 
         function getTodayRecords() {
-            var today7 = new Date().toISOString().slice(0, 10);
+            var today7 = getLocalDateStr();
             return draftRecords.filter(function(r) { return r.dateStr === today7; });
         }
 
         function getTodayCompletedClockRecords() {
-            var today8 = new Date().toISOString().slice(0, 10);
+            var today8 = getLocalDateStr();
             return draftRecords.filter(function(r) { return r.dateStr === today8 && r.status === 'completed' && r
                     .clockSource === 'clock'; });
         }
@@ -5435,12 +5624,21 @@
             var now5 = new Date();
             var parts3 = startTime.split(':').map(Number);
             if (isNaN(parts3[0]) || isNaN(parts3[1])) return '0.0';
+
             var start2 = new Date(now5);
             start2.setHours(parts3[0], parts3[1], 0, 0);
+
             var diffMs = now5 - start2;
-            if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
             var hours2 = diffMs / (1000 * 60 * 60);
-            return Math.min(hours2, 24).toFixed(1);
+
+            if (hours2 < -12) {
+                hours2 = 24 + hours2;
+            } else if (hours2 < 0) {
+                hours2 = 0;
+            }
+
+            hours2 = Math.min(Math.max(0, hours2), 24);
+            return hours2.toFixed(1);
         }
 
         function updateFabState() {
@@ -5486,7 +5684,7 @@
                     tooltip.style.display = 'block';
                 } else if (todayRecs.length > 0) {
                     var totalH2 = todayRecs.reduce(function(sum, r) { return sum + (r.mergedHours || r.hours || 0); },
-                    0);
+                        0);
                     if (totalH2 > 0) {
                         tooltip.innerHTML = '📊 今日已记录 ' + totalH2.toFixed(2) + 'h';
                         tooltip.style.display = 'block';
@@ -5495,10 +5693,213 @@
             }
         }
 
+        // ============================================================
+        //  签退弹窗（含额外扣除）
+        // ============================================================
+        function showClockOutSheet() {
+            var unclosed = getTodayUnclosedRecord();
+            if (!unclosed) {
+                showToast('今日没有未签退的签到记录', 'warning');
+                return;
+            }
+
+            var now7 = new Date();
+            var timeStr3 = now7.toTimeString().slice(0, 5);
+            var startTime4 = unclosed.startTime || '--:--';
+            var elapsed3 = calculateElapsedHours(startTime4);
+
+            var overlay = document.createElement('div');
+            overlay.className = 'fab-sheet-overlay';
+            overlay.id = 'fabSheetOverlay';
+            overlay.innerHTML = '<div class="fab-sheet" id="fabSheet"><div class="sheet-handle"></div><div class="sheet-icon clock-out"><i class="fas fa-hourglass-end"></i></div><h3>⏰ 签退打卡</h3><p class="sheet-sub">结束今日工作，自动计算工时</p><div class="sheet-time-display"><span class="label"><i class="fas fa-hourglass-start"></i> 上班时间</span><span class="value highlight-amber">' +
+                startTime4 +
+                '</span><span class="label"><i class="far fa-clock"></i> 当前时间</span><span class="value highlight-green">' +
+                timeStr3 +
+                '</span></div><div class="sheet-time-display" style="background:#eaf6ef;border-color:#a7d0b8;"><span class="label"><i class="fas fa-chart-simple"></i> 预计工时</span><span class="value highlight-blue" style="font-size:1.2rem;">' +
+                elapsed3 +
+                ' 小时</span><span class="label" style="font-weight:400;color:#2c7a4b;">（将自动扣除用餐时间）</span></div>' +
+                (mealSettings.clockPrecision === 'round' ?
+                    '<div style="background:#fef3c7;border-radius:12px;padding:8px 14px;margin-bottom:16px;font-size:0.75rem;color:#92400e;display:flex;align-items:center;gap:8px;border:1px solid #fde68a;"><i class="fas fa-arrow-down"></i> 整点模式：签退时间将向下取整到最近的整点或半点</div>' :
+                    '<div style="background:#eaf6ef;border-radius:12px;padding:8px 14px;margin-bottom:16px;font-size:0.75rem;color:#065f46;display:flex;align-items:center;gap:8px;border:1px solid #a7d0b8;"><i class="fas fa-clock"></i> 实时模式：按实际打卡时间精确计算</div>'
+                    ) +
+                '<hr class="sheet-divider"><div class="sheet-field"><label><i class="fas fa-pen"></i> 今日备注（选填）</label><textarea id="sheetNoteInput" placeholder="今天完成了什么工作？...">' +
+                (unclosed.note || '') +
+                '</textarea></div>' +
+                '<div class="sheet-field"><label><i class="fas fa-cut"></i> 额外扣除时段（休息/暂停）</label><div class="sheet-deduct-group"><input type="time" id="sheetDeductStart" value="' +
+                (unclosed.deductStart || '') + '" placeholder="开始"><span>—</span><input type="time" id="sheetDeductEnd" value="' +
+                (unclosed.deductEnd || '') +
+                '" placeholder="结束"><span class="deduct-preview" id="sheetDeductPreview">0分</span></div></div>' +
+                '<div class="sheet-field"><label><i class="fas fa-clock"></i> 结束时间 ' + (mealSettings
+                    .clockPrecision === 'round' ? '（将向下取整）' : '') +
+                '</label><input type="time" id="sheetEndTimeInput" value="' + timeStr3 +
+                '"></div><div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:#475569;cursor:pointer;"><input type="checkbox" id="sheetExcludeDinner" ' +
+                (unclosed.excludeDinner ? 'checked' : '') +
+                '><i class="fas fa-egg"></i> 不扣晚餐时间</label></div><div class="sheet-buttons"><button class="btn btn-outline" id="sheetCancelBtn">取消</button><button class="btn btn-warning" id="sheetConfirmBtn"><i class="fas fa-check"></i> 确认签退</button></div></div>';
+            document.body.appendChild(overlay);
+
+            var noteInput2 = document.getElementById('sheetNoteInput');
+            var endTimeInput = document.getElementById('sheetEndTimeInput');
+            var excludeDinner = document.getElementById('sheetExcludeDinner');
+            var confirmBtn2 = document.getElementById('sheetConfirmBtn');
+            var cancelBtn2 = document.getElementById('sheetCancelBtn');
+
+            var deductStartInput = document.getElementById('sheetDeductStart');
+            var deductEndInput = document.getElementById('sheetDeductEnd');
+            var deductPreview = document.getElementById('sheetDeductPreview');
+
+            var updateDeductPreview = function() {
+                var ds = deductStartInput.value;
+                var de = deductEndInput.value;
+                var mins = 0;
+                if (ds && de) {
+                    var dsm = timeToMinutes(ds);
+                    var dem = timeToMinutes(de);
+                    if (dsm !== null && dem !== null && dsm < dem) mins = dem - dsm;
+                }
+                deductPreview.textContent = mins > 0 ? minutesToDisplay(mins) : '0分';
+                deductPreview.style.color = mins > 0 ? '#2c7a4b' : '#94a3b8';
+                deductPreview.style.background = mins > 0 ? '#e6f0eb' : '#f1f5f9';
+            };
+            deductStartInput.addEventListener('change', updateDeductPreview);
+            deductEndInput.addEventListener('change', updateDeductPreview);
+            updateDeductPreview();
+
+            setTimeout(function() { noteInput2.focus(); }, 300);
+
+            var closeSheet2 = function() { overlay.remove(); };
+
+            var confirmClockOut2 = function() {
+                var endTime2 = endTimeInput.value;
+                if (!endTime2) {
+                    showToast('请选择结束时间', 'warning');
+                    return;
+                }
+                if (mealSettings.clockPrecision === 'round') {
+                    var rounded3 = roundTimeToNearestHalfHour(endTime2, 'down');
+                    if (rounded3 !== endTime2) {
+                        endTime2 = rounded3;
+                        endTimeInput.value = rounded3;
+                        showToast('⏰ 签退时间已取整：' + rounded3, 'info');
+                    }
+                }
+
+                var startVal = unclosed.startTime;
+                if (startVal && endTime2 <= startVal) {
+                    if (!confirm('🌙 检测到跨夜工作（' + startVal + ' → ' + endTime2 +
+                            '），将自动计算跨夜工时。\n是否确认？')) return;
+                    showToast('🌙 跨夜工作已记录', 'info');
+                }
+
+                var idx = -1;
+                for (var i2 = 0; i2 < draftRecords.length; i2++) {
+                    if (draftRecords[i2] === unclosed) { idx = i2; break; }
+                }
+                if (idx !== -1) {
+                    var dateStr6 = draftRecords[idx].dateStr;
+
+                    var deductStartVal = deductStartInput.value || '';
+                    var deductEndVal = deductEndInput.value || '';
+
+                    draftRecords[idx].endTime = endTime2;
+                    draftRecords[idx].note = noteInput2.value.trim() || draftRecords[idx].note || '';
+                    draftRecords[idx].excludeDinner = excludeDinner.checked;
+                    draftRecords[idx].deductStart = deductStartVal;
+                    draftRecords[idx].deductEnd = deductEndVal;
+                    draftRecords[idx].clockOutTime = new Date().toISOString();
+                    draftRecords[idx].status = 'completed';
+
+                    if (deductStartVal && deductEndVal) {
+                        var dsm3 = timeToMinutes(deductStartVal);
+                        var dem3 = timeToMinutes(deductEndVal);
+                        if (dsm3 !== null && dem3 !== null && dsm3 < dem3) {
+                            draftRecords[idx].deductMinutes = dem3 - dsm3;
+                        } else {
+                            draftRecords[idx].deductMinutes = 0;
+                        }
+                    } else {
+                        draftRecords[idx].deductMinutes = 0;
+                    }
+
+                    var hours = calculateNetHours(
+                        draftRecords[idx].startTime,
+                        draftRecords[idx].endTime,
+                        draftRecords[idx].excludeDinner || false,
+                        draftRecords[idx].deductStart || '',
+                        draftRecords[idx].deductEnd || '',
+                        false
+                    );
+                    draftRecords[idx].hours = hours;
+                    draftRecords[idx].salary = getSalary(hours);
+
+                    if (draftRecords[idx].startTime && draftRecords[idx].endTime) {
+                        var periods4 = getPeriodLabels(draftRecords[idx].startTime, draftRecords[idx].endTime);
+                        draftRecords[idx].periodLabels = periods4;
+                        draftRecords[idx].periodLabel = periods4.map(function(p) { return p.label; }).join('、');
+                        draftRecords[idx].periodCls = periods4.length > 0 ? periods4[0].cls : '';
+                    }
+
+                    var sameDayRecords = draftRecords.filter(function(r) {
+                        return r.dateStr === dateStr6 && r.startTime && r.endTime;
+                    });
+
+                    if (sameDayRecords.length > 1) {
+                        var mergedResult2 = calculateDayMergedHours(sameDayRecords);
+                        for (var mi3 = 0; mi3 < sameDayRecords.length; mi3++) {
+                            sameDayRecords[mi3].mergedHours = mergedResult2.totalHours;
+                            sameDayRecords[mi3].mergedSalary = mergedResult2.totalSalary;
+                            sameDayRecords[mi3].hasConflict = mergedResult2.hasConflict;
+                            sameDayRecords[mi3].conflictCount = mergedResult2.conflicts ? mergedResult2.conflicts
+                                .length : 0;
+                            sameDayRecords[mi3].mergedRanges = mergedResult2.mergedRanges;
+                        }
+                    } else {
+                        draftRecords[idx].mergedHours = draftRecords[idx].hours;
+                        draftRecords[idx].mergedSalary = draftRecords[idx].salary;
+                        draftRecords[idx].hasConflict = false;
+                        draftRecords[idx].conflictCount = 0;
+                        draftRecords[idx].mergedRanges = [];
+                    }
+
+                    trackChange(dateStr6);
+                    updateDraftHoursAndSalary();
+                    saveClockRecordDirectly();
+                    renderTableIncremental();
+                    renderCalendar(calYear, calMonth);
+                    renderChart();
+                    updateFabState();
+                    closeSheet2();
+
+                    var finalHours = draftRecords[idx].mergedHours || draftRecords[idx].hours || 0;
+                    var finalSalary = draftRecords[idx].mergedSalary || draftRecords[idx].salary || 0;
+                    showToast('✅ 签退成功！今日工时 ' + finalHours.toFixed(2) + 'h，报酬 ¥' + finalSalary.toFixed(2),
+                        'success');
+                } else {
+                    showToast('记录异常，请刷新重试', 'error');
+                    closeSheet2();
+                }
+            };
+
+            confirmBtn2.addEventListener('click', confirmClockOut2);
+            cancelBtn2.addEventListener('click', closeSheet2);
+
+            noteInput2.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault();
+                    endTimeInput.focus(); }
+            });
+            endTimeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { e.preventDefault();
+                    confirmClockOut2(); }
+            });
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeSheet2(); });
+        }
+
+        // ============================================================
+        //  签到弹窗
+        // ============================================================
         function showClockInSheet() {
             var now6 = new Date();
             var timeStr2 = now6.toTimeString().slice(0, 5);
-            var dateStr4 = now6.toISOString().slice(0, 10);
+            var dateStr4 = getLocalDateStr(now6);
 
             var todayRecs2 = getTodayRecords();
             var hasRestMark = todayRecs2.some(function(r) { return r.status === 'rest_day'; });
@@ -5539,7 +5940,7 @@
 
             var handleRestDay = function() {
                 if (confirm('确认将今日标记为休息日？\n（将记录0工时，可在表格中删除取消）')) {
-                    var dateStr5 = new Date().toISOString().slice(0, 10);
+                    var dateStr5 = getLocalDateStr();
                     var existingRest = draftRecords.some(function(r) { return r.dateStr === dateStr5 && r.status ===
                             'rest_day'; });
                     if (existingRest) {
@@ -5580,6 +5981,7 @@
                     draftRecords.push(restRecord);
                     trackChange(dateStr5);
                     updateDraftHoursAndSalary();
+                    saveClockRecordDirectly();
                     renderTableIncremental();
                     renderCalendar(calYear, calMonth);
                     renderChart();
@@ -5611,14 +6013,14 @@
                     closeSheet();
                     return;
                 }
-                var todayRest2 = draftRecords.some(function(r) { return r.dateStr === new Date().toISOString().slice(0,
-                        10) && r.status === 'rest_day'; });
+                var todayRest2 = draftRecords.some(function(r) { return r.dateStr === getLocalDateStr() && r.status ===
+                        'rest_day'; });
                 if (todayRest2) {
                     if (!confirm('今日已标记为休息日，是否仍然签到？\n（休息标记将被保留）')) return;
                 }
 
                 var newRecord2 = {
-                    dateStr: new Date().toISOString().slice(0, 10),
+                    dateStr: getLocalDateStr(),
                     startTime: startTime3,
                     endTime: '',
                     note: noteInput.value.trim() || '',
@@ -5644,12 +6046,13 @@
                 draftRecords.push(newRecord2);
                 trackChange(newRecord2.dateStr);
                 updateDraftHoursAndSalary();
+                saveClockRecordDirectly();
                 renderTableIncremental();
                 renderCalendar(calYear, calMonth);
                 renderChart();
                 updateFabState();
                 closeSheet();
-                showToast('✅ 签到成功！' + startTime3 + ' 已记录', 'success');
+                showToast('✅ 签到成功！' + startTime3 + ' 已记录并保存', 'success');
             };
 
             confirmBtn.addEventListener('click', confirmClockIn);
@@ -5663,117 +6066,6 @@
                     confirmClockIn(); }
             });
             overlay.addEventListener('click', function(e) { if (e.target === overlay) closeSheet(); });
-        }
-
-        function showClockOutSheet() {
-            var unclosed = getTodayUnclosedRecord();
-            if (!unclosed) {
-                showToast('今日没有未签退的签到记录', 'warning');
-                return;
-            }
-
-            var now7 = new Date();
-            var timeStr3 = now7.toTimeString().slice(0, 5);
-            var startTime4 = unclosed.startTime || '--:--';
-            var elapsed3 = calculateElapsedHours(startTime4);
-
-            var overlay = document.createElement('div');
-            overlay.className = 'fab-sheet-overlay';
-            overlay.id = 'fabSheetOverlay';
-            overlay.innerHTML = '<div class="fab-sheet" id="fabSheet"><div class="sheet-handle"></div><div class="sheet-icon clock-out"><i class="fas fa-hourglass-end"></i></div><h3>⏰ 签退打卡</h3><p class="sheet-sub">结束今日工作，自动计算工时</p><div class="sheet-time-display"><span class="label"><i class="fas fa-hourglass-start"></i> 上班时间</span><span class="value highlight-amber">' +
-                startTime4 +
-                '</span><span class="label"><i class="far fa-clock"></i> 当前时间</span><span class="value highlight-green">' +
-                timeStr3 +
-                '</span></div><div class="sheet-time-display" style="background:#eaf6ef;border-color:#a7d0b8;"><span class="label"><i class="fas fa-chart-simple"></i> 预计工时</span><span class="value highlight-blue" style="font-size:1.2rem;">' +
-                elapsed3 +
-                ' 小时</span><span class="label" style="font-weight:400;color:#2c7a4b;">（将自动扣除用餐时间）</span></div>' +
-                (mealSettings.clockPrecision === 'round' ?
-                    '<div style="background:#fef3c7;border-radius:12px;padding:8px 14px;margin-bottom:16px;font-size:0.75rem;color:#92400e;display:flex;align-items:center;gap:8px;border:1px solid #fde68a;"><i class="fas fa-arrow-down"></i> 整点模式：签退时间将向下取整到最近的整点或半点</div>' :
-                    '<div style="background:#eaf6ef;border-radius:12px;padding:8px 14px;margin-bottom:16px;font-size:0.75rem;color:#065f46;display:flex;align-items:center;gap:8px;border:1px solid #a7d0b8;"><i class="fas fa-clock"></i> 实时模式：按实际打卡时间精确计算</div>'
-                    ) +
-                '<hr class="sheet-divider"><div class="sheet-field"><label><i class="fas fa-pen"></i> 今日备注（选填）</label><textarea id="sheetNoteInput" placeholder="今天完成了什么工作？...">' +
-                (unclosed.note || '') +
-                '</textarea></div><div class="sheet-field"><label><i class="fas fa-clock"></i> 结束时间 ' + (mealSettings
-                    .clockPrecision === 'round' ? '（将向下取整）' : '') +
-                '</label><input type="time" id="sheetEndTimeInput" value="' + timeStr3 +
-                '"></div><div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:#475569;cursor:pointer;"><input type="checkbox" id="sheetExcludeDinner" ' +
-                (unclosed.excludeDinner ? 'checked' : '') +
-                '><i class="fas fa-egg"></i> 不扣晚餐时间</label></div><div class="sheet-buttons"><button class="btn btn-outline" id="sheetCancelBtn">取消</button><button class="btn btn-warning" id="sheetConfirmBtn"><i class="fas fa-check"></i> 确认签退</button></div></div>';
-            document.body.appendChild(overlay);
-
-            var noteInput2 = document.getElementById('sheetNoteInput');
-            var endTimeInput = document.getElementById('sheetEndTimeInput');
-            var excludeDinner = document.getElementById('sheetExcludeDinner');
-            var confirmBtn2 = document.getElementById('sheetConfirmBtn');
-            var cancelBtn2 = document.getElementById('sheetCancelBtn');
-
-            setTimeout(function() { noteInput2.focus(); }, 300);
-
-            var closeSheet2 = function() { overlay.remove(); };
-
-            var confirmClockOut2 = function() {
-                var endTime2 = endTimeInput.value;
-                if (!endTime2) {
-                    showToast('请选择结束时间', 'warning');
-                    return;
-                }
-                if (mealSettings.clockPrecision === 'round') {
-                    var rounded3 = roundTimeToNearestHalfHour(endTime2, 'down');
-                    if (rounded3 !== endTime2) {
-                        endTime2 = rounded3;
-                        endTimeInput.value = rounded3;
-                        showToast('⏰ 签退时间已取整：' + rounded3, 'info');
-                    }
-                }
-
-                var startVal = unclosed.startTime;
-                if (startVal && endTime2 <= startVal) {
-                    if (!confirm('🌙 检测到跨夜工作（' + startVal + ' → ' + endTime2 +
-                            '），将自动计算跨夜工时。\n是否确认？')) return;
-                    showToast('🌙 跨夜工作已记录', 'info');
-                }
-
-                var idx = -1;
-                for (var i2 = 0; i2 < draftRecords.length; i2++) {
-                    if (draftRecords[i2] === unclosed) { idx = i2; break; }
-                }
-                if (idx !== -1) {
-                    var dateStr6 = draftRecords[idx].dateStr;
-                    draftRecords[idx].endTime = endTime2;
-                    draftRecords[idx].note = noteInput2.value.trim() || draftRecords[idx].note || '';
-                    draftRecords[idx].excludeDinner = excludeDinner.checked;
-                    draftRecords[idx].clockOutTime = new Date().toISOString();
-                    draftRecords[idx].status = 'completed';
-
-                    trackChange(dateStr6);
-                    updateDraftHoursAndSalary();
-                    renderTableIncremental();
-                    renderCalendar(calYear, calMonth);
-                    renderChart();
-                    updateFabState();
-                    closeSheet2();
-
-                    var hours4 = draftRecords[idx].mergedHours || draftRecords[idx].hours || 0;
-                    var salary2 = draftRecords[idx].mergedSalary || draftRecords[idx].salary || 0;
-                    showToast('✅ 签退成功！今日工时 ' + hours4.toFixed(2) + 'h，报酬 ¥' + salary2.toFixed(2), 'success');
-                } else {
-                    showToast('记录异常，请刷新重试', 'error');
-                    closeSheet2();
-                }
-            };
-
-            confirmBtn2.addEventListener('click', confirmClockOut2);
-            cancelBtn2.addEventListener('click', closeSheet2);
-
-            noteInput2.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault();
-                    endTimeInput.focus(); }
-            });
-            endTimeInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') { e.preventDefault();
-                    confirmClockOut2(); }
-            });
-            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeSheet2(); });
         }
 
         function handleFabClick() {
@@ -5967,8 +6259,7 @@
 
             console.log('🚀 钟点工时管家 · 高性能版已启动');
             console.log('📊 当前数据: ' + draftRecords.length + ' 条记录');
-            console.log('⚡ 增量计算引擎: ' + (_useIncrementalEngine ? '启用' : '禁用'));
-            console.log('📋 虚拟滚动: ' + (_useVirtualScroll ? '启用' : '禁用'));
+            console.log('✅ 额外扣除修复: 修改后工时立即更新');
         }
 
         init();
